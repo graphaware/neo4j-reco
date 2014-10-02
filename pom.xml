@@ -1,0 +1,275 @@
+<!--
+  ~ Copyright (c) 2014 GraphAware
+  ~
+  ~ This file is part of GraphAware.
+  ~
+  ~ GraphAware is free software: you can redistribute it and/or modify it under the terms of
+  ~ the GNU General Public License as published by the Free Software Foundation, either
+  ~ version 3 of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  ~  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details. You should have received a copy of
+  ~ the GNU General Public License along with this program.  If not, see
+  ~ <http://www.gnu.org/licenses />.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.graphaware.neo4j</groupId>
+    <artifactId>recommendation-engine</artifactId>
+    <version>2.1.5.20.1-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <name>GraphAware Neo4j Recommendation Engine</name>
+    <description>Neo4j Based Recommendation Engine Module with real-time and pre-computed recommendations.</description>
+    <url>http://graphaware.com</url>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License, version 3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:graphaware/neo4j-reco.git</connection>
+        <developerConnection>scm:git:git@github.com:graphaware/neo4j-reco.git</developerConnection>
+        <url>git@github.com:graphaware/neo4j-reco.git</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>bachmanm</id>
+            <name>Michal Bachman</name>
+            <email>neo4j-reco@graphaware.com</email>
+        </developer>
+    </developers>
+
+    <ciManagement>
+        <url>https://travis-ci.org/graphaware/neo4j-reco</url>
+        <system>Travis CI</system>
+    </ciManagement>
+
+    <inceptionYear>2014</inceptionYear>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/graphaware/neo4j-reco/issues</url>
+    </issueManagement>
+
+    <organization>
+        <name>Graph Aware Limited</name>
+        <url>http://graphaware.com</url>
+    </organization>
+
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>intellij-javadoc-fix</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
+                        <configuration>
+                            <aggregate>true</aggregate>
+                            <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <properties>
+        <java.version>1.7</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <neo4j.version>2.1.5</neo4j.version>
+        <graphaware.version>2.1.5.20-SNAPSHOT</graphaware.version>
+        <spring.version>4.0.0.RELEASE</spring.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j</artifactId>
+            <version>${neo4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-kernel</artifactId>
+            <version>${neo4j.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.graphaware.neo4j</groupId>
+            <artifactId>api</artifactId>
+            <version>${graphaware.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.graphaware.neo4j</groupId>
+            <artifactId>common</artifactId>
+            <version>${graphaware.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.graphaware.neo4j</groupId>
+            <artifactId>runtime</artifactId>
+            <version>${graphaware.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spring Framework -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>com.graphaware.neo4j</groupId>
+            <version>2.1.4.19.3</version>
+            <artifactId>algorithms</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.graphaware.neo4j</groupId>
+            <artifactId>server-community</artifactId>
+            <version>${graphaware.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.graphaware.neo4j</groupId>
+            <version>${graphaware.version}</version>
+            <artifactId>tests</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <finalName>graphaware-reco-${project.version}</finalName>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <links>
+                        <link>http://api.neo4j.org/2.1.4/</link>
+                        <link>http://graphaware.com/site/framework/latest/apidocs/</link>
+                    </links>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
