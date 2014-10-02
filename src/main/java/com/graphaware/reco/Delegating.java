@@ -28,9 +28,9 @@ public abstract class Delegating<OUT, IN> {
     }
 
     /**
-     * {@see {@link Engine#recommend(Object, int)}}.
+     * {@see {@link Engine#recommend(Object, int, boolean)}}.
      */
-    public List<Pair<OUT, CompositeScore>> delegate(IN input, int limit) {
+    public List<Pair<OUT, CompositeScore>> delegate(IN input, int limit, boolean realTime) {
         Recommendations<OUT> recommendations = new Recommendations<>();
 
         Set<OUT> blacklist = buildBlacklist(input);
@@ -40,7 +40,7 @@ public abstract class Delegating<OUT, IN> {
                 continue;
             }
 
-            recommendations.add(part.name(), part.recommend(input, limit, blacklist));
+            recommendations.add(part.name(), part.recommend(input, limit, blacklist, realTime));
         }
 
         for (PostProcessor<OUT, IN> postProcessor : postProcessors) {

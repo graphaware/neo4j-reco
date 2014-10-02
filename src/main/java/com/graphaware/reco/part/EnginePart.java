@@ -26,9 +26,13 @@ public interface EnginePart<OUT, IN> {
      * @param limit     desired maximum number of produced recommendations for the whole engine. Parts can take this into
      *                  account in order not to produce too many recommendations, if they can traverse the graph best-first manner.
      * @param blacklist of items that must not be recommended.
+     * @param realTime  an indication whether the recommendations being computed are meant to be real-time (<code>true</code>)
+     *                  or not (<code>false</code>). Implementations can choose to ignore it, but they can also choose
+     *                  to make the recommendation process faster and less accurate for real-time scenarios and slower
+     *                  but more accurate for pre-computed scenarios.
      * @return a map of recommendations, where key is the recommended item and value if the relevance score.
      */
-    Map<OUT, Integer> recommend(IN input, int limit, Set<OUT> blacklist);
+    Map<OUT, Integer> recommend(IN input, int limit, Set<OUT> blacklist, boolean realTime);
 
     /**
      * Is this recommendation engine part optional? If it is, it can be skipped if there are enough recommendations

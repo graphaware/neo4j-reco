@@ -24,7 +24,7 @@ public class DelegatingEngine<OUT, IN> extends Delegating<OUT, IN> implements En
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<OUT, CompositeScore>> recommend(IN input, int limit) {
-        return delegate(input, limit);
+    public List<Pair<OUT, CompositeScore>> recommend(IN input, int limit, boolean realTime) {
+        return delegate(input, limit, realTime);
     }
 }

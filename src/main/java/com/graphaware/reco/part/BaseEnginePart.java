@@ -42,17 +42,22 @@ public abstract class BaseEnginePart<OUT, IN> implements EnginePart<OUT, IN> {
      * {@inheritDoc}
      */
     @Override
-    public final Map<OUT, Integer> recommend(IN input, int limit, Set<OUT> blacklist) {
+    public final Map<OUT, Integer> recommend(IN input, int limit, Set<OUT> blacklist, boolean realTime) {
         Map<OUT, Integer> result = new HashMap<>();
 
-        populateResult(result, input, limit, blacklist);
+        if (realTime) {
+            populateResultRealTime(result, input, limit, blacklist);
+        }
+        else {
+            populateResult(result, input, limit, blacklist);
+        }
 
         return transformer.transform(result);
     }
 
     /**
-     * Populate the given empty result with recommendations. It is highly recommended to use {@link #addToResult(java.util.Map, Object, java.util.Set, Object, int)}
-     * to do that.
+     * Populate the given empty result with recommendations. It is highly recommended to use
+     * {@link #addToResult(java.util.Map, Object, java.util.Set, Object, int)} to do that.
      *
      * @param result    to populate.
      * @param input     to compute recommendations for.
@@ -60,6 +65,20 @@ public abstract class BaseEnginePart<OUT, IN> implements EnginePart<OUT, IN> {
      * @param blacklist items that must not be recommended.
      */
     protected abstract void populateResult(Map<OUT, Integer> result, IN input, int limit, Set<OUT> blacklist);
+
+    /**
+     * Populate the given empty result with recommendations in real-time. Implementations can choose to override this
+     * method to perform a faster but perhaps less accurate recommendation search. It is highly recommended to use
+     * {@link #addToResult(java.util.Map, Object, java.util.Set, Object, int)} to populate the result.
+     *
+     * @param result    to populate.
+     * @param input     to compute recommendations for.
+     * @param limit     maximum number of total recommendations to produce by the whole engine (i.e. not just this part). Can be used to guide or terminate the search.
+     * @param blacklist items that must not be recommended.
+     */
+    protected void populateResultRealTime(Map<OUT, Integer> result, IN input, int limit, Set<OUT> blacklist) {
+        populateResult(result, input, limit, blacklist);
+    }
 
     /**
      * Add a potential recommendation to the overall result. Perform checks that the recommendation should actually be
