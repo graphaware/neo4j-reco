@@ -23,20 +23,20 @@ import static org.neo4j.graphdb.Direction.*;
  */
 public abstract class SomethingInCommon extends BaseEnginePart<Node, Node> {
 
-    protected SomethingInCommon(GraphDatabaseService database) {
-        super(database);
+    protected SomethingInCommon() {
+        super();
     }
 
-    protected SomethingInCommon(GraphDatabaseService database, ScoreTransformer transformer) {
-        super(database, transformer);
+    protected SomethingInCommon(ScoreTransformer transformer) {
+        super(transformer);
     }
 
-    protected SomethingInCommon(GraphDatabaseService database, List<Filter<Node, Node>> filters) {
-        super(database, filters);
+    protected SomethingInCommon(List<Filter<Node, Node>> filters) {
+        super(filters);
     }
 
-    protected SomethingInCommon(GraphDatabaseService database, ScoreTransformer transformer, List<Filter<Node, Node>> filters) {
-        super(database, transformer, filters);
+    protected SomethingInCommon(ScoreTransformer transformer, List<Filter<Node, Node>> filters) {
+        super(transformer, filters);
     }
 
     @Override

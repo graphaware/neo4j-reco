@@ -16,24 +16,22 @@ import java.util.*;
  */
 public abstract class BaseEnginePart<OUT, IN> implements EnginePart<OUT, IN> {
 
-    protected final GraphDatabaseService database;
     private final ScoreTransformer transformer;
     private final List<Filter<OUT, IN>> filters;
 
-    protected BaseEnginePart(GraphDatabaseService database) {
-        this(database, NoTransformation.getInstance());
+    protected BaseEnginePart() {
+        this(NoTransformation.getInstance());
     }
 
-    protected BaseEnginePart(GraphDatabaseService database, ScoreTransformer transformer) {
-        this(database, transformer, Collections.<Filter<OUT, IN>>emptyList());
+    protected BaseEnginePart(ScoreTransformer transformer) {
+        this(transformer, Collections.<Filter<OUT, IN>>emptyList());
     }
 
-    protected BaseEnginePart(GraphDatabaseService database, List<Filter<OUT, IN>> filters) {
-        this(database, NoTransformation.getInstance(), filters);
+    protected BaseEnginePart(List<Filter<OUT, IN>> filters) {
+        this(NoTransformation.getInstance(), filters);
     }
 
-    protected BaseEnginePart(GraphDatabaseService database, ScoreTransformer transformer, List<Filter<OUT, IN>> filters) {
-        this.database = database;
+    protected BaseEnginePart(ScoreTransformer transformer, List<Filter<OUT, IN>> filters) {
         this.transformer = transformer;
         this.filters = filters;
     }

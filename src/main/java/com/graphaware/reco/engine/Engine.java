@@ -1,4 +1,4 @@
-package com.graphaware.reco;
+package com.graphaware.reco.engine;
 
 import com.graphaware.common.util.Pair;
 import com.graphaware.reco.score.CompositeScore;

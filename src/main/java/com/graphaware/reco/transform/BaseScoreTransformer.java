@@ -16,7 +16,10 @@ public abstract class BaseScoreTransformer implements ScoreTransformer {
         Map<OUT, Integer> result = new HashMap<>();
 
         for (Map.Entry<OUT, Integer> pair : scored.entrySet()) {
-            result.put(pair.getKey(), transform(pair.getValue()));
+            int transformed = transform(pair.getValue());
+            if (transformed > 0) {
+                result.put(pair.getKey(), transformed);
+            }
         }
 
         return result;
