@@ -3,12 +3,13 @@ package com.graphaware.reco.module;
 import com.graphaware.common.util.Pair;
 import com.graphaware.reco.engine.Engine;
 import com.graphaware.reco.score.CompositeScore;
+import com.graphaware.runtime.RuntimeRegistry;
 import com.graphaware.runtime.metadata.NodeBasedContext;
 import com.graphaware.runtime.module.BaseRuntimeModule;
 import com.graphaware.runtime.module.TimerDrivenModule;
 import com.graphaware.runtime.walk.ContinuousNodeSelector;
 import com.graphaware.runtime.walk.NodeSelector;
-import com.graphaware.runtime.walk.RandomNodeSelector;
+import com.graphaware.writer.DatabaseWriter;
 import org.neo4j.graphdb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,14 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
     private final RecommendationModuleConfiguration config;
     private NodeSelector selector;
+    private final DatabaseWriter databaseWriter;
+    private final GraphDatabaseService database;
 
-    public RecommendationModule(String moduleId, RecommendationModuleConfiguration config) {
+    public RecommendationModule(String moduleId, RecommendationModuleConfiguration config, GraphDatabaseService database) {
         super(moduleId);
         this.config = config;
+        this.database = database;
+        this.databaseWriter = RuntimeRegistry.getRuntime(database).getConfiguration().getDatabaseWriter();
     }
 
     /**
@@ -64,7 +69,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
         Engine<Node, Node> engine = config.getEngine();
 
-        LOG.info("Computing for "+node.getId());
+        LOG.info("Computing for " + node.getId());
 
         List<Pair<Node, CompositeScore>> recommendations = engine.recommend(node, config.getMaxRecommendations(), false);
 
@@ -103,17 +108,22 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
         return selector.selectNode(database);
     }
 
-    private void persistRecommendations(Node node, List<Pair<Node, CompositeScore>> recommendations) {
-        for (Relationship existing : node.getRelationships(config.getRelationshipType(), Direction.OUTGOING)) {
-            existing.delete();
-        }
+    private void persistRecommendations(final Node node, final List<Pair<Node, CompositeScore>> recommendations) {
+        databaseWriter.write(database, new Runnable() {
+            @Override
+            public void run() {
+                for (Relationship existing : node.getRelationships(config.getRelationshipType(), Direction.OUTGOING)) {
+                    existing.delete();
+                }
 
-        for (Pair<Node, CompositeScore> recommendation : recommendations) {
-            Relationship created = node.createRelationshipTo(recommendation.first(), config.getRelationshipType());
-            for (String score : recommendation.second().getScores()) {
-                created.setProperty(score, recommendation.second().get(score));
+                for (Pair<Node, CompositeScore> recommendation : recommendations) {
+                    Relationship created = node.createRelationshipTo(recommendation.first(), config.getRelationshipType());
+                    for (String score : recommendation.second().getScores()) {
+                        created.setProperty(score, recommendation.second().get(score));
+                    }
+                }
             }
-        }
+        });
     }
 
     /**

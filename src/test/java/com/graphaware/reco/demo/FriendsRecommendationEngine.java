@@ -1,6 +1,5 @@
 package com.graphaware.reco.demo;
 
-import com.graphaware.reco.engine.Delegating;
 import com.graphaware.reco.engine.DelegatingEngine;
 import com.graphaware.reco.filter.Blacklist;
 import com.graphaware.reco.filter.ExcludeSelf;
@@ -8,16 +7,13 @@ import com.graphaware.reco.filter.ExistingRelationshipBlacklist;
 import com.graphaware.reco.filter.Filter;
 import com.graphaware.reco.part.EnginePart;
 import com.graphaware.reco.post.PostProcessor;
-import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static com.graphaware.reco.demo.Relationships.*;
-import static java.util.Collections.*;
-import static org.neo4j.graphdb.Direction.*;
+import static com.graphaware.reco.demo.Relationships.FRIEND_OF;
+import static org.neo4j.graphdb.Direction.BOTH;
 
 /**
  *

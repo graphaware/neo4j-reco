@@ -72,6 +72,6 @@ public class RecommendationModuleBootstrapper implements RuntimeModuleBootstrapp
             configuration = configuration.withRelationshipType(DynamicRelationshipType.withName(type));
         }
 
-        return new RecommendationModule(moduleId, configuration);
+        return new RecommendationModule(moduleId, configuration, database);
     }
 }
