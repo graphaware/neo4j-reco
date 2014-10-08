@@ -26,13 +26,11 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
     private final RecommendationModuleConfiguration config;
     private NodeSelector selector;
     private final DatabaseWriter databaseWriter;
-    private final GraphDatabaseService database;
 
     public RecommendationModule(String moduleId, RecommendationModuleConfiguration config, GraphDatabaseService database) {
         super(moduleId);
         this.config = config;
-        this.database = database;
-        this.databaseWriter = RuntimeRegistry.getRuntime(database).getConfiguration().getDatabaseWriter();
+        this.databaseWriter = RuntimeRegistry.getRuntime(database).getDatabaseWriter();
     }
 
     /**
@@ -109,7 +107,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
     }
 
     private void persistRecommendations(final Node node, final List<Pair<Node, CompositeScore>> recommendations) {
-        databaseWriter.write(database, new Runnable() {
+        databaseWriter.write(new Runnable() {
             @Override
             public void run() {
                 for (Relationship existing : node.getRelationships(config.getRelationshipType(), Direction.OUTGOING)) {

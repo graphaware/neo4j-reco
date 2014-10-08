@@ -2,7 +2,10 @@
 GraphAware Neo4j Recommendation Engine
 ======================================
 
-WIP
+This project is a mini-framework for writing a Neo4j-based recommendation engine that is capable of computing
+recommendations both in real-time and in the background.
+
+This is still work-in-progress.
 
 License
 -------
