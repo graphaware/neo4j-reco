@@ -30,7 +30,8 @@ public class CompositeScore implements Comparable<CompositeScore> {
         hasLength(scoreName);
 
         if (scoreParts.putIfAbsent(scoreName, value) != null) {
-            throw new IllegalStateException("Score " + scoreName + " has already been added");
+            return;
+//            throw new IllegalStateException("Score " + scoreName + " has already been added");
         }
 
         total.addAndGet(value);
@@ -43,6 +44,16 @@ public class CompositeScore implements Comparable<CompositeScore> {
      */
     public int get() {
         return total.get();
+    }
+
+    /**
+     * Does this composite score contain a score with the given name?
+     *
+     * @param scoreName to check.
+     * @return true iff contained.
+     */
+    public boolean contains(String scoreName) {
+        return scoreParts.contains(scoreName);
     }
 
     /**

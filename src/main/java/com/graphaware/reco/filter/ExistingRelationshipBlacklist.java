@@ -34,7 +34,7 @@ public class ExistingRelationshipBlacklist implements Blacklist<Node, Node> {
         Set<Node> excluded = new HashSet<>();
 
         for (Relationship r : input.getRelationships(type, direction)) {
-            excluded.add(r.getEndNode());
+            excluded.add(r.getOtherNode(input));
         }
 
         return excluded;

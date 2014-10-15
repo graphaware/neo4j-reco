@@ -1,4 +1,4 @@
-package com.graphaware.reco.demo;
+package com.graphaware.reco.test;
 
 import com.graphaware.reco.engine.DelegatingEngine;
 import com.graphaware.reco.filter.Blacklist;
@@ -15,9 +15,6 @@ import java.util.List;
 import static com.graphaware.reco.demo.Relationships.FRIEND_OF;
 import static org.neo4j.graphdb.Direction.BOTH;
 
-/**
- *
- */
 public class FriendsRecommendationEngine extends DelegatingEngine<Node, Node> {
 
     public FriendsRecommendationEngine() {
@@ -26,18 +23,31 @@ public class FriendsRecommendationEngine extends DelegatingEngine<Node, Node> {
 
     private static List<EnginePart<Node, Node>> parts() {
         List<Filter<Node, Node>> filters = filters();
-        return Arrays.asList(new PrecomputedRecommendations(filters), new FriendsInCommon(filters));
+        return Arrays.asList(
+                new PrecomputedRecommendations(filters),
+                new FriendsInCommon(filters),
+                new RandomPeople(filters)
+        );
     }
 
     private static List<Filter<Node, Node>> filters() {
-        return Arrays.<Filter<Node, Node>>asList(new ExcludeSelf());
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
+        );
     }
 
     private static List<Blacklist<Node, Node>> blacklists() {
-        return Arrays.asList(new ExcludeSelf(), new ExistingRelationshipBlacklist(FRIEND_OF, BOTH));
+        return Arrays.asList(
+                new ExcludeSelf(),
+                new ExistingRelationshipBlacklist(FRIEND_OF, BOTH)
+        );
     }
 
     private static List<PostProcessor<Node, Node>> postProcessors() {
-        return Arrays.<PostProcessor<Node, Node>>asList(new RewardSameGender());
+        return Arrays.<PostProcessor<Node, Node>>asList(
+                new RewardSameGender(),
+                new RewardSameLocation(),
+                new PenalizeAgeDifference()
+        );
     }
 }

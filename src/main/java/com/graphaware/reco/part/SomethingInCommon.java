@@ -11,7 +11,7 @@ import java.util.Set;
 import static org.neo4j.graphdb.Direction.*;
 
 /**
- * {@link BaseEnginePart} that recommends {@link Node}s with which have something in common. In other words, there is a
+ * {@link ScoringEnginePart} that recommends {@link Node}s with which have something in common. In other words, there is a
  * path of length two between the subject node (the input to the recommendation) and the recommended node.
  * <p/>
  * Moreover, both relationships of the path have the same type (specified by {@link #getType()} and unless {@link #getDirection()}
@@ -21,7 +21,7 @@ import static org.neo4j.graphdb.Direction.*;
  * Every time a recommendation is found, it's score is incremented by one. The final scores can be transformed by providing
  * a {@link ScoreTransformer} to the constructor.
  */
-public abstract class SomethingInCommon extends BaseEnginePart<Node, Node> {
+public abstract class SomethingInCommon extends ScoringEnginePart<Node, Node> {
 
     protected SomethingInCommon() {
         super();

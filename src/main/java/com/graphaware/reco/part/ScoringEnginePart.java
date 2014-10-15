@@ -1,9 +1,9 @@
 package com.graphaware.reco.part;
 
 import com.graphaware.reco.filter.Filter;
+import com.graphaware.reco.score.Recommendations;
 import com.graphaware.reco.transform.NoTransformation;
 import com.graphaware.reco.transform.ScoreTransformer;
-import org.neo4j.graphdb.GraphDatabaseService;
 
 import java.util.*;
 
@@ -14,39 +14,63 @@ import java.util.*;
  * @param <OUT> type of the recommendations produced.
  * @param <IN>  type of the item recommendations are for / based on.
  */
-public abstract class BaseEnginePart<OUT, IN> implements EnginePart<OUT, IN> {
+public abstract class ScoringEnginePart<OUT, IN> implements EnginePart<OUT, IN> {
 
     private final ScoreTransformer transformer;
     private final List<Filter<OUT, IN>> filters;
 
-    protected BaseEnginePart() {
+    protected ScoringEnginePart() {
         this(NoTransformation.getInstance());
     }
 
-    protected BaseEnginePart(ScoreTransformer transformer) {
+    protected ScoringEnginePart(ScoreTransformer transformer) {
         this(transformer, Collections.<Filter<OUT, IN>>emptyList());
     }
 
-    protected BaseEnginePart(List<Filter<OUT, IN>> filters) {
+    protected ScoringEnginePart(List<Filter<OUT, IN>> filters) {
         this(NoTransformation.getInstance(), filters);
     }
 
-    protected BaseEnginePart(ScoreTransformer transformer, List<Filter<OUT, IN>> filters) {
+    protected ScoringEnginePart(ScoreTransformer transformer, List<Filter<OUT, IN>> filters) {
         this.transformer = transformer;
         this.filters = filters;
     }
 
     /**
+     * Get the name of this engine part, so that its recommendations (and their scores) can be distinguished from other
+     * parts' recommendations if needed.
+     *
+     * @return part name.
+     */
+    protected abstract String name();
+
+    /**
      * {@inheritDoc}
      */
     @Override
+    public void recommend(Recommendations<OUT> output, IN input, int limit, Set<OUT> blacklist, boolean realTime) {
+        output.add(name(), recommend(input, limit, blacklist, realTime));
+    }
+
+    /**
+     * Produce recommendations.
+     *
+     * @param input     input to the recommendation engine part. Typically the person or item recommendations are being computed for.
+     * @param limit     desired maximum number of produced recommendations for the whole engine. Parts can take this into
+     *                  account in order not to produce too many recommendations, if they can traverse the graph best-first manner.
+     * @param blacklist of items that must not be recommended.
+     * @param realTime  an indication whether the recommendations being computed are meant to be real-time (<code>true</code>)
+     *                  or not (<code>false</code>). Implementations can choose to ignore it, but they can also choose
+     *                  to make the recommendation process faster and less accurate for real-time scenarios and slower
+     *                  but more accurate for pre-computed scenarios.
+     * @return a map of recommendations, where key is the recommended item and value if the relevance score.
+     */
     public final Map<OUT, Integer> recommend(IN input, int limit, Set<OUT> blacklist, boolean realTime) {
         Map<OUT, Integer> result = new HashMap<>();
 
         if (realTime) {
             populateResultRealTime(result, input, limit, blacklist);
-        }
-        else {
+        } else {
             populateResult(result, input, limit, blacklist);
         }
 
@@ -81,7 +105,7 @@ public abstract class BaseEnginePart<OUT, IN> implements EnginePart<OUT, IN> {
     /**
      * Add a potential recommendation to the overall result. Perform checks that the recommendation should actually be
      * used based on the blacklist provided and filters configured. Nothing will happen if the item is found to be
-     * blacklisted/filtered, i.e., it will be silently ignore.
+     * blacklisted/filtered, i.e., it will be silently ignored.
      *
      * @param result         to add to.
      * @param input          for which the recommendation has been computed.
@@ -92,7 +116,7 @@ public abstract class BaseEnginePart<OUT, IN> implements EnginePart<OUT, IN> {
      *                       recommendation computed by the engine part, for instance, when strengths of friendships or
      *                       product likes are known.
      */
-    protected void addToResult(Map<OUT, Integer> result, IN input, Set<OUT> blacklist, OUT recommendation, int score) {
+    protected final void addToResult(Map<OUT, Integer> result, IN input, Set<OUT> blacklist, OUT recommendation, int score) {
         if (blacklist.contains(recommendation)) {
             return;
         }
@@ -112,8 +136,11 @@ public abstract class BaseEnginePart<OUT, IN> implements EnginePart<OUT, IN> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean isOptional() {
-        return false;
+    public EnoughResultsPolicy enoughResultsPolicy() {
+        return EnoughResultsPolicy.COMPUTE_AND_CONTINUE;
     }
 }

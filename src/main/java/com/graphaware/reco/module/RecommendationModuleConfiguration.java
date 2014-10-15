@@ -14,6 +14,8 @@ import org.neo4j.graphdb.RelationshipType;
  */
 public class RecommendationModuleConfiguration {
 
+    public static final DynamicRelationshipType DEFAULT_RELATIONSHIP_TYPE = DynamicRelationshipType.withName("_RECOMMEND_");
+
     private final Engine<Node, Node> engine;
     private final NodeInclusionPolicy nodeInclusionPolicy;
     private final int maxRecommendations;
@@ -27,7 +29,7 @@ public class RecommendationModuleConfiguration {
      * @return The default {@link RecommendationModuleConfiguration}
      */
     public static RecommendationModuleConfiguration defaultConfiguration(Engine<Node, Node> engine) {
-        return new RecommendationModuleConfiguration(engine, IncludeAllBusinessNodes.getInstance(), 10, DynamicRelationshipType.withName("_RECOMMEND_"));
+        return new RecommendationModuleConfiguration(engine, IncludeAllBusinessNodes.getInstance(), 10, DEFAULT_RELATIONSHIP_TYPE);
     }
 
     /**

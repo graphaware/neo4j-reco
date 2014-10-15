@@ -36,11 +36,15 @@ public abstract class Delegating<OUT, IN> {
         Set<OUT> blacklist = buildBlacklist(input);
 
         for (EnginePart<OUT, IN> part : parts) {
-            if (recommendations.hasEnough(limit) && part.isOptional()) {
+            if (recommendations.hasEnough(limit) && !part.enoughResultsPolicy().compute()) {
                 continue;
             }
 
-            recommendations.add(part.name(), part.recommend(input, limit, blacklist, realTime));
+            part.recommend(recommendations, input, limit, blacklist, realTime);
+
+            if (recommendations.hasEnough(limit) && !part.enoughResultsPolicy().carryOn()) {
+                break;
+            }
         }
 
         for (PostProcessor<OUT, IN> postProcessor : postProcessors) {

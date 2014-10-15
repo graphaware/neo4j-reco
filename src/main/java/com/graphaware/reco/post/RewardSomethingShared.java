@@ -7,45 +7,42 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 
 /**
- * {@link PostProcessor} that rewards something shared between the the subject of the recommendation (i.e., the input
- * to the recommendation engine), and the recommended item.
+ * {@link AdditionalScorePostProcessor} that rewards something shared between the subject of the recommendation
+ * (i.e., the input to the recommendation engine), and the recommended item.
  * <p/>
  * Note that this "something" shared is a concrete thing and it is expected for the purposes of this post processor that
  * each {@link Node} participating in the recommendation (i.e. the input and the recommendation itself) both have a maximum
  * of 1 relationship of type {@link #getType()} with {@link #getDirection()} (from the input's/recommendation's point of
  * view).
  * <p/>
- * For example, this could be used on a dating site to reward matches that live in the same location, which would be indicated
- * by a single LIVES_IN relationship between people and locations.
+ * For example, this could be used on a dating site to reward matches that live in the same location,
+ * which would be indicated by a single LIVES_IN relationship between people and locations.
  */
-public abstract class RewardSomethingShared implements PostProcessor<Node, Node> {
+public abstract class RewardSomethingShared extends AdditionalScorePostProcessor<Long> {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void postProcess(Recommendations<Node> output, Node input) {
-        if (input == null) {
+    protected Long prepare(Recommendations<Node> output, Node input) {
+        return getThingId(input);
+    }
+
+    @Override
+    protected void doPostProcess(Long thingId, Node node, Recommendations<Node> output, Node input) {
+        if (thingId == null) {
             return;
         }
 
-        Long thingId1 = getThingId(input);
-
-        if (thingId1 == null) {
-            return;
-        }
-
-        for (Node node : output.getItems()) {
-            Long thingId2 = getThingId(node);
+        for (Node n : output.getItems()) {
+            Long thingId2 = getThingId(n);
             if (thingId2 == null) {
                 continue;
             }
 
-            if (thingId2.longValue() == thingId1.longValue()) {
-                output.add(node, rewardName(), rewardValue());
+            if (thingId2.longValue() == thingId.longValue()) {
+                output.add(node, additionalScoreName(), additionalScoreValue());
             }
         }
     }
+
 
     private Long getThingId(Node input) {
         Relationship rel = input.getSingleRelationship(getType(), getDirection());
@@ -70,17 +67,11 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
      */
     protected abstract Direction getDirection();
 
-    /**
-     * Get the name of the score added by this post processor.
-     *
-     * @return score name.
-     */
-    protected abstract String rewardName();
 
     /**
      * Get the score this post processor adds if subject and recommendation have a thing in common.
      *
      * @return score to add.
      */
-    protected abstract int rewardValue();
+    protected abstract int additionalScoreValue();
 }
