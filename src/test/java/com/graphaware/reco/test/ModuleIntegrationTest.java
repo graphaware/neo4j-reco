@@ -9,19 +9,20 @@ import com.graphaware.reco.module.RecommendationModuleConfiguration;
 import com.graphaware.reco.score.CompositeScore;
 import com.graphaware.runtime.GraphAwareRuntime;
 import com.graphaware.runtime.GraphAwareRuntimeFactory;
+import com.graphaware.runtime.config.FluentRuntimeConfiguration;
+import com.graphaware.runtime.schedule.FixedDelayTimingStrategy;
 import com.graphaware.test.integration.WrappingServerIntegrationTest;
-import org.junit.Assert;
 import org.junit.Test;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
-import org.neo4j.graphdb.*;
-import org.neo4j.helpers.collection.Iterables;
-import org.neo4j.tooling.GlobalGraphOperations;
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Transaction;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.graphaware.reco.demo.Relationships.RECOMMEND;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -95,7 +96,14 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
     @Test
     public void shouldRecommendPreComputed() throws InterruptedException {
-        GraphAwareRuntime runtime = GraphAwareRuntimeFactory.createRuntime(getDatabase());
+        GraphAwareRuntime runtime = GraphAwareRuntimeFactory.createRuntime(
+                getDatabase(),
+                FluentRuntimeConfiguration.defaultConfiguration()
+                        .withTimingStrategy(
+                                FixedDelayTimingStrategy.getInstance()
+                                        .withDelay(100)
+                                        .withInitialDelay(100)
+                        ));
 
         runtime.registerModule(new RecommendationModule(
                 "RECO",
@@ -106,7 +114,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
         runtime.start();
 
-        Thread.sleep(10000);
+        Thread.sleep(2000);
 
         try (Transaction tx = getDatabase().beginTx()) {
             List<Pair<Node, CompositeScore>> result;
@@ -127,8 +135,8 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             result = recommendationEngine.recommend(getPersonByName("Luanne"), 4, true);
 
             assertEquals("" +
-                    "(:Female:Person {age: 20, name: Daniela}): total:22, friendInCommon:15, random:0, ageDifference:-3, preComputed:0, sameGender:10" + LINE_SEPARATOR +
-                    "(:Male:Person {age: 30, name: Adam}): total:12, friendInCommon:15, random:0, ageDifference:-3, preComputed:0" + LINE_SEPARATOR +
+                    "(:Female:Person {age: 20, name: Daniela}): total:22, friendInCommon:15, ageDifference:-3, preComputed:0, sameGender:10" + LINE_SEPARATOR +
+                    "(:Male:Person {age: 30, name: Adam}): total:12, friendInCommon:15, ageDifference:-3, preComputed:0" + LINE_SEPARATOR +
                     "(:Male:Person {age: 40, name: Vince}): total:8, friendInCommon:15, random:0, ageDifference:-7" + LINE_SEPARATOR +
                     "(:Male:Person {age: 60, name: Bob}): total:-9, random:0, ageDifference:-9",
                     toString(result));

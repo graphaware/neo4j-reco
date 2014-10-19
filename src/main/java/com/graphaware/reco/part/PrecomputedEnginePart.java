@@ -78,6 +78,7 @@ public abstract class PrecomputedEnginePart implements EnginePart<Node, Node> {
 
         if (include) {
             addToResult(result, relationship);
+            blacklist.add(relationship.getEndNode());
         }
     }
 
