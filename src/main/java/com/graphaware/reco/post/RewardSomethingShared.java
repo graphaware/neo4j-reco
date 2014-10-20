@@ -7,7 +7,7 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 
 /**
- * {@link AdditionalScorePostProcessor} that rewards something shared between the subject of the recommendation
+ * {@link PostProcessor} that rewards something shared between the subject of the recommendation
  * (i.e., the input to the recommendation engine), and the recommended item.
  * <p/>
  * Note that this "something" shared is a concrete thing and it is expected for the purposes of this post processor that
@@ -18,7 +18,7 @@ import org.neo4j.graphdb.RelationshipType;
  * For example, this could be used on a dating site to reward matches that live in the same location,
  * which would be indicated by a single LIVES_IN relationship between people and locations.
  */
-public abstract class RewardSomethingShared extends AdditionalScorePostProcessor<Long> {
+public abstract class RewardSomethingShared extends BasePostProcessor<Long> {
 
     @Override
     protected Long prepare(Recommendations<Node> output, Node input) {
@@ -26,7 +26,7 @@ public abstract class RewardSomethingShared extends AdditionalScorePostProcessor
     }
 
     @Override
-    protected void doPostProcess(Long thingId, Node node, Recommendations<Node> output, Node input) {
+    protected void postProcess(Long thingId, Node node, Recommendations<Node> output, Node input) {
         if (thingId == null) {
             return;
         }
@@ -42,7 +42,6 @@ public abstract class RewardSomethingShared extends AdditionalScorePostProcessor
             }
         }
     }
-
 
     private Long getThingId(Node input) {
         Relationship rel = input.getSingleRelationship(getType(), getDirection());
@@ -67,6 +66,12 @@ public abstract class RewardSomethingShared extends AdditionalScorePostProcessor
      */
     protected abstract Direction getDirection();
 
+    /**
+     * Get the name of the score added by this post processor.
+     *
+     * @return score name.
+     */
+    protected abstract String additionalScoreName();
 
     /**
      * Get the score this post processor adds if subject and recommendation have a thing in common.

@@ -31,7 +31,6 @@ public class CompositeScore implements Comparable<CompositeScore> {
 
         if (scoreParts.putIfAbsent(scoreName, value) != null) {
             return;
-//            throw new IllegalStateException("Score " + scoreName + " has already been added");
         }
 
         total.addAndGet(value);

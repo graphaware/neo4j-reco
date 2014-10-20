@@ -16,7 +16,6 @@ import static com.graphaware.reco.util.MapSorter.sortMapByDescendingValue;
  */
 public class Recommendations<OUT> {
 
-    private final Set<String> appliedScores = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     private final ConcurrentHashMap<OUT, CompositeScore> scoredItems = new ConcurrentHashMap<>();
 
     /**
@@ -27,7 +26,6 @@ public class Recommendations<OUT> {
      * @param score          value of the partial score.
      */
     public void add(OUT recommendation, String scoreName, int score) {
-        applying(scoreName);
         scoredItems.putIfAbsent(recommendation, new CompositeScore());
 
         CompositeScore compositeScore = scoredItems.get(recommendation);
@@ -46,7 +44,6 @@ public class Recommendations<OUT> {
      * @param recommendations recommended items with their score to add.
      */
     public void add(String scoreName, Map<OUT, Integer> recommendations) {
-        applying(scoreName);
         for (Map.Entry<OUT, Integer> reco : recommendations.entrySet()) {
             add(reco.getKey(), scoreName, reco.getValue());
         }
@@ -103,24 +100,4 @@ public class Recommendations<OUT> {
     public Set<OUT> getItems() {
         return new HashSet<>(scoredItems.keySet());
     }
-
-    /**
-     * Let this result know that the given score has been applied.
-     *
-     * @param scoreName that has been applied.
-     */
-    public void applying(String scoreName) {
-        appliedScores.add(scoreName);
-    }
-
-    /**
-     * Has the given score been applied to this result?
-     *
-     * @param scoreName to check.
-     * @return true iff applied.
-     */
-    public boolean hasBeenApplied(String scoreName) {
-        return appliedScores.contains(scoreName);
-    }
-
 }

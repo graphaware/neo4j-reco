@@ -1,7 +1,6 @@
 package com.graphaware.reco.test;
 
-import com.graphaware.reco.post.AdditionalScorePostProcessor;
-import com.graphaware.reco.post.PostProcessor;
+import com.graphaware.reco.post.BasePostProcessor;
 import com.graphaware.reco.score.Recommendations;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -13,18 +12,13 @@ import static org.neo4j.helpers.collection.Iterables.toArray;
 /**
  * Rewards same gender (exactly the same labels) by 5 points.
  */
-public class RewardSameGender extends AdditionalScorePostProcessor<Label[]> {
+public class RewardSameGender extends BasePostProcessor<Label[]> {
 
     @Override
-    protected String additionalScoreName() {
-        return "sameGender";
-    }
-
-    @Override
-    protected void doPostProcess(Label[] inputLabels, Node node, Recommendations<Node> output, Node input) {
+    protected void postProcess(Label[] inputLabels, Node node, Recommendations<Node> output, Node input) {
         for (Node recommendation : output.getItems()) {
             if (Arrays.equals(inputLabels, toArray(Label.class, recommendation.getLabels()))) {
-                output.add(recommendation, additionalScoreName(), 10);
+                output.add(recommendation, "sameGender", 10);
             }
         }
     }
