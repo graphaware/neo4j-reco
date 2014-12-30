@@ -68,7 +68,7 @@ public class Score implements Comparable<Score> {
      * @return true iff contained.
      */
     public boolean contains(String scoreName) {
-        return scoreParts.contains(scoreName);
+        return scoreParts.containsKey(scoreName);
     }
 
     /**
