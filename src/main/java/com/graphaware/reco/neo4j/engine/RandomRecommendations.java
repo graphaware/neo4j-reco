@@ -15,11 +15,11 @@ import java.util.*;
  * {@link SingleScoreRecommendationEngine} that randomly recommends {@link org.neo4j.graphdb.Node}s which comply with
  * the provided {@link com.graphaware.common.policy.NodeInclusionPolicy}.
  */
-public abstract class RandomEngine extends SingleScoreRecommendationEngine<Node, Node> {
+public abstract class RandomRecommendations extends SingleScoreRecommendationEngine<Node, Node> {
 
     private final NodeSelector selector;
 
-    public RandomEngine() {
+    public RandomRecommendations() {
         this.selector = new RandomNodeSelector(getPolicy());
     }
 
