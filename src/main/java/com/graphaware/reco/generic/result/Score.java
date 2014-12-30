@@ -11,7 +11,6 @@ import static org.springframework.util.Assert.notNull;
 
 /**
  * A recommendation score that is composed of multiple partial scores. Each partial score has a name and and integer value.
- * It is only allowed to register a each partial score one time per {@link Score} instance.
  * <p/>
  * This class is thread-safe.
  */
@@ -44,6 +43,13 @@ public class Score implements Comparable<Score> {
         total.addAndGet(value);
     }
 
+    /**
+     * Merge another score into this score.
+     *
+     * @param score to merge.
+     * @return merged score (this instance). The returned object should be used after merging, rather than the instance
+     * merged to.
+     */
     public Score merge(Score score) {
         for (Map.Entry<String, AtomicInteger> entry : score.scoreParts.entrySet()) {
             this.add(entry.getKey(), entry.getValue().get());
@@ -59,16 +65,6 @@ public class Score implements Comparable<Score> {
      */
     public int get() {
         return total.get();
-    }
-
-    /**
-     * Does this composite score contain a score with the given name?
-     *
-     * @param scoreName to check.
-     * @return true iff contained.
-     */
-    public boolean contains(String scoreName) {
-        return scoreParts.containsKey(scoreName);
     }
 
     /**
