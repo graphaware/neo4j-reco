@@ -6,7 +6,7 @@ import static org.springframework.util.Assert.notNull;
 /**
  * The simplest possible context, allowing all recommendations.
  */
-class SimpleContext<OUT, IN> implements Context<OUT, IN> {
+public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
 
     private final Mode mode;
     private final int limit;

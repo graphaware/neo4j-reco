@@ -11,16 +11,17 @@ import static org.springframework.util.Assert.notNull;
  * A {@link com.graphaware.reco.generic.context.Context} that accepts a list of {@link com.graphaware.reco.generic.filter.Filter}s
  * and a set of blacklisted items, both of which it uses to exclude some recommendations.
  */
-class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
+public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
 
     private final List<Filter<OUT, IN>> filters;
     private final Set<OUT> blacklist;
 
     /**
      * Construct a new context.
-     * @param mode  in which recommendations are being computed. Must not be <code>null</code>.
-     * @param limit the maximum number of desired recommendations. Must be positive.
-     * @param filters used to filter out items. Can be empty, but must not be <code>null</code>.
+     *
+     * @param mode      in which recommendations are being computed. Must not be <code>null</code>.
+     * @param limit     the maximum number of desired recommendations. Must be positive.
+     * @param filters   used to filter out items. Can be empty, but must not be <code>null</code>.
      * @param blacklist a set of blacklisted items. Can be empty, but must not be <code>null</code>.
      */
     FilteringContext(Mode mode, int limit, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
@@ -55,6 +56,16 @@ class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
         }
 
         return true;
+    }
+
+    /**
+     * Blacklist the given recommendation. Intended for {@link com.graphaware.reco.generic.engine.RecommendationEngine}s
+     * to prevent following engines from discovering the same recommendation.
+     *
+     * @param recommendation to blacklist.
+     */
+    public void blacklist(OUT recommendation) {
+        this.blacklist.add(recommendation);
     }
 }
 

@@ -19,21 +19,57 @@ package com.graphaware.reco.generic.engine;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.ContextFactory;
 import com.graphaware.reco.generic.context.Mode;
+import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
 
 /**
- *
+ * A {@link com.graphaware.reco.generic.engine.DelegatingRecommendationEngine} intended to be used as the single top-level
+ * {@link com.graphaware.reco.generic.engine.RecommendationEngine}. It accepts a single {@link com.graphaware.reco.generic.context.ContextFactory}
+ * at construction-time, which it then uses to produce {@link com.graphaware.reco.generic.context.Context}s.
  */
-public class TopLevelRecommendationEngine<OUT, IN> extends DelegatingRecommendationEngine<OUT, IN> {
+public class TopLevelRecommendationEngine<OUT, IN, C extends Context<OUT, IN>> extends DelegatingRecommendationEngine<OUT, IN, C> {
 
-    private final ContextFactory<OUT, IN> contextFactory;
+    private final ContextFactory<OUT, IN, C> contextFactory;
 
-    public TopLevelRecommendationEngine(ContextFactory<OUT, IN> contextFactory) {
+    /**
+     * Create a new engine.
+     *
+     * @param contextFactory to use for producing contexts.
+     */
+    public TopLevelRecommendationEngine(ContextFactory<OUT, IN, C> contextFactory) {
         this.contextFactory = contextFactory;
     }
 
+    /**
+     * Produce recommendations.
+     *
+     * @param input for which recommendations are about to be computed.
+     * @param mode  in which the computation takes place.
+     * @param limit maximum number of recommendations desired.
+     * @return recommendations.
+     */
     public Recommendations<OUT> recommend(IN input, Mode mode, int limit) {
         return recommend(input, contextFactory.produceContext(input, mode, limit));
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * Only delegates to subclass, overridden to be made <code>final</code>.
+     */
+    @Override
+    public final Recommendations<OUT> recommend(IN input, C context) {
+        return super.recommend(input, context);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * Only delegates to subclass, overridden to be made <code>final</code>.
+     */
+    @Override
+    public final ParticipationPolicy<OUT, IN> participationPolicy(C context) {
+        return super.participationPolicy(context);
     }
 }
 

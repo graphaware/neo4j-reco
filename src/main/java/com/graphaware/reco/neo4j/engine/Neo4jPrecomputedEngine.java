@@ -1,12 +1,15 @@
 package com.graphaware.reco.neo4j.engine;
 
 import com.graphaware.reco.generic.context.Context;
+import com.graphaware.reco.generic.engine.PrecomputedEngine;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
+
+import javax.management.relation.Relation;
 
 import static com.graphaware.common.util.PropertyContainerUtils.getInt;
 import static org.neo4j.graphdb.Direction.OUTGOING;
@@ -26,43 +29,22 @@ import static org.neo4j.graphdb.Direction.OUTGOING;
  * precomputed recommendations produced by this engine should be added to the blacklist to prevent them from being
  * "re-discovered" and thus presented with doubled scores.
  */
-public abstract class PrecomputedEngine implements RecommendationEngine<Node, Node> {
+public abstract class Neo4jPrecomputedEngine extends PrecomputedEngine<Node, Node, Relationship> {
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link com.graphaware.reco.generic.policy.ParticipationPolicy#ALWAYS} by default.
-     */
     @Override
-    public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {
-        return ParticipationPolicy.ALWAYS;
+    protected Iterable<Relationship> produce(Node input) {
+        return input.getRelationships(getType(), OUTGOING);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Recommendations<Node> recommend(Node input, Context<Node, Node> context) {
-        Recommendations<Node> result = new Recommendations<>();
-
-        for (Relationship recommend : input.getRelationships(getType(), OUTGOING)) {
-            if (context.allow(recommend.getEndNode(), input)) {
-                addToResult(result, recommend);
-            }
-        }
-
-        return result;
+    protected Node extract(Relationship source) {
+        return source.getEndNode();
     }
 
-    /**
-     * Add a recommendation to the overall recommendations.
-     *
-     * @param recommendations to add to.
-     * @param recommendation  relationship that links the item being recommended to with the recommendation to add.
-     */
-    protected void addToResult(Recommendations<Node> recommendations, Relationship recommendation) {
-        for (String scoreName : recommendation.getPropertyKeys()) {
-            recommendations.add(recommendation.getEndNode(), scoreName, getInt(recommendation, scoreName, 0));
+    @Override
+    protected void addToResult(Recommendations<Node> recommendations, Node recommendation, Relationship relationship) {
+        for (String scoreName : relationship.getPropertyKeys()) {
+            recommendations.add(recommendation, scoreName, getInt(relationship, scoreName, 0));
         }
     }
 

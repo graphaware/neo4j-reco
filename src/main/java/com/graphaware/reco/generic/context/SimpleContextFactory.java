@@ -14,20 +14,20 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.neo4j.engine;
-
-import com.graphaware.reco.generic.context.ContextFactory;
-import com.graphaware.reco.generic.context.FilteringContext;
-import com.graphaware.reco.generic.engine.TopLevelRecommendationEngine;
-import com.graphaware.reco.neo4j.context.Neo4jContextFactory;
-import org.neo4j.graphdb.Node;
+package com.graphaware.reco.generic.context;
 
 /**
- *
+ * A {@link com.graphaware.reco.generic.context.ContextFactory} producing {@link com.graphaware.reco.generic.context.SimpleContext}.
  */
-public class Neo4jRecommendationEngine extends TopLevelRecommendationEngine<Node, Node, FilteringContext<Node, Node>> {
+public class SimpleContextFactory<OUT, IN> implements ContextFactory<OUT, IN, SimpleContext<OUT, IN>> {
 
-    public Neo4jRecommendationEngine(Neo4jContextFactory contextFactory) {
-        super(contextFactory);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SimpleContext<OUT, IN> produceContext(IN input, Mode mode, int limit) {
+        SimpleContext<OUT, IN> result = new SimpleContext<>(mode, limit);
+        result.initialize(input);
+        return result;
     }
 }

@@ -15,7 +15,7 @@ import static org.springframework.util.Assert.*;
  * blacklists of items passed onto the context, and a list of {@link com.graphaware.reco.generic.filter.Filter}s, which
  * are passed to the produced contexts directly.
  */
-public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN> {
+public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN, FilteringContext<OUT, IN>> {
 
     private final List<BlacklistBuilder<OUT, IN>> blacklistBuilders = new LinkedList<>();
     private final List<Filter<OUT, IN>> filters = new LinkedList<>();
@@ -25,6 +25,7 @@ public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN>
      * of items.
      *
      * @param blacklistBuilders to be used. All of the arguments must not be <code>null</code>.
+     * @return this instance.
      */
     @SafeVarargs
     public final FilteringContextFactory<OUT, IN> addBlacklistBuilders(BlacklistBuilder<OUT, IN>... blacklistBuilders) {
@@ -40,6 +41,7 @@ public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN>
      * Add {@link com.graphaware.reco.generic.filter.Filter}s passed to the produced {@link com.graphaware.reco.generic.context.Context}s.
      *
      * @param filters to be used. All of the arguments must not be <code>null</code>.
+     * @return this instance.
      */
     @SafeVarargs
     public final FilteringContextFactory<OUT, IN> addFilters(Filter<OUT, IN>... filters) {
@@ -55,12 +57,16 @@ public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN>
      * {@inheritDoc}
      */
     @Override
-    public Context<OUT, IN> produceContext(IN input, Mode mode, int limit) {
+    public FilteringContext<OUT, IN> produceContext(IN input, Mode mode, int limit) {
         Set<OUT> blacklist = new HashSet<>();
         for (BlacklistBuilder<OUT, IN> blacklistBuilder : blacklistBuilders) {
             blacklist.addAll(blacklistBuilder.buildBlacklist(input));
         }
 
-        return new FilteringContext<>(mode, limit, unmodifiableList(filters), unmodifiableSet(blacklist));
+        FilteringContext<OUT, IN> result = new FilteringContext<>(mode, limit, unmodifiableList(filters), blacklist);
+
+        result.initialize(input);
+
+        return result;
     }
 }

@@ -28,6 +28,7 @@ public abstract class RandomEngine extends SingleScoreRecommendationEngine<Node,
      */
     @Override
     public ParticipationPolicy<Node, Node> participationPolicy(Context context) {
+        //noinspection unchecked
         return ParticipationPolicy.IF_MORE_RESULTS_NEEDED;
     }
 

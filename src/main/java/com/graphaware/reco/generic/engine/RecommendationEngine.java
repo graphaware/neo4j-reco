@@ -5,12 +5,12 @@ import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
 
 /**
- * A recommendation engine. Nothing more, nothing less.
+ * A recommendation engine.
  *
  * @param <OUT> type of the recommendations produced.
  * @param <IN>  type of the item recommendations are for / based on.
  */
-public interface RecommendationEngine<OUT, IN> {
+public interface RecommendationEngine<OUT, IN, C extends Context<OUT, IN>> {
 
     /**
      * Get this engine's participation / involvement in producing recommendations in a specific context.
@@ -18,7 +18,7 @@ public interface RecommendationEngine<OUT, IN> {
      * @param context the context in which recommendations are being produced.
      * @return participation policy.
      */
-    ParticipationPolicy<OUT, IN> participationPolicy(Context<OUT, IN> context);
+    ParticipationPolicy<OUT, IN> participationPolicy(C context);
 
     /**
      * Produce recommendations.
@@ -28,5 +28,5 @@ public interface RecommendationEngine<OUT, IN> {
      * @param context additional information about the recommendation process useful to the engine.
      * @return recommendations.
      */
-    Recommendations<OUT> recommend(IN input, Context<OUT, IN> context);
+    Recommendations<OUT> recommend(IN input, C context);
 }

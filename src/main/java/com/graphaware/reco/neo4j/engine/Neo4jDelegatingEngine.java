@@ -16,18 +16,12 @@
 
 package com.graphaware.reco.neo4j.engine;
 
-import com.graphaware.reco.generic.context.ContextFactory;
-import com.graphaware.reco.generic.context.FilteringContext;
-import com.graphaware.reco.generic.engine.TopLevelRecommendationEngine;
-import com.graphaware.reco.neo4j.context.Neo4jContextFactory;
+import com.graphaware.reco.generic.context.Context;
+import com.graphaware.reco.generic.engine.DelegatingRecommendationEngine;
 import org.neo4j.graphdb.Node;
 
 /**
  *
  */
-public class Neo4jRecommendationEngine extends TopLevelRecommendationEngine<Node, Node, FilteringContext<Node, Node>> {
-
-    public Neo4jRecommendationEngine(Neo4jContextFactory contextFactory) {
-        super(contextFactory);
-    }
+public class Neo4jDelegatingEngine extends DelegatingRecommendationEngine<Node, Node, Context<Node, Node>> {
 }

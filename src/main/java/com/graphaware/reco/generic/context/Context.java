@@ -17,8 +17,8 @@ public interface Context<OUT, IN> {
     int limit();
 
     /**
-     * Initialize the context before computing recommendation for the given input. Called exactly once, thus doesn't
-     * have to be thread-safe.
+     * Initialize the context before computing recommendation for the given input. Must be called exactly once by the
+     * corresponding {@link com.graphaware.reco.generic.context.ContextFactory}, thus doesn't need to be thread-safe.
      *
      * @param input for which to compute recommendations.
      */
