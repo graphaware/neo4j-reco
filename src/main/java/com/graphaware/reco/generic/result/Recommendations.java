@@ -49,27 +49,14 @@ public class Recommendations<OUT> {
      * @param score          value of the partial score.
      */
     public void add(OUT recommendation, String scoreName, int score) {
-        scoredItems.putIfAbsent(recommendation, new Score());
+        Score existingScore = scoredItems.get(recommendation);
 
-        Score compositeScore = scoredItems.get(recommendation);
-
-        if (compositeScore == null) {
-            throw new IllegalStateException("Missing composite score - this is a bug");
+        if (existingScore == null) {
+            scoredItems.putIfAbsent(recommendation, new Score());
+            existingScore = scoredItems.get(recommendation);
         }
 
-        compositeScore.add(scoreName, score);
-    }
-
-    /**
-     * Add recommendations from a single component.
-     *
-     * @param scoreName       name of the partial score all the recommendations are receiving.
-     * @param recommendations recommended items with their score to add.
-     */
-    public void add(String scoreName, Map<OUT, Integer> recommendations) {
-        for (Map.Entry<OUT, Integer> reco : recommendations.entrySet()) {
-            add(reco.getKey(), scoreName, reco.getValue());
-        }
+        existingScore.add(scoreName, score);
     }
 
     /**
@@ -98,11 +85,11 @@ public class Recommendations<OUT> {
      * @return score.
      * @throws IllegalArgumentException if the item hasn't been scored.
      */
-    public Pair<OUT, Score> get(OUT item) {
+    public Score get(OUT item) {
         if (!scoredItems.containsKey(item)) {
             throw new IllegalArgumentException("Item " + item + " is not amongst the recommendations");
         }
-        return new Pair<>(item, scoredItems.get(item));
+        return scoredItems.get(item);
     }
 
     /**

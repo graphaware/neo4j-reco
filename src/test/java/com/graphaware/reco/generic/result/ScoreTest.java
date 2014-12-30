@@ -16,7 +16,10 @@
 
 package com.graphaware.reco.generic.result;
 
+import com.graphaware.common.util.Pair;
+import com.graphaware.common.util.PropertyContainerUtils;
 import org.junit.Test;
+import org.neo4j.graphdb.Node;
 
 import java.util.Arrays;
 import java.util.Collections;
