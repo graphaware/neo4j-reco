@@ -1,4 +1,4 @@
-package com.graphaware.reco.neo4j.integration;
+package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
@@ -8,6 +8,9 @@ import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
 import com.graphaware.reco.neo4j.filter.ExcludeSelf;
 import com.graphaware.reco.neo4j.filter.ExistingRelationshipBlacklistBuilder;
+import com.graphaware.reco.integration.post.PenalizeAgeDifference;
+import com.graphaware.reco.integration.post.RewardSameLabels;
+import com.graphaware.reco.integration.post.RewardSameLocation;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 

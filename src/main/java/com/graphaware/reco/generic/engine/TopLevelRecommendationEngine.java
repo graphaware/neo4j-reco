@@ -16,11 +16,15 @@
 
 package com.graphaware.reco.generic.engine;
 
+import com.graphaware.common.util.Pair;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.ContextFactory;
 import com.graphaware.reco.generic.context.Mode;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
+import com.graphaware.reco.generic.result.Score;
+
+import java.util.List;
 
 /**
  * A {@link com.graphaware.reco.generic.engine.DelegatingRecommendationEngine} intended to be used as the single top-level
@@ -48,8 +52,8 @@ public class TopLevelRecommendationEngine<OUT, IN, C extends Context<OUT, IN>> e
      * @param limit maximum number of recommendations desired.
      * @return recommendations.
      */
-    public Recommendations<OUT> recommend(IN input, Mode mode, int limit) {
-        return recommend(input, contextFactory.produceContext(input, mode, limit));
+    public List<Pair<OUT, Score>> recommend(IN input, Mode mode, int limit) {
+        return recommend(input, contextFactory.produceContext(input, mode, limit)).get(limit);
     }
 
     /**

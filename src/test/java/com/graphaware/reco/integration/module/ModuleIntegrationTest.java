@@ -1,11 +1,11 @@
-package com.graphaware.reco.neo4j.integration;
+package com.graphaware.reco.integration.module;
 
 import com.graphaware.common.util.IterableUtils;
 import com.graphaware.common.util.Pair;
 import com.graphaware.common.util.PropertyContainerUtils;
 import com.graphaware.reco.generic.context.Mode;
-import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.result.Recommendations;
+import com.graphaware.reco.integration.engine.FriendsRecommendationEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
 import com.graphaware.reco.neo4j.module.RecommendationModule;
 import com.graphaware.reco.neo4j.module.RecommendationModuleConfiguration;
@@ -70,28 +70,34 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
     @Test
     public void shouldRecommendRealTime() {
         try (Transaction tx = getDatabase().beginTx()) {
-            Recommendations<Node> result;
+            List<Pair<Node, Score>> result;
 
             result = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
             assertEquals("" +
-                    "(:Male:Person {age: 30, name: Adam}): total:19, friendInCommon:15, ageDifference:-6, sameGender:10" + LINE_SEPARATOR +
-                    "(:Female:Person {age: 25, name: Luanne}): total:8, friendInCommon:15, ageDifference:-7",
+                            "(:Male:Person {age: 30, name: Adam}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
+                            "(:Female:Person {age: 25, name: Luanne}): total:8, ageDifference:-7, friendsInCommon:15",
                     toString(result));
 
             result = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
 
             assertEquals("" +
-                    "(:Male:Person {age: 40, name: Vince}): total:19, friendInCommon:15, ageDifference:-6, sameGender:10" + LINE_SEPARATOR +
-                    "(:Female:Person {age: 25, name: Luanne}): total:12, friendInCommon:15, ageDifference:-3",
+                            "(:Male:Person {age: 40, name: Vince}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
+                            "(:Female:Person {age: 25, name: Luanne}): total:12, ageDifference:-3, friendsInCommon:15",
                     toString(result));
 
             result = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
 
-            assertEquals("" +
-                    "(:Female:Person {age: 20, name: Daniela}): total:22, friendInCommon:15, random:0, ageDifference:-3, sameGender:10" + LINE_SEPARATOR +
-                    "(:Male:Person {age: 30, name: Adam}): total:12, friendInCommon:15, random:0, ageDifference:-3" + LINE_SEPARATOR +
-                    "(:Male:Person {age: 40, name: Vince}): total:8, friendInCommon:15, random:0, ageDifference:-7" + LINE_SEPARATOR +
-                    "(:Male:Person {age: 60, name: Bob}): total:-9, random:0, ageDifference:-9", toString(result));
+            assertEquals("Daniela", result.get(0).first().getProperty("name"));
+            assertEquals(22, result.get(0).second().get());
+
+            assertEquals("Adam", result.get(1).first().getProperty("name"));
+            assertEquals(12, result.get(1).second().get());
+
+            assertEquals("Vince", result.get(2).first().getProperty("name"));
+            assertEquals(8, result.get(2).second().get());
+
+            assertEquals("Bob", result.get(3).first().getProperty("name"));
+            assertEquals(-9, result.get(3).second().get());
 
             tx.success();
         }
@@ -120,29 +126,34 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
         Thread.sleep(2000);
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Recommendations<Node> result;
+            List<Pair<Node, Score>> result;
 
             result = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
             assertEquals("" +
-                    "(:Male:Person {age: 30, name: Adam}): total:19, friendInCommon:15, ageDifference:-6, preComputed:0, sameGender:10" + LINE_SEPARATOR +
-                    "(:Female:Person {age: 25, name: Luanne}): total:8, friendInCommon:15, ageDifference:-7, preComputed:0",
+                            "(:Male:Person {age: 30, name: Adam}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
+                            "(:Female:Person {age: 25, name: Luanne}): total:8, ageDifference:-7, friendsInCommon:15",
                     toString(result));
 
             result = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
 
             assertEquals("" +
-                    "(:Male:Person {age: 40, name: Vince}): total:19, friendInCommon:15, ageDifference:-6, preComputed:0, sameGender:10" + LINE_SEPARATOR +
-                    "(:Female:Person {age: 25, name: Luanne}): total:12, friendInCommon:15, ageDifference:-3, preComputed:0",
+                            "(:Male:Person {age: 40, name: Vince}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
+                            "(:Female:Person {age: 25, name: Luanne}): total:12, ageDifference:-3, friendsInCommon:15",
                     toString(result));
 
             result = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
 
-            assertEquals("" +
-                    "(:Female:Person {age: 20, name: Daniela}): total:22, friendInCommon:15, ageDifference:-3, preComputed:0, sameGender:10" + LINE_SEPARATOR +
-                    "(:Male:Person {age: 30, name: Adam}): total:12, friendInCommon:15, ageDifference:-3, preComputed:0" + LINE_SEPARATOR +
-                    "(:Male:Person {age: 40, name: Vince}): total:8, friendInCommon:15, random:0, ageDifference:-7" + LINE_SEPARATOR +
-                    "(:Male:Person {age: 60, name: Bob}): total:-9, random:0, ageDifference:-9",
-                    toString(result));
+            assertEquals("Daniela", result.get(0).first().getProperty("name"));
+            assertEquals(22, result.get(0).second().get());
+
+            assertEquals("Adam", result.get(1).first().getProperty("name"));
+            assertEquals(12, result.get(1).second().get());
+
+            assertEquals("Vince", result.get(2).first().getProperty("name"));
+            assertEquals(8, result.get(2).second().get());
+
+            assertEquals("Bob", result.get(3).first().getProperty("name"));
+            assertEquals(-9, result.get(3).second().get());
 
             tx.success();
         }
@@ -152,9 +163,9 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
         return IterableUtils.getSingle(getDatabase().findNodesByLabelAndProperty(DynamicLabel.label("Person"), "name", name));
     }
 
-    private String toString(Recommendations<Node> recommendations) {
+    private String toString(List<Pair<Node, Score>> recommendations) {
         StringBuilder s = new StringBuilder();
-        for (Pair<Node, Score> pair : recommendations.get(Integer.MAX_VALUE)) {
+        for (Pair<Node, Score> pair : recommendations) {
             Node node = pair.first();
             Score score = pair.second();
             s.append(PropertyContainerUtils.nodeToString(node)).append(": ");

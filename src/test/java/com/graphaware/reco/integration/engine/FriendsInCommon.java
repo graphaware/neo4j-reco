@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.neo4j.integration;
+package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.transform.ParetoScoreTransformer;
 import com.graphaware.reco.neo4j.demo.Relationships;
@@ -33,7 +33,7 @@ import static org.neo4j.graphdb.Direction.BOTH;
 public class FriendsInCommon extends SomethingInCommon {
 
     public FriendsInCommon() {
-        super(new ParetoScoreTransformer(100, 10, 2));
+        super(new ParetoScoreTransformer(100, 10, 1));
     }
 
     @Override

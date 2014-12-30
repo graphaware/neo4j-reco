@@ -1,11 +1,11 @@
-package com.graphaware.reco.neo4j.integration;
+package com.graphaware.reco.integration.post;
 
 import com.graphaware.reco.neo4j.post.RewardSomethingShared;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 
-import static com.graphaware.reco.neo4j.integration.Relationships.*;
+import static com.graphaware.reco.integration.domain.Relationships.*;
 import static org.neo4j.graphdb.Direction.*;
 import static org.neo4j.helpers.collection.Iterables.toArray;
 

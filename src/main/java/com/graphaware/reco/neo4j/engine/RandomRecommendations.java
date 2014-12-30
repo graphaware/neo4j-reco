@@ -59,7 +59,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * @return score, 1 by default.
      */
     protected int score(Node node) {
-        return 1;
+        return 0;
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * @return maximum number of attempts.
      */
     protected int numberOfAttempts(Context<Node, Node> context) {
-        return context.limit() * 10;
+        return context.limit() * 50;
     }
 
     /**

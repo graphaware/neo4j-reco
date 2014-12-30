@@ -57,7 +57,5 @@ public class CypherBlacklistBuilderTest extends DatabaseIntegrationTest {
 
             tx.success();
         }
-
     }
-
 }

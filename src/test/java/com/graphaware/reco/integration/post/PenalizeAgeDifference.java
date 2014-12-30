@@ -1,4 +1,4 @@
-package com.graphaware.reco.neo4j.integration;
+package com.graphaware.reco.integration.post;
 
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendations;

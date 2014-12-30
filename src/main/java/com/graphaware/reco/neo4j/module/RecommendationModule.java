@@ -18,6 +18,8 @@ import org.neo4j.graphdb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  * {@link TimerDrivenModule} that continuously pre-computes recommendations in the graph.
  */
@@ -69,7 +71,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
         LOG.info("Computing for " + node.getId());
 
-        Recommendations<Node> recommendations = config.getEngine().recommend(node, Mode.BATCH, config.getMaxRecommendations());
+        List<Pair<Node, Score>> recommendations = config.getEngine().recommend(node, Mode.BATCH, config.getMaxRecommendations());
 
         persistRecommendations(node, recommendations);
 
@@ -106,7 +108,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
         return selector.selectNode(database);
     }
 
-    private void persistRecommendations(final Node node, final Recommendations<Node> recommendations) {
+    private void persistRecommendations(final Node node, final List<Pair<Node, Score>> recommendations) {
         databaseWriter.write(new Runnable() {
             @Override
             public void run() {
@@ -114,7 +116,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
                     existing.delete();
                 }
 
-                for (Pair<Node, Score> recommendation : recommendations.get(config.getMaxRecommendations())) {
+                for (Pair<Node, Score> recommendation : recommendations) {
                     Relationship created = node.createRelationshipTo(recommendation.first(), config.getRelationshipType());
                     for (String score : recommendation.second().getScores()) {
                         created.setProperty(score, recommendation.second().get(score));

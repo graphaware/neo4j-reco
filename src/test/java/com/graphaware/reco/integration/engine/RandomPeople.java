@@ -1,4 +1,4 @@
-package com.graphaware.reco.neo4j.integration;
+package com.graphaware.reco.integration.engine;
 
 import com.graphaware.common.policy.NodeInclusionPolicy;
 import com.graphaware.reco.neo4j.engine.RandomRecommendations;

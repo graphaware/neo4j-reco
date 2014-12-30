@@ -53,7 +53,10 @@ public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<
             for (Relationship r2 : thingInCommon.getRelationships(getType(), reverse(getDirection()))) {
                 Node node = r2.getOtherNode(thingInCommon);
                 if (node.getId() != input.getId()) {
-                    result.put(node, scoreNode(node));
+                    if (!result.containsKey(node)) {
+                        result.put(node, 0);
+                    }
+                    result.put(node, result.get(node) + scoreNode(node));
                 }
             }
         }
