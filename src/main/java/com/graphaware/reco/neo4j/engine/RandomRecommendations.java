@@ -44,7 +44,10 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
         Map<Node, Integer> result = new HashMap<>();
         int attempts = 0;
 
-        while (attempts++ < numberOfAttempts(context) && result.size() < context.limit()) {
+        int numberOfAttempts = numberOfAttempts(context);
+        int numberOfRecommendations = numberOfRecommendations(context);
+
+        while (attempts++ < numberOfAttempts && result.size() < numberOfRecommendations) {
             Node node = selector.selectNode(input.getGraphDatabase());
             result.put(node, score(node));
         }
@@ -66,10 +69,26 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * Determine the maximum total number of attempts to make when selecting random nodes to recommend.
      *
      * @param context of the current computation.
-     * @return maximum number of attempts.
+     * @return maximum number of attempts. By default 10 * {@link com.graphaware.reco.generic.context.Context#limit()}
      */
     protected int numberOfAttempts(Context<Node, Node> context) {
-        return context.limit() * 50;
+        return context.limit() * 10;
+    }
+
+    /**
+     * Determine the maximum number of random nodes to recommend.
+     * <p/>
+     * The reason for this setting is the following: usually, this engine will be used as the last one to make up the
+     * desired number of recommendations. If only {@link com.graphaware.reco.generic.context.Context#limit()} recommendations
+     * were produced, there could be a possibility that the produced recommendations are the ones already computed by
+     * previous engines, thus not making up the desired number. The higher the return value of this method, the lower
+     * the chance of the desired number of recommendations not being satisfied.
+     *
+     * @param context of the current computation.
+     * @return maximum number of recommendations. By default 2 * {@link com.graphaware.reco.generic.context.Context#limit()}
+     */
+    protected int numberOfRecommendations(Context<Node, Node> context) {
+        return context.limit() * 2;
     }
 
     /**
