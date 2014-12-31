@@ -9,6 +9,8 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import static com.graphaware.reco.neo4j.module.RecommendationModuleConfiguration.defaultConfiguration;
@@ -61,12 +63,27 @@ public class RecommendationModuleBootstrapper implements RuntimeModuleBootstrapp
     }
 
     private <T> T create(Map<String, String> config, String configKey, String logString) {
-        T result;
         if (config.get(configKey) != null) {
             String className = config.get(configKey);
+
+            LOG.info("Trying to instantiate class " + className);
+
             try {
                 Class<?> cls = Class.forName(className);
-                result = (T) cls.newInstance();
+                try {
+                    LOG.info("Attempting to instantiate as a singleton...");
+                    Method factoryMethod = cls.getDeclaredMethod("getInstance");
+                    T result = (T) factoryMethod.invoke(null, null);
+                    LOG.info("Success.");
+                    return result;
+                } catch (NoSuchMethodException | InvocationTargetException e) {
+                    LOG.debug("Not a singleton.");
+                }
+
+                LOG.info("Attempting to instantiate using public no-arg constructor...");
+                T result = (T) cls.newInstance();
+                LOG.info("Success.");
+                return result;
             } catch (ClassNotFoundException e) {
                 LOG.error(logString + " " + className + " wasn't found on the classpath. Will not pre-compute recommendations", e);
                 throw new RuntimeException(logString + " " + className + " wasn't found on the classpath. Will not pre-compute recommendations", e);
@@ -78,6 +95,5 @@ public class RecommendationModuleBootstrapper implements RuntimeModuleBootstrapp
             LOG.error("Recommendation will not be pre-computed. No " + logString + " specified!");
             throw new RuntimeException("Recommendation will not be pre-computed. No " + logString + " specified!");
         }
-        return result;
     }
 }

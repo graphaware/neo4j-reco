@@ -20,7 +20,6 @@ import com.graphaware.common.util.Pair;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.ContextFactory;
 import com.graphaware.reco.generic.context.Mode;
-import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.reco.generic.result.Score;
 
@@ -64,16 +63,6 @@ public class TopLevelRecommendationEngine<OUT, IN, C extends Context<OUT, IN>> e
     @Override
     public final Recommendations<OUT> recommend(IN input, C context) {
         return super.recommend(input, context);
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * Only delegates to subclass, overridden to be made <code>final</code>.
-     */
-    @Override
-    public final ParticipationPolicy<OUT, IN> participationPolicy(C context) {
-        return super.participationPolicy(context);
     }
 }
 

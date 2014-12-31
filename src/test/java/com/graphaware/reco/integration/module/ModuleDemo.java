@@ -1,4 +1,4 @@
-package com.graphaware.reco.neo4j.demo;
+package com.graphaware.reco.integration.module;
 
 import com.graphaware.common.util.PropertyContainerUtils;
 import com.graphaware.module.algo.generator.GraphGenerator;
@@ -8,6 +8,7 @@ import com.graphaware.module.algo.generator.config.BasicGeneratorConfig;
 import com.graphaware.module.algo.generator.node.SocialNetworkNodeCreator;
 import com.graphaware.module.algo.generator.relationship.BarabasiAlbertRelationshipGenerator;
 import com.graphaware.module.algo.generator.relationship.SocialNetworkRelationshipCreator;
+import com.graphaware.reco.integration.domain.Relationships;
 import com.graphaware.test.integration.WrappingServerIntegrationTest;
 import org.junit.Ignore;
 import org.junit.Test;

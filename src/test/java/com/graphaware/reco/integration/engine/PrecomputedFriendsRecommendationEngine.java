@@ -16,38 +16,24 @@
 
 package com.graphaware.reco.integration.engine;
 
-import com.graphaware.reco.generic.transform.ParetoScoreTransformer;
 import com.graphaware.reco.integration.domain.Relationships;
-import com.graphaware.reco.neo4j.engine.SomethingInCommon;
-import org.neo4j.graphdb.Direction;
+import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
 import org.neo4j.graphdb.RelationshipType;
 
-import static org.neo4j.graphdb.Direction.BOTH;
 
-/**
- * {@link com.graphaware.reco.generic.engine.RecommendationEngine} that finds recommendation based on friends in common.
- * <p/>
- * Fewer than 2 friends don't matter and the score if increasing by Pareto function, achieving 80% score with 10 friends
- * in common. The maximum score is 100.
- */
-public class FriendsInCommon extends SomethingInCommon {
+public final class PrecomputedFriendsRecommendationEngine extends Neo4jPrecomputedEngine {
 
-    public FriendsInCommon() {
-        super(new ParetoScoreTransformer(100, 10, 1));
+    private static final PrecomputedFriendsRecommendationEngine INSTANCE = new PrecomputedFriendsRecommendationEngine();
+
+    public static PrecomputedFriendsRecommendationEngine getInstance() {
+        return INSTANCE;
+    }
+
+    private PrecomputedFriendsRecommendationEngine() {
     }
 
     @Override
     protected RelationshipType getType() {
-        return Relationships.FRIEND_OF;
-    }
-
-    @Override
-    protected Direction getDirection() {
-        return BOTH;
-    }
-
-    @Override
-    protected String scoreName() {
-        return "friendsInCommon";
+        return Relationships.RECOMMEND;
     }
 }
