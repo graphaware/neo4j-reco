@@ -50,7 +50,7 @@ public class TopLevelRecommendationEngine<OUT, IN, C extends Context<OUT, IN>> e
      * @param input for which recommendations are about to be computed.
      * @param mode  in which the computation takes place.
      * @param limit maximum number of recommendations desired.
-     * @return recommendations.
+     * @return recommendations sorted by decreasing relevance and trimmed to limit.
      */
     public List<Pair<OUT, Score>> recommend(IN input, Mode mode, int limit) {
         return recommend(input, contextFactory.produceContext(input, mode, limit)).get(limit);
