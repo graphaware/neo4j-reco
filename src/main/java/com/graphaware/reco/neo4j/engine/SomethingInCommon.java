@@ -26,22 +26,6 @@ import static org.neo4j.graphdb.Direction.*;
 public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<Node, Node> {
 
     /**
-     * Construct a recommendation engine that performs no score transformation.
-     */
-    public SomethingInCommon() {
-        super();
-    }
-
-    /**
-     * Construct a recommendation engine that transforms all scores using the provided transformer.
-     *
-     * @param transformer for scores, must not be <code>null</code>.
-     */
-    public SomethingInCommon(ScoreTransformer transformer) {
-        super(transformer);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -53,10 +37,7 @@ public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<
             for (Relationship r2 : thingInCommon.getRelationships(getType(), reverse(getDirection()))) {
                 Node node = r2.getOtherNode(thingInCommon);
                 if (node.getId() != input.getId()) {
-                    if (!result.containsKey(node)) {
-                        result.put(node, 0);
-                    }
-                    result.put(node, result.get(node) + scoreNode(node));
+                    addToResult(result, node, scoreNode(node));
                 }
             }
         }

@@ -24,6 +24,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -88,16 +89,16 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             result = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
 
             assertEquals("Daniela", result.get(0).first().getProperty("name"));
-            assertEquals(22, result.get(0).second().get());
+            assertEquals(22, result.get(0).second().getTotalScore());
 
             assertEquals("Adam", result.get(1).first().getProperty("name"));
-            assertEquals(12, result.get(1).second().get());
+            assertEquals(12, result.get(1).second().getTotalScore());
 
             assertEquals("Vince", result.get(2).first().getProperty("name"));
-            assertEquals(8, result.get(2).second().get());
+            assertEquals(8, result.get(2).second().getTotalScore());
 
             assertEquals("Bob", result.get(3).first().getProperty("name"));
-            assertEquals(-9, result.get(3).second().get());
+            assertEquals(-9, result.get(3).second().getTotalScore());
 
             tx.success();
         }
@@ -144,16 +145,16 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             result = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
 
             assertEquals("Daniela", result.get(0).first().getProperty("name"));
-            assertEquals(22, result.get(0).second().get());
+            assertEquals(22, result.get(0).second().getTotalScore());
 
             assertEquals("Adam", result.get(1).first().getProperty("name"));
-            assertEquals(12, result.get(1).second().get());
+            assertEquals(12, result.get(1).second().getTotalScore());
 
             assertEquals("Vince", result.get(2).first().getProperty("name"));
-            assertEquals(8, result.get(2).second().get());
+            assertEquals(8, result.get(2).second().getTotalScore());
 
             assertEquals("Bob", result.get(3).first().getProperty("name"));
-            assertEquals(-9, result.get(3).second().get());
+            assertEquals(-9, result.get(3).second().getTotalScore());
 
             tx.success();
         }
@@ -169,10 +170,10 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             Node node = pair.first();
             Score score = pair.second();
             s.append(PropertyContainerUtils.nodeToString(node)).append(": ");
-            s.append("total:").append(score.get());
-            for (String scoreName : score.getScores()) {
+            s.append("total:").append(score.getTotalScore());
+            for (Map.Entry<String, Integer> part : score.getScoreParts().entrySet()) {
                 s.append(", ");
-                s.append(scoreName).append(":").append(score.get(scoreName));
+                s.append(part.getKey()).append(":").append(part.getValue());
             }
             s.append(LINE_SEPARATOR);
         }

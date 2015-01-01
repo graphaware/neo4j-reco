@@ -19,13 +19,13 @@ package com.graphaware.reco.generic.context;
 /**
  * A {@link com.graphaware.reco.generic.context.ContextFactory} producing {@link com.graphaware.reco.generic.context.SimpleContext}.
  */
-public class SimpleContextFactory<OUT, IN> implements ContextFactory<OUT, IN, SimpleContext<OUT, IN>> {
+public class SimpleContextFactory<OUT, IN> implements ContextFactory<OUT, IN, Context<OUT, IN>> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public SimpleContext<OUT, IN> produceContext(IN input, Mode mode, int limit) {
+    public Context<OUT, IN> produceContext(IN input, Mode mode, int limit) {
         SimpleContext<OUT, IN> result = new SimpleContext<>(mode, limit);
         result.initialize(input);
         return result;

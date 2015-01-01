@@ -115,9 +115,9 @@ public class RecommendationsTest {
         assertEquals("Reco0", two.first());
         assertEquals("Reco2", three.first());
 
-        assertEquals(39997, one.second().get());
-        assertEquals(35003, two.second().get());
-        assertEquals(15000, three.second().get());
+        assertEquals(39997, one.second().getTotalScore());
+        assertEquals(35003, two.second().getTotalScore());
+        assertEquals(15000, three.second().getTotalScore());
 
         assertEquals(6664, one.second().get("Score0"));
         assertEquals(20833, one.second().get("Score1"));
@@ -205,9 +205,9 @@ public class RecommendationsTest {
         assertEquals("Reco0", two.first());
         assertEquals("Reco2", three.first());
 
-        assertEquals(39997, one.second().get());
-        assertEquals(35003, two.second().get());
-        assertEquals(15000, three.second().get());
+        assertEquals(39997, one.second().getTotalScore());
+        assertEquals(35003, two.second().getTotalScore());
+        assertEquals(15000, three.second().getTotalScore());
 
         assertEquals(6664, one.second().get("Score0"));
         assertEquals(20833, one.second().get("Score1"));
@@ -262,9 +262,9 @@ public class RecommendationsTest {
         assertEquals("Reco0", two.first());
         assertEquals("Reco2", three.first());
 
-        assertEquals(39997, one.second().get());
-        assertEquals(35003, two.second().get());
-        assertEquals(15000, three.second().get());
+        assertEquals(39997, one.second().getTotalScore());
+        assertEquals(35003, two.second().getTotalScore());
+        assertEquals(15000, three.second().getTotalScore());
 
         assertEquals(6664, one.second().get("Score0"));
         assertEquals(20833, one.second().get("Score1"));

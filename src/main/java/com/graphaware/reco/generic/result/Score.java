@@ -1,5 +1,6 @@
 package com.graphaware.reco.generic.result;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +17,7 @@ import static org.springframework.util.Assert.notNull;
  */
 public class Score implements Comparable<Score> {
 
-    private final AtomicInteger total = new AtomicInteger(0);
+    private final AtomicInteger totalScore = new AtomicInteger(0);
     private final ConcurrentHashMap<String, AtomicInteger> scoreParts = new ConcurrentHashMap<>();
 
     /**
@@ -40,7 +41,7 @@ public class Score implements Comparable<Score> {
         }
 
         score.addAndGet(value);
-        total.addAndGet(value);
+        totalScore.addAndGet(value);
     }
 
     /**
@@ -63,8 +64,18 @@ public class Score implements Comparable<Score> {
      *
      * @return total value.
      */
-    public int get() {
-        return total.get();
+    public int getTotalScore() {
+        return totalScore.get();
+    }
+
+    public Map<String, Integer> getScoreParts() {
+        Map<String, Integer> result = new HashMap<>();
+
+        for (Map.Entry<String, AtomicInteger> entry : scoreParts.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().get());
+        }
+
+        return result;
     }
 
     /**
@@ -82,19 +93,10 @@ public class Score implements Comparable<Score> {
     }
 
     /**
-     * Get the names of the partial scores forming this composite score.
-     *
-     * @return partial score names.
-     */
-    public Set<String> getScores() {
-        return new HashSet<>(scoreParts.keySet());
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public int compareTo(Score o) {
-        return Integer.compare(get(), o.get());
+        return Integer.compare(getTotalScore(), o.getTotalScore());
     }
 }

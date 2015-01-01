@@ -24,21 +24,10 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> implements Recomm
     private final ScoreTransformer transformer;
 
     /**
-     * Construct a recommendation engine that performs no score transformation.
+     * Construct a recommendation engine.
      */
     protected SingleScoreRecommendationEngine() {
-        this.transformer = NoTransformation.getInstance();
-    }
-
-    /**
-     * Construct a recommendation engine that transforms all scores using the provided transformer.
-     *
-     * @param transformer for scores, must not be <code>null</code>.
-     */
-    protected SingleScoreRecommendationEngine(ScoreTransformer transformer) {
-        notNull(transformer);
-
-        this.transformer = transformer;
+        this.transformer = scoreTransformer();
     }
 
     /**
@@ -50,6 +39,14 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> implements Recomm
     public ParticipationPolicy<OUT, IN> participationPolicy(Context context) {
         //noinspection unchecked
         return ParticipationPolicy.ALWAYS;
+    }
+
+    /**
+     * Get a score transformer used to transform all scores produced by this engine. Intended to be overridden if needed.
+     * @return transformer, {@link com.graphaware.reco.generic.transform.NoTransformation} by default.
+     */
+    protected ScoreTransformer scoreTransformer() {
+        return NoTransformation.getInstance();
     }
 
     /**
@@ -87,4 +84,11 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> implements Recomm
      * @return a map of recommended items and their scores.
      */
     protected abstract Map<OUT, Integer> doRecommend(IN input, Context<OUT, IN> context);
+
+    protected final void addToResult(Map<OUT, Integer> result, OUT recommendation, int score) {
+        if (!result.containsKey(recommendation)) {
+            result.put(recommendation, 0);
+        }
+        result.put(recommendation, result.get(recommendation) + score);
+    }
 }

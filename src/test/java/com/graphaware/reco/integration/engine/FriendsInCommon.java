@@ -17,6 +17,7 @@
 package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.transform.ParetoScoreTransformer;
+import com.graphaware.reco.generic.transform.ScoreTransformer;
 import com.graphaware.reco.integration.domain.Relationships;
 import com.graphaware.reco.neo4j.engine.SomethingInCommon;
 import org.neo4j.graphdb.Direction;
@@ -32,8 +33,9 @@ import static org.neo4j.graphdb.Direction.BOTH;
  */
 public class FriendsInCommon extends SomethingInCommon {
 
-    public FriendsInCommon() {
-        super(new ParetoScoreTransformer(100, 10, 1));
+    @Override
+    protected ScoreTransformer scoreTransformer() {
+        return new ParetoScoreTransformer(100, 10, 1);
     }
 
     @Override

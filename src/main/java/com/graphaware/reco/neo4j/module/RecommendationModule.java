@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * {@link TimerDrivenModule} that continuously pre-computes recommendations in the graph.
@@ -118,8 +119,8 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
                 for (Pair<Node, Score> recommendation : recommendations) {
                     Relationship created = node.createRelationshipTo(recommendation.first(), config.getRelationshipType());
-                    for (String score : recommendation.second().getScores()) {
-                        created.setProperty(score, recommendation.second().get(score));
+                    for (Map.Entry<String, Integer> entry : recommendation.second().getScoreParts().entrySet()) {
+                        created.setProperty(entry.getKey(), entry.getValue());
                     }
                 }
             }
