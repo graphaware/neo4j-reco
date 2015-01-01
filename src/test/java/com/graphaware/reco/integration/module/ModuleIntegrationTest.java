@@ -6,7 +6,7 @@ import com.graphaware.common.util.PropertyContainerUtils;
 import com.graphaware.reco.generic.context.Mode;
 import com.graphaware.reco.generic.result.Score;
 import com.graphaware.reco.integration.domain.Relationships;
-import com.graphaware.reco.integration.engine.ComputingFriendsRecommendationEngine;
+import com.graphaware.reco.integration.engine.Neo4jFriendsEngine;
 import com.graphaware.reco.integration.engine.FriendsRecommendationEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
 import com.graphaware.reco.neo4j.module.RecommendationModule;
@@ -38,7 +38,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        recommendationEngine = FriendsRecommendationEngine.getInstance();
+        recommendationEngine = new FriendsRecommendationEngine();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
         runtime.registerModule(new RecommendationModule(
                 "RECO",
-                RecommendationModuleConfiguration.defaultConfiguration(ComputingFriendsRecommendationEngine.getInstance())
+                RecommendationModuleConfiguration.defaultConfiguration(new Neo4jFriendsEngine())
                         .withMaxRecommendations(2)
                         .withRelationshipType(Relationships.RECOMMEND),
                 getDatabase()));

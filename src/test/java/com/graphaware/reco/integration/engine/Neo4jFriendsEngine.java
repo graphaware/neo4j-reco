@@ -17,30 +17,35 @@
 package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.context.FilteringContext;
+import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
+import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.integration.post.PenalizeAgeDifference;
 import com.graphaware.reco.integration.post.RewardSameLabels;
 import com.graphaware.reco.integration.post.RewardSameLocation;
 import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
 import org.neo4j.graphdb.Node;
 
-public final class ComputingFriendsRecommendationEngine extends Neo4jRecommendationEngine {
+import java.util.Arrays;
+import java.util.List;
 
-    private static final ComputingFriendsRecommendationEngine INSTANCE = new ComputingFriendsRecommendationEngine();
+public final class Neo4jFriendsEngine extends Neo4jRecommendationEngine {
 
-    public static ComputingFriendsRecommendationEngine getInstance() {
-        return INSTANCE;
+    public Neo4jFriendsEngine() {
+        super(new FriendsContextFactory());
     }
 
-    private ComputingFriendsRecommendationEngine() {
-        super(FriendsRecommendationContextFactory.getInstance());
-
-        addEngines(
+    @Override
+    protected List<RecommendationEngine<Node, Node, ? super FilteringContext<Node, Node>>> engines() {
+        return Arrays.<RecommendationEngine<Node, Node, ? super FilteringContext<Node, Node>>>asList(
                 new FriendsInCommon(),
                 new RandomPeople()
         );
+    }
 
-        addPostProcessors(
+    @Override
+    protected List<PostProcessor<Node, Node>> postProcessors() {
+        return Arrays.asList(
                 new RewardSameLabels(),
                 new RewardSameLocation(),
                 new PenalizeAgeDifference()

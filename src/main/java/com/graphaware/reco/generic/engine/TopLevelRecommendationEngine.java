@@ -40,6 +40,7 @@ public class TopLevelRecommendationEngine<OUT, IN, C extends Context<OUT, IN>> e
      * @param contextFactory to use for producing contexts.
      */
     public TopLevelRecommendationEngine(ContextFactory<OUT, IN, C> contextFactory) {
+        super();
         this.contextFactory = contextFactory;
     }
 

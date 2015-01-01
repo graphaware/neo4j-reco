@@ -16,9 +16,15 @@
 
 package com.graphaware.reco.integration.engine;
 
+import com.graphaware.reco.generic.filter.BlacklistBuilder;
+import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.neo4j.context.Neo4jContextFactory;
 import com.graphaware.reco.neo4j.filter.ExcludeSelf;
 import com.graphaware.reco.neo4j.filter.ExistingRelationshipBlacklistBuilder;
+import org.neo4j.graphdb.Node;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static com.graphaware.reco.integration.domain.Relationships.FRIEND_OF;
 import static org.neo4j.graphdb.Direction.BOTH;
@@ -26,20 +32,20 @@ import static org.neo4j.graphdb.Direction.BOTH;
 /**
  *
  */
-public final class FriendsRecommendationContextFactory extends Neo4jContextFactory {
+public final class FriendsContextFactory extends Neo4jContextFactory {
 
-    private static final FriendsRecommendationContextFactory INSTANCE = new FriendsRecommendationContextFactory();
-
-    public static FriendsRecommendationContextFactory getInstance() {
-        return INSTANCE;
+    @Override
+    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
+        return Arrays.asList(
+                new ExcludeSelf(),
+                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
     }
 
-    private FriendsRecommendationContextFactory() {
-        addBlacklistBuilders(
-                new ExcludeSelf(),
-                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH));
-
-        addFilters(
-                new ExcludeSelf());
+    @Override
+    protected List<Filter<Node, Node>> filters() {
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
+        );
     }
 }
