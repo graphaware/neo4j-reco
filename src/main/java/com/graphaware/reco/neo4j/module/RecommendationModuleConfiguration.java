@@ -1,12 +1,9 @@
 package com.graphaware.reco.neo4j.module;
 
 import com.graphaware.common.policy.NodeInclusionPolicy;
-import com.graphaware.reco.generic.context.ContextFactory;
-import com.graphaware.reco.generic.engine.RecommendationEngine;
-import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import com.graphaware.runtime.policy.all.IncludeAllBusinessNodes;
 import org.neo4j.graphdb.DynamicRelationshipType;
-import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 
 /**
@@ -16,7 +13,7 @@ public class RecommendationModuleConfiguration {
 
     public static final DynamicRelationshipType DEFAULT_RELATIONSHIP_TYPE = DynamicRelationshipType.withName("_RECOMMEND_");
 
-    private final Neo4jRecommendationEngine engine;
+    private final Neo4jTopLevelDelegatingEngine engine;
     private final NodeInclusionPolicy nodeInclusionPolicy;
     private final int maxRecommendations;
     private final RelationshipType relationshipType;
@@ -28,7 +25,7 @@ public class RecommendationModuleConfiguration {
      * @param engine         the recommendation engine that will be used to compute recommendations.
      * @return The default {@link RecommendationModuleConfiguration}
      */
-    public static RecommendationModuleConfiguration defaultConfiguration(Neo4jRecommendationEngine engine) {
+    public static RecommendationModuleConfiguration defaultConfiguration(Neo4jTopLevelDelegatingEngine engine) {
         return new RecommendationModuleConfiguration(engine, IncludeAllBusinessNodes.getInstance(), 10, DEFAULT_RELATIONSHIP_TYPE);
     }
 
@@ -72,14 +69,14 @@ public class RecommendationModuleConfiguration {
      * @param maxRecommendations  maximum number of recommendations to pre-compute per node.
      * @param relationshipType    relationship type of the relationship between the subject and the pre-computed recommendations.
      */
-    private RecommendationModuleConfiguration(Neo4jRecommendationEngine engine, NodeInclusionPolicy nodeInclusionPolicy, int maxRecommendations, RelationshipType relationshipType) {
+    private RecommendationModuleConfiguration(Neo4jTopLevelDelegatingEngine engine, NodeInclusionPolicy nodeInclusionPolicy, int maxRecommendations, RelationshipType relationshipType) {
         this.engine = engine;
         this.nodeInclusionPolicy = nodeInclusionPolicy;
         this.maxRecommendations = maxRecommendations;
         this.relationshipType = relationshipType;
     }
 
-    public Neo4jRecommendationEngine getEngine() {
+    public Neo4jTopLevelDelegatingEngine getEngine() {
         return engine;
     }
 

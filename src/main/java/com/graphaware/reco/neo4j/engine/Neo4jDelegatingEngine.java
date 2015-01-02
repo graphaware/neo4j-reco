@@ -16,12 +16,12 @@
 
 package com.graphaware.reco.neo4j.engine;
 
-import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.DelegatingRecommendationEngine;
 import org.neo4j.graphdb.Node;
 
 /**
- *
+ * A Neo4j {@link com.graphaware.reco.generic.engine.DelegatingRecommendationEngine} where both the input to the
+ * recommendation-computing process and the produced recommendations are {@link org.neo4j.graphdb.Node}s.
  */
 public class Neo4jDelegatingEngine extends DelegatingRecommendationEngine<Node, Node> {
 }

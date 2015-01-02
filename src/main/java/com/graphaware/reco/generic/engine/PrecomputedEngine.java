@@ -25,11 +25,11 @@ import static com.graphaware.common.util.PropertyContainerUtils.getInt;
 /**
  * A {@link RecommendationEngine} that reads pre-computed recommendations and their scores from an external source.
  * <p/>
- * {@link com.graphaware.reco.generic.context.Context} blacklists and filters are still used to filter out recommendations
+ * {@link com.graphaware.reco.generic.context.Context#allow(Object, Object)} is still consulted filter out recommendations
  * for which the situation has changed since they were pre-computed.
  * <p/>
- * Once a pre-computed recommendation has been read, it is blacklisted so that other recommendation engines do not
- * discover it again.
+ * Once a pre-computed recommendation has been read, it is disallowed by calling {@link com.graphaware.reco.generic.context.Context#disallow(Object)}
+ * so that other recommendation engines do not discover it again.
  *
  * @param <SOURCE> type of the precomputed recommendation source. Could be an object from cache, a graph relationship, etc.
  */

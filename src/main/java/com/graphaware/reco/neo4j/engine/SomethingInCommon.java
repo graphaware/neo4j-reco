@@ -29,7 +29,7 @@ public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<
      * {@inheritDoc}
      */
     @Override
-    protected Map<Node, Integer> doRecommend(Node input, Context<Node, Node> context) {
+    protected final Map<Node, Integer> doRecommend(Node input, Context<Node, Node> context) {
         Map<Node, Integer> result = new HashMap<>();
 
         for (Relationship r1 : input.getRelationships(getType(), getDirection())) {

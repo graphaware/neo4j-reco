@@ -1,11 +1,13 @@
 package com.graphaware.reco.generic.result;
 
 import com.graphaware.common.util.Pair;
+import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.graphaware.reco.generic.util.MapSorter.sortMapByDescendingValue;
+import static org.springframework.util.Assert.*;
 
 /**
  * Encapsulates recommendations and their {@link Score}s.
@@ -18,15 +20,31 @@ public class Recommendations<OUT> {
 
     private final ConcurrentHashMap<OUT, Score> scoredItems = new ConcurrentHashMap<>();
 
+    /**
+     * Merge the given recommendations to this instance.
+     *
+     * @param recommendations to merge.
+     * @return merged recommendations, instance of this class. The returned object should be used after merging,
+     * rather than the instance merged to.
+     */
     public Recommendations<OUT> merge(final Recommendations<OUT> recommendations) {
         for (Map.Entry<OUT, Score> scoredItem : recommendations.scoredItems.entrySet()) {
-            this.add(scoredItem.getKey(), scoredItem.getValue());
+            add(scoredItem.getKey(), scoredItem.getValue());
         }
 
         return this;
     }
 
+    /**
+     * Add a recommendation and its score.
+     *
+     * @param recommendation to add. Must not be <code>null</code>.
+     * @param score          of the recommendation. Must not be <code>null</code>.
+     */
     public void add(OUT recommendation, Score score) {
+        notNull(recommendation);
+        notNull(score);
+
         Score existingScore = scoredItems.get(recommendation);
 
         if (existingScore != null) {
@@ -44,11 +62,15 @@ public class Recommendations<OUT> {
     /**
      * Add a recommendation.
      *
-     * @param recommendation to add.
-     * @param scoreName      name of the partial score this recommendation is receiving.
+     * @param recommendation to add. Must not be <code>null</code>.
+     * @param scoreName      name of the partial score this recommendation is receiving. Must not be <code>null</code> or empty.
      * @param score          value of the partial score.
      */
     public void add(OUT recommendation, String scoreName, int score) {
+        notNull(recommendation);
+        notNull(scoreName);
+        hasLength(scoreName);
+
         Score existingScore = scoredItems.get(recommendation);
 
         if (existingScore == null) {
@@ -81,14 +103,17 @@ public class Recommendations<OUT> {
     /**
      * Get a {@link Score} for the given item.
      *
-     * @param item to get score for.
+     * @param item to get score for. Must not be <code>null</code>.
      * @return score.
      * @throws IllegalArgumentException if the item hasn't been scored.
      */
     public Score get(OUT item) {
+        notNull(item);
+
         if (!scoredItems.containsKey(item)) {
             throw new IllegalArgumentException("Item " + item + " is not amongst the recommendations");
         }
+
         return scoredItems.get(item);
     }
 

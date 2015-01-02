@@ -2,13 +2,13 @@ package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
-import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import org.neo4j.graphdb.Node;
 
 import java.util.Arrays;
 import java.util.List;
 
-public final class FriendsRecommendationEngine extends Neo4jRecommendationEngine {
+public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
 
     public FriendsRecommendationEngine() {
         super(new FriendsContextFactory());

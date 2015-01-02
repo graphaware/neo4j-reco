@@ -59,7 +59,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * Score a randomly selected node.
      *
      * @param node to score.
-     * @return score, 1 by default.
+     * @return score, 0 by default.
      */
     protected int score(Node node) {
         return 0;

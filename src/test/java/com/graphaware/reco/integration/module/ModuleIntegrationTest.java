@@ -8,7 +8,7 @@ import com.graphaware.reco.generic.result.Score;
 import com.graphaware.reco.integration.domain.Relationships;
 import com.graphaware.reco.integration.engine.Neo4jFriendsEngine;
 import com.graphaware.reco.integration.engine.FriendsRecommendationEngine;
-import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import com.graphaware.reco.neo4j.module.RecommendationModule;
 import com.graphaware.reco.neo4j.module.RecommendationModuleConfiguration;
 import com.graphaware.runtime.GraphAwareRuntime;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private Neo4jRecommendationEngine recommendationEngine;
+    private Neo4jTopLevelDelegatingEngine recommendationEngine;
 
     @Override
     public void setUp() throws Exception {

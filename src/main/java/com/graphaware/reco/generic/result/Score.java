@@ -68,6 +68,11 @@ public class Score implements Comparable<Score> {
         return totalScore.get();
     }
 
+    /**
+     * Get a copy of all the composite score parts.
+     *
+     * @return composite score parts.
+     */
     public Map<String, Integer> getScoreParts() {
         Map<String, Integer> result = new HashMap<>();
 

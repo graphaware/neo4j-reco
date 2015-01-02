@@ -17,20 +17,19 @@
 package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.context.FilteringContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.integration.post.PenalizeAgeDifference;
 import com.graphaware.reco.integration.post.RewardSameLabels;
 import com.graphaware.reco.integration.post.RewardSameLocation;
-import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import org.neo4j.graphdb.Node;
 
 import java.util.Arrays;
 import java.util.List;
 
-public final class Neo4jFriendsEngine extends Neo4jRecommendationEngine {
+public final class Neo4jFriendsEngine extends Neo4jTopLevelDelegatingEngine {
 
     public Neo4jFriendsEngine() {
         super(new FriendsContextFactory());

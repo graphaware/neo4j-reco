@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 GraphAware
+ * Copyright (c) 2015 GraphAware
  *
  * This file is part of GraphAware.
  *
@@ -18,31 +18,20 @@ package com.graphaware.reco.generic.engine;
 
 import com.graphaware.common.util.Pair;
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.context.ContextFactory;
 import com.graphaware.reco.generic.context.Mode;
+import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.reco.generic.result.Score;
 
 import java.util.List;
 
 /**
- * A {@link com.graphaware.reco.generic.engine.DelegatingRecommendationEngine} intended to be used as the single top-level
- * {@link com.graphaware.reco.generic.engine.RecommendationEngine}. It accepts a single {@link com.graphaware.reco.generic.context.ContextFactory}
- * at construction-time, which it then uses to produce {@link com.graphaware.reco.generic.context.Context}s.
+ * A recommendation engine intended to be used as the "top-level" engine, i.e. the API for clients to get recommendations.
+ *
+ * @param <OUT> type of the recommendations produced.
+ * @param <IN>  type of the item recommendations are for / based on.
  */
-public class TopLevelRecommendationEngine<OUT, IN> extends DelegatingRecommendationEngine<OUT, IN> {
-
-    private final ContextFactory<OUT, IN> contextFactory;
-
-    /**
-     * Create a new engine.
-     *
-     * @param contextFactory to use for producing contexts.
-     */
-    public TopLevelRecommendationEngine(ContextFactory<OUT, IN> contextFactory) {
-        super();
-        this.contextFactory = contextFactory;
-    }
+public interface TopLevelRecommendationEngine<OUT, IN> extends RecommendationEngine<OUT, IN> {
 
     /**
      * Produce recommendations.
@@ -52,18 +41,5 @@ public class TopLevelRecommendationEngine<OUT, IN> extends DelegatingRecommendat
      * @param limit maximum number of recommendations desired.
      * @return recommendations sorted by decreasing relevance and trimmed to limit.
      */
-    public List<Pair<OUT, Score>> recommend(IN input, Mode mode, int limit) {
-        return recommend(input, contextFactory.produceContext(input, mode, limit)).get(limit);
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * Only delegates to subclass, overridden to be made <code>final</code>.
-     */
-    @Override
-    public final Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
-        return super.recommend(input, context);
-    }
+    List<Pair<OUT, Score>> recommend(IN input, Mode mode, int limit);
 }
-
