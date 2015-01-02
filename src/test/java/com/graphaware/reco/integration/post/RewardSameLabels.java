@@ -26,7 +26,7 @@ import java.util.Arrays;
 import static org.neo4j.helpers.collection.Iterables.toArray;
 
 /**
- * Rewards same gender (exactly the same labels) by 5 points.
+ * Rewards same gender (exactly the same labels) by 10 points.
  */
 public class RewardSameLabels implements PostProcessor<Node, Node> {
 

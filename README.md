@@ -184,11 +184,403 @@ Blacklists and `Filter`s are still consulted in case the situation has changed s
 Using GraphAware Neo4j Recommendation Engine
 --------------------------------------------
 
-This documentation is in progress. In the meantime, have a look at the `ModuleIntegrationTest` class and the other classes it uses
-to get started. Also, the classes in this library have a decent <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a>, which should help you get building your first
-recommendation engine.
+The best place to start is by having a look at the `ModuleIntegrationTest` class and the other classes it uses.
+Also, the classes in this library have a decent <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a>,
+which should help you get building your first recommendation engine. Feel free to get in touch for support (info@graphaware.com).
 
-Feel free to get in touch for support (info@graphaware.com).
+We will illustrate how easy it is to build a recommendation using an example. Let's say we have a graph of people, i.e.
+`Node`s with label `:Person`. Moreover, each `:Person` also has a `:Male` or a `:Female` label, and two properties: a `name` (String) and
+an `age` (integer). We will also have `Node`s with label `:City` and a `name` property.
+
+The only two relationship types in our simple graph will be `FRIEND_OF` and `LIVES_IN` and we will assume friendships are mutual,
+thus ignore the direction of the `FRIEND_OF` relationship. A sample graph, expressed in Cypher, could look like this:
+
+```
+    CREATE
+    (m:Person:Male {name:'Michal', age:30}),
+    (d:Person:Female {name:'Daniela', age:20}),
+    (v:Person:Male {name:'Vince', age:40}),
+    (a:Person:Male {name:'Adam', age:30}),
+    (l:Person:Female {name:'Luanne', age:25}),
+    (c:Person:Male {name:'Christophe', age:60}),
+
+    (lon:City {name:'London'}),
+    (mum:City {name:'Mumbai'}),
+
+    (m)-[:FRIEND_OF]->(d),
+    (m)-[:FRIEND_OF]->(l),
+    (m)-[:FRIEND_OF]->(a),
+    (m)-[:FRIEND_OF]->(v),
+    (d)-[:FRIEND_OF]->(v),
+    (c)-[:FRIEND_OF]->(v),
+    (d)-[:LIVES_IN]->(lon),
+    (v)-[:LIVES_IN]->(lon),
+    (m)-[:LIVES_IN]->(lon),
+    (l)-[:LIVES_IN]->(mum));
+```
+
+Our intention will be recommending people a person should be friends with, based on the following requirements:
+(1) The more friends in common two people have, the more likely it is they should become friends
+(2) The difference between zero and one friends in common should be significant and each additional friend in common should
+ increase the recommendation relevance by a smaller magnitude.
+(3) If people live in the same city, the chance of them becoming friends increases
+(4) If people are of the same gender, the chance of them becoming friends is greater than if they are of opposite genders
+(5) The bigger the age difference between two people, the lower the chance they will become friends
+(6) People should not be friends with themselves
+(7) People who are already friends should not be recommended as potential friends
+(8) If we don't have enough recommendations, we will recommend some random people
+
+Let's start tackling the requirements one by one.
+
+### Real-Time Recommendations
+
+#### FriendsInCommon
+
+First, we will build a `RecommendationEngine` that finds recommendations based on friends in common. For each friend in
+common, the relevance score will increase by 1. Since this is a single-criterion `RecommendationEngine`, we will extend
+`SingleScoreRecommendationEngine` as follows:
+
+```java
+/**
+ * {@link com.graphaware.reco.generic.engine.RecommendationEngine} that finds recommendation based on friends in common.
+ */
+public class FriendsInCommon extends SomethingInCommon {
+
+    @Override
+    protected RelationshipType getType() {
+        return Relationships.FRIEND_OF;
+    }
+
+    @Override
+    protected Direction getDirection() {
+        return Direction.BOTH;
+    }
+
+    @Override
+    protected String scoreName() {
+        return "friendsInCommon";
+    }
+}
+```
+
+The code above tackles requirement (1). Let's modify the code to account for requirement (2) as well by providing an
+exponential `ScoreTransformer`, called the `ParetoScoreTransformer`. Please read the Javadoc of the class to find out
+exactly how it works. For now, it is sufficient to say that it will transform the number of friends in common to a score
+with a theoretical upper value of 100, with 80% of the total score being achieved by 10 friends in common.
+
+```java
+/**
+ * {@link com.graphaware.reco.generic.engine.RecommendationEngine} that finds recommendation based on friends in common.
+ * <p/>
+ * The score is increasing by Pareto function, achieving 80% score with 10 friends in common. The maximum score is 100.
+ */
+public class FriendsInCommon extends SomethingInCommon {
+
+    @Override
+    protected ScoreTransformer scoreTransformer() {
+        return new ParetoScoreTransformer(100, 10);
+    }
+
+    @Override
+    protected RelationshipType getType() {
+        return Relationships.FRIEND_OF;
+    }
+
+    @Override
+    protected Direction getDirection() {
+        return BOTH;
+    }
+
+    @Override
+    protected String scoreName() {
+        return "friendsInCommon";
+    }
+}
+```
+
+#### FriendsInCommon
+
+Whilst we're at it, we will also build the other `SingleScoreRecommendationEngine` that we'll need to satisfy requirement (8):
+
+```java
+ /**
+  * {@link com.graphaware.reco.neo4j.engine.RandomRecommendations} selecting random nodes with "Person" label.
+  */
+ public class RandomPeople extends RandomRecommendations {
+
+     @Override
+     protected NodeInclusionPolicy getPolicy() {
+         return new NodeInclusionPolicy() {
+             @Override
+             public boolean include(Node node) {
+                 return node.hasLabel(DynamicLabel.label("Person"));
+             }
+         };
+     }
+
+     @Override
+     protected String scoreName() {
+         return "random";
+     }
+ }
+```
+
+Note that this engine will (automatically) only be used if there aren't enough genuine recommendations.
+
+#### RewardSameLocation and RewardSameLabels
+
+We will tackle requirements (3) and (4) by implementing some `PostProcessors` rather than separate `RecommendationEngine`s.
+The reason is mainly performance; we do not want to suggest everyone who lives in the same city or who is of the same gender.
+Instead, we will reward already discovered recommendations for living in the same city or being of the same gender, by
+the following two classes:
+
+```java
+/**
+ * Rewards same location by 10 points.
+ */
+public class RewardSameLocation extends RewardSomethingShared {
+
+    @Override
+    protected RelationshipType type() {
+        return LIVES_IN;
+    }
+
+    @Override
+    protected Direction direction() {
+        return OUTGOING;
+    }
+
+    @Override
+    protected int scoreValue(Node recommendation, Node input, Node sharedThing) {
+        return 10;
+    }
+
+    @Override
+    protected String scoreName() {
+        return "sameLocation";
+    }
+}
+```
+
+```java
+/**
+ * Rewards same gender (exactly the same labels) by 10 points.
+ */
+public class RewardSameLabels implements PostProcessor<Node, Node> {
+
+    @Override
+    public void postProcess(Recommendations<Node> recommendations, Node input) {
+        Label[] inputLabels = toArray(Label.class, input.getLabels());
+
+        for (Node recommendation : recommendations.getItems()) {
+            if (Arrays.equals(inputLabels, toArray(Label.class, recommendation.getLabels()))) {
+                recommendations.add(recommendation, "sameGender", 10);
+            }
+        }
+    }
+}
+```
+
+#### PenalizeAgeDifference
+
+Another `PostProcessor` will take care of requirement (5). We will subtract 1 point from the relevance score for each
+year of difference in age.
+
+```java
+/**
+ * Subtracts a point of each year of difference in age.
+ */
+public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
+
+    private final ParetoScoreTransformer transformer = new ParetoScoreTransformer(10, 20, 0);
+
+    @Override
+    public void postProcess(Recommendations<Node> recommendations, Node input) {
+        int age = getInt(input, "age", 40);
+
+        for (Node reco : recommendations.getItems()) {
+            int diff = Math.abs(getInt(reco, "age", 40) - age);
+            recommendations.add(reco, "ageDifference", -transformer.transform(reco, diff));
+        }
+    }
+}
+```
+
+#### Blacklist Builders and Filters
+
+We could build custom `BlacklistBuilder`s and `Filter`s as well to satisfy requirements (6) and (7), but we will just use classes
+already provided by the library, as we will see shortly.
+
+#### Putting it all together
+
+Now that we have all the components that satisfy all 8 requirements, we just need to combine them into a `ContextFactory` and
+a top-level `RecommendationEngine`. The following `ContextFactory` will produce `Context`s that do not allow existing
+friends, or the person we are computing recommendations for, to be recommended as potential friends:
+
+```java
+/**
+ * {@link com.graphaware.reco.neo4j.context.Neo4jContextFactory} for recommending friends.
+ */
+public final class FriendsContextFactory extends Neo4jContextFactory {
+
+    @Override
+    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
+        return Arrays.asList(
+                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
+    }
+
+    @Override
+    protected List<Filter<Node, Node>> filters() {
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
+        );
+    }
+}
+```
+
+Finally, we will combine everything into a top-level engine:
+
+```java
+/**
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
+ */
+public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
+
+    public FriendsComputingEngine() {
+        super(new FriendsContextFactory());
+    }
+
+    @Override
+    protected List<RecommendationEngine<Node, Node>> engines() {
+        return Arrays.<RecommendationEngine<Node, Node>>asList(
+                new FriendsInCommon(),
+                new RandomPeople()
+        );
+    }
+
+    @Override
+    protected List<PostProcessor<Node, Node>> postProcessors() {
+        return Arrays.asList(
+                new RewardSameLabels(),
+                new RewardSameLocation(),
+                new PenalizeAgeDifference()
+        );
+    }
+}
+
+```
+
+#### A quick integration test
+
+In this example, we have neglected unit testing altogether, which, of course, you shouldn't do. We will build a simple
+integration test though in order to smoke-test our brand new recommendation engine.
+
+```java
+public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
+
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private Neo4jTopLevelDelegatingEngine recommendationEngine;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        recommendationEngine = new FriendsComputingEngine();
+    }
+
+    @Override
+    protected void populateDatabase(GraphDatabaseService database) {
+        new ExecutionEngine(database).execute(
+                "CREATE " +
+                        "(m:Person:Male {name:'Michal', age:30})," +
+                        "(d:Person:Female {name:'Daniela', age:20})," +
+                        "(v:Person:Male {name:'Vince', age:40})," +
+                        "(a:Person:Male {name:'Adam', age:30})," +
+                        "(l:Person:Female {name:'Luanne', age:25})," +
+                        "(b:Person:Male {name:'Bob', age:60})," +
+
+                        "(lon:City {name:'London'})," +
+                        "(mum:City {name:'Mumbai'})," +
+
+                        "(m)-[:FRIEND_OF]->(d)," +
+                        "(m)-[:FRIEND_OF]->(l)," +
+                        "(m)-[:FRIEND_OF]->(a)," +
+                        "(m)-[:FRIEND_OF]->(v)," +
+                        "(d)-[:FRIEND_OF]->(v)," +
+                        "(b)-[:FRIEND_OF]->(v)," +
+                        "(d)-[:LIVES_IN]->(lon)," +
+                        "(v)-[:LIVES_IN]->(lon)," +
+                        "(m)-[:LIVES_IN]->(lon)," +
+                        "(l)-[:LIVES_IN]->(mum)");
+    }
+
+    @Test
+    public void shouldRecommendRealTime() {
+        try (Transaction tx = getDatabase().beginTx()) {
+            List<Pair<Node, Score>> result;
+
+            result = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
+            assertEquals("" +
+                            "(:Male:Person {age: 30, name: Adam}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
+                            "(:Female:Person {age: 25, name: Luanne}): total:8, ageDifference:-7, friendsInCommon:15",
+                    toString(result));
+
+            result = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
+
+            assertEquals("" +
+                            "(:Male:Person {age: 40, name: Vince}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
+                            "(:Female:Person {age: 25, name: Luanne}): total:12, ageDifference:-3, friendsInCommon:15",
+                    toString(result));
+
+            result = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
+
+            assertEquals("Daniela", result.get(0).first().getProperty("name"));
+            assertEquals(22, result.get(0).second().getTotalScore());
+
+            assertEquals("Adam", result.get(1).first().getProperty("name"));
+            assertEquals(12, result.get(1).second().getTotalScore());
+
+            assertEquals("Vince", result.get(2).first().getProperty("name"));
+            assertEquals(8, result.get(2).second().getTotalScore());
+
+            assertEquals("Bob", result.get(3).first().getProperty("name"));
+            assertEquals(-9, result.get(3).second().getTotalScore());
+
+            tx.success();
+        }
+    }
+
+    private Node getPersonByName(String name) {
+        return IterableUtils.getSingle(getDatabase().findNodesByLabelAndProperty(DynamicLabel.label("Person"), "name", name));
+    }
+
+    private String toString(List<Pair<Node, Score>> recommendations) {
+        StringBuilder s = new StringBuilder();
+        for (Pair<Node, Score> pair : recommendations) {
+            Node node = pair.first();
+            Score score = pair.second();
+            s.append(PropertyContainerUtils.nodeToString(node)).append(": ");
+            s.append("total:").append(score.getTotalScore());
+            for (Map.Entry<String, Integer> part : score.getScoreParts().entrySet()) {
+                s.append(", ");
+                s.append(part.getKey()).append(":").append(part.getValue());
+            }
+            s.append(LINE_SEPARATOR);
+        }
+
+        String result = s.toString();
+        if (result.isEmpty()) {
+            return result;
+        }
+        return result.substring(0, result.length() - LINE_SEPARATOR.length());
+    }
+}
+```
+
+### Pre-Computed Recommendations
+
+TBD
+
 
 License
 -------
