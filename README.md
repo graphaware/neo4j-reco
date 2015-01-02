@@ -40,7 +40,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
         ...
         <dependency>
             <groupId>com.graphaware.neo4j</groupId>
-            <artifactId>reco</artifactId>
+            <artifactId>recommendation-engine</artifactId>
             <version>2.1.6.26.1</version>
         </dependency>
         ...
