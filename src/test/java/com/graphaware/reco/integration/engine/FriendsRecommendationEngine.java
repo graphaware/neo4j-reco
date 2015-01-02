@@ -1,6 +1,5 @@
 package com.graphaware.reco.integration.engine;
 
-import com.graphaware.reco.generic.context.FilteringContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jRecommendationEngine;
@@ -16,8 +15,8 @@ public final class FriendsRecommendationEngine extends Neo4jRecommendationEngine
     }
 
     @Override
-    protected List<RecommendationEngine<Node, Node, ? super FilteringContext<Node, Node>>> engines() {
-        return Arrays.<RecommendationEngine<Node, Node, ? super FilteringContext<Node, Node>>>asList(
+    protected List<RecommendationEngine<Node, Node>> engines() {
+        return Arrays.asList(
                 new Neo4jPrecomputedEngine(),
                 new Neo4jFriendsEngine()
         );

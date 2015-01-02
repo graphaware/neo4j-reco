@@ -63,5 +63,13 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
 
         return true;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void blacklist(OUT recommendation) {
+        throw new UnsupportedOperationException("SimpleContext does not support blacklisting items. Please use FilteringContext");
+    }
 }
 

@@ -19,7 +19,7 @@ import static org.springframework.util.Assert.*;
  * and {@link #addBlacklistBuilder(com.graphaware.reco.generic.filter.BlacklistBuilder)} (or their plural equivalents), or
  * by extending this class and overriding {@link #blacklistBuilders()} and {@link #filters()}.
  */
-public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN, FilteringContext<OUT, IN>> {
+public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN> {
 
     private final List<BlacklistBuilder<OUT, IN>> blacklistBuilders = new LinkedList<>();
     private final List<Filter<OUT, IN>> filters = new LinkedList<>();
@@ -112,7 +112,7 @@ public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN,
      * {@inheritDoc}
      */
     @Override
-    public final FilteringContext<OUT, IN> produceContext(IN input, Mode mode, int limit) {
+    public final Context<OUT, IN> produceContext(IN input, Mode mode, int limit) {
         Set<OUT> blacklist = new HashSet<>();
         for (BlacklistBuilder<OUT, IN> blacklistBuilder : blacklistBuilders) {
             blacklist.addAll(blacklistBuilder.buildBlacklist(input));

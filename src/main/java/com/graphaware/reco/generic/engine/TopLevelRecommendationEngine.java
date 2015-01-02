@@ -30,16 +30,16 @@ import java.util.List;
  * {@link com.graphaware.reco.generic.engine.RecommendationEngine}. It accepts a single {@link com.graphaware.reco.generic.context.ContextFactory}
  * at construction-time, which it then uses to produce {@link com.graphaware.reco.generic.context.Context}s.
  */
-public class TopLevelRecommendationEngine<OUT, IN, C extends Context<OUT, IN>> extends DelegatingRecommendationEngine<OUT, IN, C> {
+public class TopLevelRecommendationEngine<OUT, IN> extends DelegatingRecommendationEngine<OUT, IN> {
 
-    private final ContextFactory<OUT, IN, C> contextFactory;
+    private final ContextFactory<OUT, IN> contextFactory;
 
     /**
      * Create a new engine.
      *
      * @param contextFactory to use for producing contexts.
      */
-    public TopLevelRecommendationEngine(ContextFactory<OUT, IN, C> contextFactory) {
+    public TopLevelRecommendationEngine(ContextFactory<OUT, IN> contextFactory) {
         super();
         this.contextFactory = contextFactory;
     }
@@ -62,7 +62,7 @@ public class TopLevelRecommendationEngine<OUT, IN, C extends Context<OUT, IN>> e
      * Only delegates to subclass, overridden to be made <code>final</code>.
      */
     @Override
-    public final Recommendations<OUT> recommend(IN input, C context) {
+    public final Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
         return super.recommend(input, context);
     }
 }

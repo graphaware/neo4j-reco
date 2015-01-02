@@ -7,7 +7,7 @@ package com.graphaware.reco.generic.context;
  * <p/>
  * Implementations must be thread-safe.
  */
-public interface ContextFactory<OUT, IN, C extends Context<OUT, IN>> {
+public interface ContextFactory<OUT, IN> {
 
     /**
      * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process. Must call
@@ -18,5 +18,5 @@ public interface ContextFactory<OUT, IN, C extends Context<OUT, IN>> {
      * @param limit maximum number of recommendations desired.
      * @return context.
      */
-    C produceContext(IN input, Mode mode, int limit);
+    Context<OUT, IN> produceContext(IN input, Mode mode, int limit);
 }

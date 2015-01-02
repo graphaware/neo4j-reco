@@ -23,5 +23,5 @@ import org.neo4j.graphdb.Node;
 /**
  *
  */
-public class Neo4jDelegatingEngine extends DelegatingRecommendationEngine<Node, Node, Context<Node, Node>> {
+public class Neo4jDelegatingEngine extends DelegatingRecommendationEngine<Node, Node> {
 }

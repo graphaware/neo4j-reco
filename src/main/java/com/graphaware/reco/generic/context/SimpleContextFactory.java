@@ -19,7 +19,7 @@ package com.graphaware.reco.generic.context;
 /**
  * A {@link com.graphaware.reco.generic.context.ContextFactory} producing {@link com.graphaware.reco.generic.context.SimpleContext}.
  */
-public class SimpleContextFactory<OUT, IN> implements ContextFactory<OUT, IN, Context<OUT, IN>> {
+public class SimpleContextFactory<OUT, IN> implements ContextFactory<OUT, IN> {
 
     /**
      * {@inheritDoc}

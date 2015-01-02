@@ -25,7 +25,7 @@ import org.neo4j.graphdb.Node;
 /**
  *
  */
-public class Neo4jRecommendationEngine extends TopLevelRecommendationEngine<Node, Node, FilteringContext<Node, Node>> {
+public class Neo4jRecommendationEngine extends TopLevelRecommendationEngine<Node, Node> {
 
     public Neo4jRecommendationEngine(Neo4jContextFactory contextFactory) {
         super(contextFactory);

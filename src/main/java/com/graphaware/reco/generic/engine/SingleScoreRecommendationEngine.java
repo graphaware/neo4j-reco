@@ -19,7 +19,7 @@ import static org.springframework.util.Assert.*;
  * There is an option to provide a {@link com.graphaware.reco.generic.transform.ScoreTransformer} at construction time,
  * which is used to transform all the produced scores.
  */
-public abstract class SingleScoreRecommendationEngine<OUT, IN> implements RecommendationEngine<OUT, IN, Context<OUT, IN>> {
+public abstract class SingleScoreRecommendationEngine<OUT, IN> implements RecommendationEngine<OUT, IN> {
 
     private final ScoreTransformer transformer;
 

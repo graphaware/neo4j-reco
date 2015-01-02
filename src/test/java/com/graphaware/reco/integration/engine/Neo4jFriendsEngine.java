@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.integration.engine;
 
+import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.FilteringContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
@@ -36,8 +37,8 @@ public final class Neo4jFriendsEngine extends Neo4jRecommendationEngine {
     }
 
     @Override
-    protected List<RecommendationEngine<Node, Node, ? super FilteringContext<Node, Node>>> engines() {
-        return Arrays.<RecommendationEngine<Node, Node, ? super FilteringContext<Node, Node>>>asList(
+    protected List<RecommendationEngine<Node, Node>> engines() {
+        return Arrays.<RecommendationEngine<Node, Node>>asList(
                 new FriendsInCommon(),
                 new RandomPeople()
         );
@@ -53,7 +54,7 @@ public final class Neo4jFriendsEngine extends Neo4jRecommendationEngine {
     }
 
     @Override
-    public ParticipationPolicy<Node, Node> participationPolicy(FilteringContext<Node, Node> context) {
+    public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {
         //noinspection unchecked
         return ParticipationPolicy.IF_MORE_RESULTS_NEEDED;
     }

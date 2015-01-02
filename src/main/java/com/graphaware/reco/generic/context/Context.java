@@ -33,4 +33,12 @@ public interface Context<OUT, IN> {
      * @return true iff the recommendation is allowed for the given input.
      */
     boolean allow(OUT recommendation, IN input);
+
+    /**
+     * Blacklist the given recommendation. Intended for {@link com.graphaware.reco.generic.engine.RecommendationEngine}s
+     * to prevent following engines from discovering the same recommendation.
+     *
+     * @param recommendation to blacklist.
+     */
+    void blacklist(OUT recommendation);
 }

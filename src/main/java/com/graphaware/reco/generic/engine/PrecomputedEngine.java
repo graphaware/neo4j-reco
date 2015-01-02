@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.engine;
 
+import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.FilteringContext;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
@@ -33,7 +34,7 @@ import static com.graphaware.common.util.PropertyContainerUtils.getInt;
  *
  * @param <SOURCE> type of the precomputed recommendation source. Could be an object from cache, a graph relationship, etc.
  */
-public abstract class PrecomputedEngine<OUT, IN, SOURCE> implements RecommendationEngine<OUT, IN, FilteringContext<OUT, IN>> {
+public abstract class PrecomputedEngine<OUT, IN, SOURCE> implements RecommendationEngine<OUT, IN> {
 
     /**
      * {@inheritDoc}
@@ -41,7 +42,7 @@ public abstract class PrecomputedEngine<OUT, IN, SOURCE> implements Recommendati
      * @return {@link com.graphaware.reco.generic.policy.ParticipationPolicy#ALWAYS} by default.
      */
     @Override
-    public ParticipationPolicy<OUT, IN> participationPolicy(FilteringContext<OUT, IN> context) {
+    public ParticipationPolicy<OUT, IN> participationPolicy(Context<OUT, IN> context) {
         //noinspection unchecked
         return ParticipationPolicy.ALWAYS;
     }
@@ -50,7 +51,7 @@ public abstract class PrecomputedEngine<OUT, IN, SOURCE> implements Recommendati
      * {@inheritDoc}
      */
     @Override
-    public Recommendations<OUT> recommend(IN input, FilteringContext<OUT, IN> context) {
+    public Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
         Recommendations<OUT> result = new Recommendations<>();
 
         for (SOURCE source : produce(input)) {

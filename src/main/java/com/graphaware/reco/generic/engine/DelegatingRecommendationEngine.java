@@ -17,9 +17,9 @@ import static org.springframework.util.Assert.*;
  * have been consulted, results are tallied and post processed using provided {@link PostProcessor}s, before being returned
  * to the caller.
  */
-public class DelegatingRecommendationEngine<OUT, IN, C extends Context<OUT, IN>> implements RecommendationEngine<OUT, IN, C> {
+public class DelegatingRecommendationEngine<OUT, IN> implements RecommendationEngine<OUT, IN> {
 
-    private final List<RecommendationEngine<OUT, IN, ? super C>> engines = new LinkedList<>();
+    private final List<RecommendationEngine<OUT, IN>> engines = new LinkedList<>();
     private final List<PostProcessor<OUT, IN>> postProcessors = new LinkedList<>();
 
     public DelegatingRecommendationEngine() {
@@ -32,7 +32,7 @@ public class DelegatingRecommendationEngine<OUT, IN, C extends Context<OUT, IN>>
      *
      * @return empty list by default.
      */
-    protected List<RecommendationEngine<OUT, IN, ? super C>> engines() {
+    protected List<RecommendationEngine<OUT, IN>> engines() {
         return Collections.emptyList();
     }
 
@@ -51,7 +51,7 @@ public class DelegatingRecommendationEngine<OUT, IN, C extends Context<OUT, IN>>
      *
      * @param engine to delegate to. Must not be <code>null</code>.
      */
-    public final void addEngine(RecommendationEngine<OUT, IN, ? super C> engine) {
+    public final void addEngine(RecommendationEngine<OUT, IN> engine) {
         notNull(engine);
         engines.add(engine);
     }
@@ -62,9 +62,9 @@ public class DelegatingRecommendationEngine<OUT, IN, C extends Context<OUT, IN>>
      *
      * @param engines to delegate to. Must not be <code>null</code> and all of the elements must not be <code>null</code>.
      */
-    public final void addEngines(List<RecommendationEngine<OUT, IN, ? super C>> engines) {
+    public final void addEngines(List<RecommendationEngine<OUT, IN>> engines) {
         notNull(engines);
-        for (RecommendationEngine<OUT, IN, ? super C> engine : engines) {
+        for (RecommendationEngine<OUT, IN> engine : engines) {
             addEngine(engine);
         }
     }
@@ -97,10 +97,10 @@ public class DelegatingRecommendationEngine<OUT, IN, C extends Context<OUT, IN>>
      * {@inheritDoc}
      */
     @Override
-    public Recommendations<OUT> recommend(IN input, C context) {
+    public Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
         Recommendations<OUT> recommendations = new Recommendations<>();
 
-        for (RecommendationEngine<OUT, IN, ? super C> engine : engines) {
+        for (RecommendationEngine<OUT, IN> engine : engines) {
             if (engine.participationPolicy(context).participate(input, context, recommendations)) {
                 recommendations.merge(engine.recommend(input, context));
             }
@@ -119,7 +119,7 @@ public class DelegatingRecommendationEngine<OUT, IN, C extends Context<OUT, IN>>
      * @return {@link com.graphaware.reco.generic.policy.ParticipationPolicy#ALWAYS} by default.
      */
     @Override
-    public ParticipationPolicy<OUT, IN> participationPolicy(C context) {
+    public ParticipationPolicy<OUT, IN> participationPolicy(Context<OUT, IN> context) {
         //noinspection unchecked
         return ParticipationPolicy.ALWAYS;
     }
