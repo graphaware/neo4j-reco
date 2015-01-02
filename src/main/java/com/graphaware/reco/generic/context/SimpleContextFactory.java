@@ -26,7 +26,7 @@ public class SimpleContextFactory<OUT, IN> implements ContextFactory<OUT, IN> {
      */
     @Override
     public Context<OUT, IN> produceContext(IN input, Mode mode, int limit) {
-        SimpleContext<OUT, IN> result = new SimpleContext<>(mode, limit);
+        Context<OUT, IN> result = new SimpleContext<>(mode, limit);
         result.initialize(input);
         return result;
     }

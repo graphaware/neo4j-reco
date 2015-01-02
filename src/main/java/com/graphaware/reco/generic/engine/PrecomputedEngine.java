@@ -17,7 +17,6 @@
 package com.graphaware.reco.generic.engine;
 
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.context.FilteringContext;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
 
@@ -58,7 +57,7 @@ public abstract class PrecomputedEngine<OUT, IN, SOURCE> implements Recommendati
             OUT recommendation = extract(source);
             if (context.allow(recommendation, input)) {
                 addToResult(result, recommendation, source);
-                context.blacklist(recommendation);
+                context.disallow(recommendation);
             }
         }
 

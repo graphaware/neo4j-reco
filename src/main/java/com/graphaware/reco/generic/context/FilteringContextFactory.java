@@ -77,7 +77,6 @@ public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN>
         return this;
     }
 
-
     /**
      * Add a {@link com.graphaware.reco.generic.filter.Filter} passed to the produced {@link com.graphaware.reco.generic.context.Context}s.
      *

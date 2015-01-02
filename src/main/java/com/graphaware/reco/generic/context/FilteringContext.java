@@ -9,7 +9,7 @@ import static org.springframework.util.Assert.notNull;
 
 /**
  * A {@link com.graphaware.reco.generic.context.Context} that accepts a list of {@link com.graphaware.reco.generic.filter.Filter}s
- * and a set of blacklisted items, both of which it uses to exclude some recommendations.
+ * and a set of blacklisted items, both of which it uses to disallow some recommendations.
  */
 public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
 
@@ -37,7 +37,8 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
     /**
      * {@inheritDoc}
      * <p/>
-     * Returns <code>false</code> for blacklisted items and items filtered out by at least one of the {@link com.graphaware.reco.generic.filter.Filter}s.
+     * Returns <code>false</code> for blacklisted items and items filtered out by at least one of the
+     * {@link com.graphaware.reco.generic.filter.Filter}s.
      */
     @Override
     public boolean allow(OUT recommendation, IN input) {
@@ -59,12 +60,12 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
     }
 
     /**
-     * Blacklist the given recommendation. Intended for {@link com.graphaware.reco.generic.engine.RecommendationEngine}s
-     * to prevent following engines from discovering the same recommendation.
-     *
-     * @param recommendation to blacklist.
+     * {@inheritDoc}
+     * <p/>
+     * Blacklist the given disallowed recommendation.
      */
-    public void blacklist(OUT recommendation) {
+    @Override
+    public void disallow(OUT recommendation) {
         this.blacklist.add(recommendation);
     }
 }

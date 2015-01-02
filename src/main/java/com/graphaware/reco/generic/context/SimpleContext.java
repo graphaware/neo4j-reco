@@ -66,9 +66,11 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws java.lang.UnsupportedOperationException at all times, unless overridden.
      */
     @Override
-    public void blacklist(OUT recommendation) {
+    public void disallow(OUT recommendation) {
         throw new UnsupportedOperationException("SimpleContext does not support blacklisting items. Please use FilteringContext");
     }
 }
