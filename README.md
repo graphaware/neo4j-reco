@@ -185,7 +185,7 @@ Using GraphAware Neo4j Recommendation Engine
 --------------------------------------------
 
 This documentation is in progress. In the meantime, have a look at the `ModuleIntegrationTest` class and the other classes it uses
-to get started. Also, the classes in this library have a decent Javadoc, which should help you get building your first
+to get started. Also, the classes in this library have a decent <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a>, which should help you get building your first
 recommendation engine.
 
 Feel free to get in touch for support (info@graphaware.com).
