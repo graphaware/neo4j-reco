@@ -384,16 +384,17 @@ public class RewardSameLabels implements PostProcessor<Node, Node> {
 
 #### PenalizeAgeDifference
 
-Another `PostProcessor` will take care of requirement (5). We will subtract 1 point from the relevance score for each
-year of difference in age.
+Another `PostProcessor` will take care of requirement (5). We will subtract a maximum of 10 points from the relevance
+score with 80% being subtracted when the difference in age is 20 years.
 
 ```java
 /**
- * Subtracts a point of each year of difference in age.
+ * Subtracts points for difference in age. The maximum number of points subtracted is 10 and 80% of that is achieved
+ * when the difference is 20 years.
  */
 public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
 
-    private final ParetoScoreTransformer transformer = new ParetoScoreTransformer(10, 20, 0);
+    private final ParetoScoreTransformer transformer = new ParetoScoreTransformer(10, 20);
 
     @Override
     public void postProcess(Recommendations<Node> recommendations, Node input) {
