@@ -398,7 +398,7 @@ public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
 
     @Override
     public void postProcess(Recommendations<Node> recommendations, Node input) {
-        int age = getInt(input, "age", 40);
+        int age = getInt(input, "age", 40); //assume 40 years old if there is no age property
 
         for (Node reco : recommendations.getItems()) {
             int diff = Math.abs(getInt(reco, "age", 40) - age);
