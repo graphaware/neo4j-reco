@@ -7,7 +7,7 @@ import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.Node;
 
 /**
- *
+ * {@link com.graphaware.reco.neo4j.engine.RandomRecommendations} selecting random nodes with "Person" label.
  */
 public class RandomPeople extends RandomRecommendations {
 

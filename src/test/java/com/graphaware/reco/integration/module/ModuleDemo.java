@@ -9,6 +9,7 @@ import com.graphaware.module.algo.generator.node.SocialNetworkNodeCreator;
 import com.graphaware.module.algo.generator.relationship.BarabasiAlbertRelationshipGenerator;
 import com.graphaware.module.algo.generator.relationship.SocialNetworkRelationshipCreator;
 import com.graphaware.reco.integration.domain.Relationships;
+import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
 import com.graphaware.test.integration.WrappingServerIntegrationTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,11 +20,9 @@ import org.neo4j.tooling.GlobalGraphOperations;
 
 import java.util.Arrays;
 
+import static com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine.*;
 import static org.neo4j.graphdb.Direction.*;
 
-/**
- *
- */
 public class ModuleDemo extends WrappingServerIntegrationTest {
 
     @Test
@@ -58,7 +57,7 @@ public class ModuleDemo extends WrappingServerIntegrationTest {
 
     private void printRecommendations(Node node) {
         StringBuilder s = new StringBuilder(node.getProperty("name").toString()).append("(").append(Arrays.toString(Iterables.toArray(Label.class, node.getLabels()))).append("):");
-        for (Relationship reco : node.getRelationships(Relationships.RECOMMEND, OUTGOING)) {
+        for (Relationship reco : node.getRelationships(RECOMMEND, OUTGOING)) {
             s.append(" ").append(reco.getEndNode().getProperty("name").toString()).append("(");
             s.append(PropertyContainerUtils.propertiesToString(reco));
             s.append("),");

@@ -30,7 +30,7 @@ import static com.graphaware.reco.integration.domain.Relationships.FRIEND_OF;
 import static org.neo4j.graphdb.Direction.BOTH;
 
 /**
- *
+ * {@link com.graphaware.reco.neo4j.context.Neo4jContextFactory} for recommending friends.
  */
 public final class FriendsContextFactory extends Neo4jContextFactory {
 

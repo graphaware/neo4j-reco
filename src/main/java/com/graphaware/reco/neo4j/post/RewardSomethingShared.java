@@ -42,10 +42,15 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
     }
 
     private Node sharedNode(Node input) {
-        Relationship rel = input.getSingleRelationship(type(), direction());
-        if (rel != null) {
-            return rel.getOtherNode(input);
+        try {
+            Relationship rel = input.getSingleRelationship(type(), direction());
+            if (rel != null) {
+                return rel.getOtherNode(input);
+            }
+        } catch (RuntimeException e) {
+            //probably too many relationships
         }
+
         return null;
     }
 

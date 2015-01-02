@@ -29,9 +29,12 @@ import org.neo4j.graphdb.Node;
 import java.util.Arrays;
 import java.util.List;
 
-public final class Neo4jFriendsEngine extends Neo4jTopLevelDelegatingEngine {
+/**
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
+ */
+public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
 
-    public Neo4jFriendsEngine() {
+    public FriendsComputingEngine() {
         super(new FriendsContextFactory());
     }
 

@@ -8,7 +8,7 @@ import org.neo4j.graphdb.Node;
 import static com.graphaware.common.util.PropertyContainerUtils.getInt;
 
 /**
- * Subtract a point of each year of difference in age.
+ * Subtracts a point of each year of difference in age.
  */
 public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
 

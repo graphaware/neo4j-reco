@@ -28,14 +28,13 @@ import static org.neo4j.graphdb.Direction.BOTH;
 /**
  * {@link com.graphaware.reco.generic.engine.RecommendationEngine} that finds recommendation based on friends in common.
  * <p/>
- * Fewer than 2 friends don't matter and the score if increasing by Pareto function, achieving 80% score with 10 friends
- * in common. The maximum score is 100.
+ * The score is increasing by Pareto function, achieving 80% score with 10 friends in common. The maximum score is 100.
  */
 public class FriendsInCommon extends SomethingInCommon {
 
     @Override
     protected ScoreTransformer scoreTransformer() {
-        return new ParetoScoreTransformer(100, 10, 1);
+        return new ParetoScoreTransformer(100, 10);
     }
 
     @Override
