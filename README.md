@@ -184,7 +184,7 @@ Blacklists and `Filter`s are still consulted in case the situation has changed s
 Using GraphAware Neo4j Recommendation Engine
 --------------------------------------------
 
-This documentation is in progress. In the meantime, have a look at the `ModuleDemo` class and the other classes it uses
+This documentation is in progress. In the meantime, have a look at the `ModuleIntegrationTest` class and the other classes it uses
 to get started. Also, the classes in this library have a decent Javadoc, which should help you get building your first
 recommendation engine.
 
