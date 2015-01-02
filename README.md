@@ -220,15 +220,15 @@ thus ignore the direction of the `FRIEND_OF` relationship. A sample graph, expre
 ```
 
 Our intention will be recommending people a person should be friends with, based on the following requirements:
-(1) The more friends in common two people have, the more likely it is they should become friends
-(2) The difference between zero and one friends in common should be significant and each additional friend in common should
+1. The more friends in common two people have, the more likely it is they should become friends
+2. The difference between zero and one friends in common should be significant and each additional friend in common should
  increase the recommendation relevance by a smaller magnitude.
-(3) If people live in the same city, the chance of them becoming friends increases
-(4) If people are of the same gender, the chance of them becoming friends is greater than if they are of opposite genders
-(5) The bigger the age difference between two people, the lower the chance they will become friends
-(6) People should not be friends with themselves
-(7) People who are already friends should not be recommended as potential friends
-(8) If we don't have enough recommendations, we will recommend some random people
+3. If people live in the same city, the chance of them becoming friends increases
+4. If people are of the same gender, the chance of them becoming friends is greater than if they are of opposite genders
+5. The bigger the age difference between two people, the lower the chance they will become friends
+6. People should not be friends with themselves
+7. People who are already friends should not be recommended as potential friends
+8. If we don't have enough recommendations, we will recommend some random people
 
 Let's start tackling the requirements one by one.
 
