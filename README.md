@@ -220,6 +220,7 @@ thus ignore the direction of the `FRIEND_OF` relationship. A sample graph, expre
 ```
 
 Our intention will be recommending people a person should be friends with, based on the following requirements:
+
 1. The more friends in common two people have, the more likely it is they should become friends
 2. The difference between zero and one friends in common should be significant and each additional friend in common should
  increase the recommendation relevance by a smaller magnitude.
