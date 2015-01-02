@@ -6,7 +6,7 @@ GraphAware Neo4j Recommendation Engine
 GraphAware Neo4j Recommendation Engine is a library for building high-performance complex recommendation engines atop Neo4j.
 It is in production at a number of GraphAware's clients producing real-time recommendations on graphs with hundreds of millions of nodes.
 
-The library imposes a specific recommendation engine architecture, which has emerged from years of experience building recommendation
+The library imposes a specific recommendation engine architecture, which has emerged from our experience building recommendation
 engines on top of Neo4j. In return, it offers high performance and handles most of the plumbing so that you only write
 the recommendation business logic specific to your use case.
 
@@ -66,9 +66,9 @@ structure for representing users' interests, behaviours, and other characteristi
 recommendations. More importantly, graph databases, and Neo4j especially, provide a natural way of expressing queries on
 this data in order to find relevant recommendations, and executing these queries very fast.
 
-There are three main challenges when building a recommendation engine. The first is to discover the items to recommend.
-The second is to choose the most relevant ones to present to the user. Finally, the third challenge is to find relevant
-recommendations as quickly as possible. Preferably, this should happen in real-time, i.e. using the most up to date information
+There are three main challenges when building a recommendation engine. The first is to **discover** the items to recommend.
+The second is to **choose the most relevant ones** to present to the user. Finally, the third challenge is to find relevant
+recommendations **as quickly as possible**. Preferably, this should happen in real-time, i.e. using the most up to date information
 we have. The last thing we want to do is to recommend something the user has already purchased, or a person we know she
 isn't interested in.
 
@@ -82,7 +82,7 @@ recommendation engine, or perhaps even a proof of concept, one feature that shou
 how the recommendation relevance is computed and, perhaps more importantly, measure how users react to recommendations
 produced by different relevance-computing configurations.
 
-Finally, let's address the speed issue, which is of a technical nature. When serving real-time recommendations, users
+Finally, let's address the issue of speed, which is of a technical nature. When serving real-time recommendations, users
 shouldn't need to wait for more than, let's say, a couple hundred milliseconds. With Neo4j, we will be able to build many
 different recommendation queries that take milliseconds to execute. However, there are situations (large graphs with some
 very dense nodes) where we will need to take extra care in order not to slow the recommendation process down. Finally,
@@ -98,66 +98,97 @@ all of the above challenges. The library works with the following concepts:
 #### Recommendation Engines and Recommendations
 
 A **Recommendation Engine** is a component that produces **Recommendations**, given an **Input**. Whilst the architecture is
-generic enough to support other persistence mechanisms, we focus on Neo4j and so the input will typically be a Neo4j _Node_
+generic enough to support other persistence mechanisms, we focus on Neo4j and so the input will typically be a Neo4j `Node`
 representing a user for whom we want to find recommendations, a product for which we want to find buyers, etc.
 
-A _RecommendationEngine_, as in the case of _DelegatingRecommendationEngine_ can be composed of other _RecommendationEngines_
-that it delegates to. Usually, however, a _RecommendationEngine_ will encapsulate the querying and relevance-computing
+A `RecommendationEngine`, as in the case of `DelegatingRecommendationEngine` can be composed of other `RecommendationEngine`s
+that it delegates to. Usually, however, a `RecommendationEngine` will encapsulate the querying and relevance-computing
 logic for discovering recommendations based on a single logical criterion. Such engine typically extends
-_SingleScoreRecommendationEngine_. For example, we would have one engine that discovers items a user may want to buy based
+`SingleScoreRecommendationEngine`. For example, we could have one engine that discovers items a user may want to buy based
 on what other users with similar tastes have bought. Another engine would discover items based on user's expressed
 preferences. Yet another one could discover items to be recommended based on what is currently trending.
 
-For performance reasons as well as to achieve good encapsulation, _RecommendationEngines_ are only concerned with discovering
+For performance reasons as well as to achieve good encapsulation, `RecommendationEngines` are only concerned with discovering
 and scoring all potential recommendations, without caring about the fact that some recommendations discovered this way may
 not be suitable, perhaps because the user has already purchased the discovered item. Removing irrelevant recommendations
 will be discussed shortly.
 
 #### Scores and Score Transformers
 
-_Recommendations_ is a collections of tuples/pairs, where each pair is composed of a recommended **Item** (again, typically a _Node_)
-and associated relevance **Score**. The _Score_ is composed of **Partial Scores**. Each _Partial Score_ has a name and an integer
-value. Typically, a single _SingleScoreRecommendationEngine_, as the name suggest, is responsible for a single _Partial Score_.
+`Recommendations` are a collection of tuples/pairs, where each pair is composed of a recommended item (again, typically a `Node`)
+and associated relevance **Score**. The `Score` is composed of **Partial Scores**. Each _Partial Score_ has a name and an integer
+value. Typically, a single `SingleScoreRecommendationEngine`, as the name suggest, is responsible for a single _Partial Score_.
 
-When an _Item_ has been discovered as a potential recommendation by multiple _SingleScoreRecommendationEngines_, its _Parial Scores_
-will be tallied by the _Score_ object. For example, an item that is currently trending and matches the user's preferred
-tastes will have a total relevance _Score_ composed of two _Partial Scores_, one due to the fact that it is trending, and
+When an item has been discovered as a potential recommendation by multiple `SingleScoreRecommendationEngine`s, its _Parial Scores_
+will be tallied by the `Score` object. For example, an item that is currently trending and matches the user's preferred
+tastes will have a total relevance `Score` composed of two _Partial Scores_, one due to the fact that it is trending, and
 another one because it is a preferred item.
 
-In some cases, an _Item_ might be discovered multiple times by the same _SingleScoreRecommendationEngine_. For example,
+In some cases, an item might be discovered multiple times by the same `SingleScoreRecommendationEngine`. For example,
 we may have an engine that suggests people a user should be friends with based on the fact that they have some friends in
 common. Assuming an easy-to-imagine graph traversal that discovers these recommendations, a potential friend will be discovered
 three times if he has three friends in common with the user we're computing recommendations for. However, each additional
 friend in common might not bear the same relevance for the recommendation. Thus, each _Partial Score_ can have a
-**Score Transformer** applied to it. A _ScoreTransformer_ can apply an arbitrary mathematical function to the _Partial Score_
-computed by a _SingleScoreRecommendationEngine_.
+**Score Transformer** applied to it. A ScoreTransformer can apply an arbitrary mathematical function to the _Partial Score_
+computed by a `SingleScoreRecommendationEngine`.
 
 #### Contexts, Context Factories, and Mode
 
-_Recommendations_ are always computed within a **Context**. Whist each recommendation-computing process for a single _Input_
-might involve multiple _RecommendationEngines_ and other components, there is usually a single _Context_ per computation
-that encapsulates information relevant to the process. For example, the _Context_ provides information about the **Mode**
-of computation, i.e. whether it is _REAL\_TIME_ or _BATCH_ (pre-computing). It also knows, how many recommendations should
-be produced, and is able to decide, whether a potential recommendation discovered by a _RecommendationEngine_ is allowed
-to be served to the user. For each computation, a new _Context_ is produced and this is typically achieved using a
+`Recommendations` are always computed within a **Context**. Whist each recommendation-computing process for a single input
+might involve multiple `RecommendationEngine`s and other components, there is usually a single `Context` per computation
+that encapsulates information relevant to the process. For example, the `Context` provides information about the **Mode**
+of computation, i.e. whether it is `REAL_TIME` or `BATCH` (pre-computing). It also knows, how many recommendations should
+be produced, and is able to decide, whether a potential recommendation discovered by a `RecommendationEngine` is allowed
+to be served to the user. For each computation, a new `Context` is produced and this is typically achieved using a
 singleton **ContextFactory**.
 
 #### Blacklist Builders and Filters
 
-TBD (in progress)
+Rather than requiring all `RecommendationEngine`s to know how to detect irrelevant recommendations (thus slowing the computation
+down and scattering a single concern), the logic is centralised into **Blacklist Builders** and **Filters**. `BlacklistBuilder`s,
+as the name suggests, are responsible for building "blacklists" of items that must not be recommended for a given input.
+
+Assuming that the input is a `Node` representing a person, an example of a `BlacklistBuilder` could be `AlreadyPurchasedItems`
+which builds a blacklist of items that the person has already purchased. `BlacklistBuilder`s are most efficient in situations
+where a small number of irrelevant recommendations (let's say up to 100) can be discovered with a single query before the
+recommendation process begins.
+
+`Filter`s, on the other hand, can tell whether a recommendation is relevant or not by looking at the recommendation
+itself once it has been discovered. An obvious example of a `Filter` could be a class called `ExcludeSelf`, which would
+make sure that (for example) a recommended friend isn't the same `Node` that the recommendations are being computed for.
+Another example of a `Filter` could be `ExcludeItemsOutOfStock`, or `ExcludeMarriedPeople`.
+
+Blacklists produced by `BlacklistBuilder`s and `Filter`s are typically passed to an instance of `Context` (usually
+`FilteringContext`), which uses them to exclude irrelevant recommendations.
 
 #### Post Processors
 
+In the presence of "supernodes", i.e. nodes with disproportionately many relationships, it would too expensive to compute
+recommendations using dedicated `RecommendationEngine`s. Imagine, for example, that we would like to boost the score of
+people living in the same city as the person we're computing recommendations for. Rather than implementing a `RecommendationEngine`
+that discovers all people living in the same city (which could be millions!), we can implement a **PostProcessor** which
+modifies the score of already computed recommendations. In the example above, a `PostProcessor` called `RewardSameCity`
+could add 50 points to each recommendation if the person we're recommending to and the recommended person live in the same city.
+It is much quicker to perform this check for each recommendation than discovering all people living in the same city.
+
+Other examples of a `PostProcessor` could include `RewardSameGender`, `PenalizeAgeDifference`, etc.
+
 #### Pre-Computation
 
-
-First of, these things need to
-be discovered.
+Once we've built a `RecommendationEngine`, we could use it to continuously
+pre-compute recommendations when the database isn't busy, using <a href="https://github.com/graphaware/neo4j-framework/tree/master/runtime#building-a-timer-driven-graphaware-runtime-module" target="_blank">GraphAware Timer-Driven Module</a>. For each potential
+input, we could pre-compute a number of recommendations and link them to the input using a _RECOMMEND_ relationship.
+When serving recommendations, we could read them directly from the database, rather than computing them in real-time.
+Blacklists and `Filter`s are still consulted in case the situation has changed since the time recommendations were pre-computed.
 
 Using GraphAware Neo4j Recommendation Engine
 --------------------------------------------
 
+This documentation is in progress. In the meantime, have a look at the `ModuleDemo` class and the other classes it uses
+to get started. Also, the classes in this library have a decent Javadoc, which should help you get building your first
+recommendation engine.
 
+Feel free to get in touch for support (info@graphaware.com).
 
 License
 -------
