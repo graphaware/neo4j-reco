@@ -4,7 +4,7 @@ GraphAware Neo4j Recommendation Engine
 [![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.1.6.26.1
 
 GraphAware Neo4j Recommendation Engine is a library for building high-performance complex recommendation engines atop Neo4j.
-It is in production at a number of GraphAware's clients producing real-time recommendations on graphs with hundreds of millions of nodes.
+It is in production at a number of <a href="http://graphaware.com" target="_blank">GraphAware</a>'s clients producing real-time recommendations on graphs with hundreds of millions of nodes.
 
 The library imposes a specific recommendation engine architecture, which has emerged from our experience building recommendation
 engines on top of Neo4j. In return, it offers high performance and handles most of the plumbing so that you only write
