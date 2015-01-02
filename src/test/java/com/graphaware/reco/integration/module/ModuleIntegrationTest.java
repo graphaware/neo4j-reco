@@ -28,9 +28,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- *
- */
 public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
