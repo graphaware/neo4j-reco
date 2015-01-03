@@ -581,8 +581,117 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
 ### Pre-Computed Recommendations
 
-TBD
+With `FriendsComputingEngine`, we have a full-blown recommendation engine and could have stopped right there. However,
+we would like to demonstrate the capability of using the very same engine to pre-compute recommendations.
 
+It is worth mentioning that in this simple example, the exact same recommendation will be pre-computed as would have
+been computed in real-time. However, in real-life scenarios, `RecommendationEngine`s can choose to perform a quicker
+computation in `REAL_TIME` scenarios, but take a more accurate and slower approach in `BATCH` `Mode`. The information
+about the `Mode` of computation is available to each `RecommendationEngine` from the `Context` object.
+
+#### Pre-Computing
+
+In order for our `FriendsComputingEngine` to be used to pre-compute recommendations when the database isn't busy, the
+only thing we need to do is modify *neo4j.properties*. We're assuming that we are running in server mode and that the
+the following .jar files have been placed into the _plugins_ directory of your Neo4j installation:
+
+* GraphAware Framework Server (Community / Enterprise)
+* GraphAware Neo4j Reco (this library)
+* Your code developed as part of this tutorial
+
+Add the following lines to *neo4j.properties*:
+
+```
+#Enable GraphAware Runtime
+com.graphaware.runtime.enabled=true
+
+#Register the Recommendation Module
+com.graphaware.module.reco.1=com.graphaware.reco.neo4j.module.RecommendationModuleBootstrapper
+
+#Express for which nodes recommendations should be computed
+com.graphaware.module.reco.node=hasLabel('Person')
+
+#Define which Recommendation Engine to use
+com.graphaware.module.reco.engine=com.graphaware.reco.integration.engine.FriendsComputingEngine
+
+#Optionally, specify how many recommendation to compute (default is 10)
+com.graphaware.module.reco.maxRecommendations=5
+
+#Optionally, specify the Relationship Type of the relationship linking people with their recommended friends (default is RECOMMEND)
+com.graphaware.module.reco.relationshipType=RECOMMEND
+```
+
+That's all. You can tweak how often the pre-computation kicks in and what it means for your database to be busy. Please
+refer to the documentation of <a href="https://github.com/graphaware/neo4j-framework/tree/master/runtime#building-a-timer-driven-graphaware-runtime-module" target="_blank">GraphAware Timer-Driven Modules</a> to learn how to do that.
+
+#### Using Pre-Computed Recommendations
+
+In order for the pre-computed recommendations to be served first, before we start computing them in real-time, we need
+to make a few tweaks to our recommendation engine setup. First, we will override one more method in `FriendsComputingEngine`
+in order to indicate that it should only be used if there aren't enough pre-computed recommendations:
+
+```java
+/**
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
+ */
+public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
+
+    public FriendsComputingEngine() {
+        super(new FriendsContextFactory());
+    }
+
+    @Override
+    protected List<RecommendationEngine<Node, Node>> engines() {
+        return Arrays.<RecommendationEngine<Node, Node>>asList(
+                new FriendsInCommon(),
+                new RandomPeople()
+        );
+    }
+
+    @Override
+    protected List<PostProcessor<Node, Node>> postProcessors() {
+        return Arrays.asList(
+                new RewardSameLabels(),
+                new RewardSameLocation(),
+                new PenalizeAgeDifference()
+        );
+    }
+
+    @Override
+    public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {
+        //noinspection unchecked
+        return ParticipationPolicy.IF_MORE_RESULTS_NEEDED;
+    }
+}
+```
+
+Finally, we need a new top-level `RecommendationEngine` that is exposed to our controllers or whatever component of your
+application is consuming the recommendations. The new top-level engine will first delegate to a `PrecomputedRecommendationEngine`,
+then to our `FriendsComputingEngine`.
+
+```java
+/**
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
+ * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
+ * real-time using {@link com.graphaware.reco.integration.engine.FriendsComputingEngine}.
+ */
+public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
+
+    public FriendsRecommendationEngine() {
+        super(new FriendsContextFactory());
+    }
+
+    @Override
+    protected List<RecommendationEngine<Node, Node>> engines() {
+        return Arrays.asList(
+                new Neo4jPrecomputedEngine(),
+                new FriendsComputingEngine()
+        );
+    }
+}
+```
+
+Job done!
 
 License
 -------
