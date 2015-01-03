@@ -584,7 +584,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 With `FriendsComputingEngine`, we have a full-blown recommendation engine and could have stopped right there. However,
 we would like to demonstrate the capability of using the very same engine to pre-compute recommendations.
 
-It is worth mentioning that in this simple example, the exact same recommendation will be pre-computed as would have
+It is worth mentioning that in this simple example, the exact same recommendations will be pre-computed as would have
 been computed in real-time. However, in real-life scenarios, `RecommendationEngine`s can choose to perform a quicker
 computation in `REAL_TIME` scenarios, but take a more accurate and slower approach in `BATCH` `Mode`. The information
 about the `Mode` of computation is available to each `RecommendationEngine` from the `Context` object.
@@ -666,7 +666,7 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
 ```
 
 Finally, we need a new top-level `RecommendationEngine` that is exposed to our controllers or whatever component of your
-application is consuming the recommendations. The new top-level engine will first delegate to a `PrecomputedRecommendationEngine`,
+application is consuming the recommendations. The new top-level engine will first delegate to a `Neo4jPrecomputedEngine`,
 then to our `FriendsComputingEngine`.
 
 ```java
