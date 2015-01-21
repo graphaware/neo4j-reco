@@ -16,15 +16,18 @@
 
 package com.graphaware.reco.generic.engine;
 
-import com.graphaware.common.util.Pair;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.ContextFactory;
 import com.graphaware.reco.generic.context.Mode;
+import com.graphaware.reco.generic.log.RecommendationLogger;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
-import com.graphaware.reco.generic.result.Score;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+
+import static org.springframework.util.Assert.notNull;
 
 /**
  * A {@link com.graphaware.reco.generic.engine.TopLevelRecommendationEngine} {@link com.graphaware.reco.generic.engine.DelegatingRecommendationEngine}.
@@ -33,6 +36,7 @@ import java.util.List;
 public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingRecommendationEngine<OUT, IN> implements TopLevelRecommendationEngine<OUT, IN> {
 
     private final ContextFactory<OUT, IN> contextFactory;
+    private final List<RecommendationLogger<OUT, IN>> loggers = new LinkedList<>();
 
     /**
      * Create a new engine.
@@ -42,6 +46,7 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
     public TopLevelDelegatingRecommendationEngine(ContextFactory<OUT, IN> contextFactory) {
         super();
         this.contextFactory = contextFactory;
+        addLoggers(loggers());
     }
 
     /**
@@ -49,7 +54,15 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
      */
     @Override
     public List<Recommendation<OUT>> recommend(IN input, Mode mode, int limit) {
-        return recommend(input, contextFactory.produceContext(input, mode, limit)).get(limit);
+        Context<OUT, IN> context = contextFactory.produceContext(input, mode, limit);
+
+        List<Recommendation<OUT>> recommendations = recommend(input, context).get(limit);
+
+        for (RecommendationLogger<OUT, IN> logger : loggers) {
+            logger.logRecommendations(input, recommendations, context);
+        }
+
+        return recommendations;
     }
 
     /**
@@ -60,6 +73,38 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
     @Override
     public final Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
         return super.recommend(input, context);
+    }
+
+    /**
+     * Get {@link RecommendationLogger}s to use for recording / logging produced recommendations. Designed to be overridden.
+     *
+     * @return empty list by default.
+     */
+    protected List<RecommendationLogger<OUT, IN>> loggers() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Add a {@link RecommendationLogger} that this engine logs to.
+     *
+     * @param logger to use. Must not be <code>null</code>.
+     */
+    public final void addLogger(RecommendationLogger<OUT, IN> logger) {
+        notNull(logger);
+        loggers.add(logger);
+    }
+
+    /**
+     * Add {@link RecommendationLogger}s that this engine logs to, in the order
+     * in which they are added.
+     *
+     * @param loggers to use. Must not be <code>null</code> and all of the elements must not be <code>null</code>.
+     */
+    public final void addLoggers(List<RecommendationLogger<OUT, IN>> loggers) {
+        notNull(loggers);
+        for (RecommendationLogger<OUT, IN> logger : loggers) {
+            addLogger(logger);
+        }
     }
 }
 

@@ -25,6 +25,7 @@ import com.graphaware.reco.generic.result.Score;
 import com.graphaware.reco.integration.domain.Relationships;
 import com.graphaware.reco.integration.engine.FriendsComputingEngine;
 import com.graphaware.reco.integration.engine.FriendsRecommendationEngine;
+import com.graphaware.reco.integration.log.RememberingLogger;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import com.graphaware.reco.neo4j.module.RecommendationModule;
 import com.graphaware.reco.neo4j.module.RecommendationModuleConfiguration;
@@ -50,11 +51,13 @@ import static org.junit.Assert.assertEquals;
 public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
     private Neo4jTopLevelDelegatingEngine recommendationEngine;
+    private RememberingLogger logger = new RememberingLogger();
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         recommendationEngine = new FriendsRecommendationEngine();
+        logger.clear();
     }
 
     @Override
@@ -88,11 +91,15 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
         try (Transaction tx = getDatabase().beginTx()) {
             List<Recommendation<Node>> result;
 
-            result = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
+            Node vince = getPersonByName("Vince");
+            result = recommendationEngine.recommend(vince, Mode.REAL_TIME, 2);
+
             assertEquals("" +
                     "(:Male:Person {age: 30, name: Adam}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
                     "(:Female:Person {age: 25, name: Luanne}): total:8, ageDifference:-7, friendsInCommon:15",
                     RecommendationsPrinter.toString(result));
+
+            assertEquals(logger.get(vince), RecommendationsPrinter.toString(result));
 
             result = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
 
