@@ -21,6 +21,7 @@ import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.ContextFactory;
 import com.graphaware.reco.generic.context.Mode;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
+import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.reco.generic.result.Score;
 import com.graphaware.runtime.RuntimeRegistry;
@@ -88,7 +89,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
         LOG.info("Computing for " + node.getId());
 
-        List<Pair<Node, Score>> recommendations = config.getEngine().recommend(node, Mode.BATCH, config.getMaxRecommendations());
+        List<Recommendation<Node>> recommendations = config.getEngine().recommend(node, Mode.BATCH, config.getMaxRecommendations());
 
         persistRecommendations(node, recommendations);
 
@@ -125,7 +126,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
         return selector.selectNode(database);
     }
 
-    private void persistRecommendations(final Node node, final List<Pair<Node, Score>> recommendations) {
+    private void persistRecommendations(final Node node, final List<Recommendation<Node>> recommendations) {
         databaseWriter.write(new Runnable() {
             @Override
             public void run() {
@@ -133,9 +134,9 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
                     existing.delete();
                 }
 
-                for (Pair<Node, Score> recommendation : recommendations) {
-                    Relationship created = node.createRelationshipTo(recommendation.first(), config.getRelationshipType());
-                    for (Map.Entry<String, Integer> entry : recommendation.second().getScoreParts().entrySet()) {
+                for (Recommendation<Node> recommendation : recommendations) {
+                    Relationship created = node.createRelationshipTo(recommendation.getItem(), config.getRelationshipType());
+                    for (Map.Entry<String, Integer> entry : recommendation.getScore().getScoreParts().entrySet()) {
                         created.setProperty(entry.getKey(), entry.getValue());
                     }
                 }

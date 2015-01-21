@@ -30,9 +30,9 @@ public interface Filter<OUT, IN> {
     /**
      * Should the given recommendation actually be used?
      *
-     * @param recommendation to decide on. Must not be <code>null</code>.
-     * @param input          input based on which this recommendation was found. Must not be <code>null</code>.
+     * @param item  to decide on. Must not be <code>null</code>.
+     * @param input input based on which this recommendation was found. Must not be <code>null</code>.
      * @return true iff the recommendation should be used based on this filter's opinion.
      */
-    boolean include(OUT recommendation, IN input);
+    boolean include(OUT item, IN input);
 }

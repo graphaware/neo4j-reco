@@ -44,10 +44,10 @@ public class ExcludeSelf implements BlacklistBuilder<Node, Node>, Filter<Node, N
      * {@inheritDoc}
      */
     @Override
-    public boolean include(Node recommendation, Node input) {
-        notNull(recommendation);
+    public boolean include(Node item, Node input) {
+        notNull(item);
         notNull(input);
 
-        return input.getId() != recommendation.getId();
+        return input.getId() != item.getId();
     }
 }

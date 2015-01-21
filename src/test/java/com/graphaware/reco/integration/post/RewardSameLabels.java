@@ -17,6 +17,7 @@
 package com.graphaware.reco.integration.post;
 
 import com.graphaware.reco.generic.post.PostProcessor;
+import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -34,9 +35,9 @@ public class RewardSameLabels implements PostProcessor<Node, Node> {
     public void postProcess(Recommendations<Node> recommendations, Node input) {
         Label[] inputLabels = toArray(Label.class, input.getLabels());
 
-        for (Node recommendation : recommendations.getItems()) {
-            if (Arrays.equals(inputLabels, toArray(Label.class, recommendation.getLabels()))) {
-                recommendations.add(recommendation, "sameGender", 10);
+        for (Recommendation<Node> recommendation : recommendations.get()) {
+            if (Arrays.equals(inputLabels, toArray(Label.class, recommendation.getItem().getLabels()))) {
+                recommendation.add("sameGender", 10);
             }
         }
     }

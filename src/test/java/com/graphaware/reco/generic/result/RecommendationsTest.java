@@ -16,7 +16,6 @@
 
 package com.graphaware.reco.generic.result;
 
-import com.graphaware.common.util.Pair;
 import org.junit.Test;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class RecommendationsTest {
         Recommendations<String> r = new Recommendations<>();
 
         assertTrue(r.get(10).isEmpty());
-        assertTrue(r.getItems().isEmpty());
+        assertTrue(r.get().isEmpty());
 
         try {
             r.get("test");
@@ -55,26 +54,29 @@ public class RecommendationsTest {
         r.add("Reco1", "Score2", 1);
         r.add("Reco1", "Score1", 1);
 
-        List<Pair<String, Score>> result = r.get(10);
+        List<Recommendation<String>> result = r.get(10);
 
         assertEquals(2, result.size());
-        Pair<String, Score> one = result.get(0);
-        Pair<String, Score> two = result.get(1);
+        Recommendation<String> one = result.get(0);
+        Recommendation<String> two = result.get(1);
 
-        assertEquals("Reco1", one.first());
-        assertEquals("Reco2", two.first());
+        assertEquals("Reco1", one.getItem());
+        assertEquals("Reco2", two.getItem());
 
-        assertEquals(2, one.second().get("Score1"));
-        assertEquals(1, one.second().get("Score2"));
-        assertEquals(2, two.second().get("Score1"));
+        assertNotNull(one.getUuid());
+        assertNotNull(two.getUuid());
 
-        assertEquals(2, r.getItems().size());
-        assertTrue(r.getItems().contains("Reco1"));
-        assertTrue(r.getItems().contains("Reco2"));
+        assertEquals(2, one.getScore().get("Score1"));
+        assertEquals(1, one.getScore().get("Score2"));
+        assertEquals(2, two.getScore().get("Score1"));
 
-        assertEquals(2, r.get("Reco1").get("Score1"));
-        assertEquals(1, r.get("Reco1").get("Score2"));
-        assertEquals(2, r.get("Reco2").get("Score1"));
+        assertEquals(2, r.get().size());
+        assertTrue(r.get().contains(new Recommendation<>("Reco1")));
+        assertTrue(r.get().contains(new Recommendation<>("Reco2")));
+
+        assertEquals(2, r.get("Reco1").getScore().get("Score1"));
+        assertEquals(1, r.get("Reco1").getScore().get("Score2"));
+        assertEquals(2, r.get("Reco2").getScore().get("Score1"));
 
         try {
             r.get("Unknown");
@@ -104,31 +106,31 @@ public class RecommendationsTest {
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.SECONDS);
 
-        List<Pair<String, Score>> result = r.get(10);
+        List<Recommendation<String>> result = r.get(10);
 
         assertEquals(3, result.size());
-        Pair<String, Score> one = result.get(0);
-        Pair<String, Score> two = result.get(1);
-        Pair<String, Score> three = result.get(2);
+        Recommendation<String> one = result.get(0);
+        Recommendation<String> two = result.get(1);
+        Recommendation<String> three = result.get(2);
 
-        assertEquals("Reco1", one.first());
-        assertEquals("Reco0", two.first());
-        assertEquals("Reco2", three.first());
+        assertEquals("Reco1", one.getItem());
+        assertEquals("Reco0", two.getItem());
+        assertEquals("Reco2", three.getItem());
 
-        assertEquals(39997, one.second().getTotalScore());
-        assertEquals(35003, two.second().getTotalScore());
-        assertEquals(15000, three.second().getTotalScore());
+        assertEquals(39997, one.getScore().getTotalScore());
+        assertEquals(35003, two.getScore().getTotalScore());
+        assertEquals(15000, three.getScore().getTotalScore());
 
-        assertEquals(6664, one.second().get("Score0"));
-        assertEquals(20833, one.second().get("Score1"));
-        assertEquals(12500, one.second().get("Score3"));
+        assertEquals(6664, one.getScore().get("Score0"));
+        assertEquals(20833, one.getScore().get("Score1"));
+        assertEquals(12500, one.getScore().get("Score3"));
 
-        assertEquals(16666, two.second().get("Score0"));
-        assertEquals(8337, two.second().get("Score1"));
-        assertEquals(10000, two.second().get("Score2"));
+        assertEquals(16666, two.getScore().get("Score0"));
+        assertEquals(8337, two.getScore().get("Score1"));
+        assertEquals(10000, two.getScore().get("Score2"));
 
-        assertEquals(6670, three.second().get("Score0"));
-        assertEquals(8330, three.second().get("Score1"));
+        assertEquals(6670, three.getScore().get("Score0"));
+        assertEquals(8330, three.getScore().get("Score1"));
     }
 
     @Test
@@ -146,26 +148,26 @@ public class RecommendationsTest {
         r.add("Reco2", s2);
         r.add("Reco1", s1);
 
-        List<Pair<String, Score>> result = r.get(10);
+        List<Recommendation<String>> result = r.get(10);
 
         assertEquals(2, result.size());
-        Pair<String, Score> one = result.get(0);
-        Pair<String, Score> two = result.get(1);
+        Recommendation<String> one = result.get(0);
+        Recommendation<String> two = result.get(1);
 
-        assertEquals("Reco1", one.first());
-        assertEquals("Reco2", two.first());
+        assertEquals("Reco1", one.getItem());
+        assertEquals("Reco2", two.getItem());
 
-        assertEquals(4, one.second().get("Score1"));
-        assertEquals(2, one.second().get("Score2"));
-        assertEquals(2, two.second().get("Score1"));
+        assertEquals(4, one.getScore().get("Score1"));
+        assertEquals(2, one.getScore().get("Score2"));
+        assertEquals(2, two.getScore().get("Score1"));
 
-        assertEquals(2, r.getItems().size());
-        assertTrue(r.getItems().contains("Reco1"));
-        assertTrue(r.getItems().contains("Reco2"));
+        assertEquals(2, r.get().size());
+        assertTrue(r.get().contains(new Recommendation<>("Reco1")));
+        assertTrue(r.get().contains(new Recommendation<>("Reco2")));
 
-        assertEquals(4, r.get("Reco1").get("Score1"));
-        assertEquals(2, r.get("Reco1").get("Score2"));
-        assertEquals(2, r.get("Reco2").get("Score1"));
+        assertEquals(4, r.get("Reco1").getScore().get("Score1"));
+        assertEquals(2, r.get("Reco1").getScore().get("Score2"));
+        assertEquals(2, r.get("Reco2").getScore().get("Score1"));
     }
 
     @Test
@@ -194,31 +196,31 @@ public class RecommendationsTest {
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.SECONDS);
 
-        List<Pair<String, Score>> result = r.get(10);
+        List<Recommendation<String>> result = r.get(10);
 
         assertEquals(3, result.size());
-        Pair<String, Score> one = result.get(0);
-        Pair<String, Score> two = result.get(1);
-        Pair<String, Score> three = result.get(2);
+        Recommendation<String> one = result.get(0);
+        Recommendation<String> two = result.get(1);
+        Recommendation<String> three = result.get(2);
 
-        assertEquals("Reco1", one.first());
-        assertEquals("Reco0", two.first());
-        assertEquals("Reco2", three.first());
+        assertEquals("Reco1", one.getItem());
+        assertEquals("Reco0", two.getItem());
+        assertEquals("Reco2", three.getItem());
 
-        assertEquals(39997, one.second().getTotalScore());
-        assertEquals(35003, two.second().getTotalScore());
-        assertEquals(15000, three.second().getTotalScore());
+        assertEquals(39997, one.getScore().getTotalScore());
+        assertEquals(35003, two.getScore().getTotalScore());
+        assertEquals(15000, three.getScore().getTotalScore());
 
-        assertEquals(6664, one.second().get("Score0"));
-        assertEquals(20833, one.second().get("Score1"));
-        assertEquals(12500, one.second().get("Score3"));
+        assertEquals(6664, one.getScore().get("Score0"));
+        assertEquals(20833, one.getScore().get("Score1"));
+        assertEquals(12500, one.getScore().get("Score3"));
 
-        assertEquals(16666, two.second().get("Score0"));
-        assertEquals(8337, two.second().get("Score1"));
-        assertEquals(10000, two.second().get("Score2"));
+        assertEquals(16666, two.getScore().get("Score0"));
+        assertEquals(8337, two.getScore().get("Score1"));
+        assertEquals(10000, two.getScore().get("Score2"));
 
-        assertEquals(6670, three.second().get("Score0"));
-        assertEquals(8330, three.second().get("Score1"));
+        assertEquals(6670, three.getScore().get("Score0"));
+        assertEquals(8330, three.getScore().get("Score1"));
     }
 
     @Test
@@ -251,31 +253,31 @@ public class RecommendationsTest {
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.SECONDS);
 
-        List<Pair<String, Score>> result = r.get(10);
+        List<Recommendation<String>> result = r.get(10);
 
         assertEquals(3, result.size());
-        Pair<String, Score> one = result.get(0);
-        Pair<String, Score> two = result.get(1);
-        Pair<String, Score> three = result.get(2);
+        Recommendation<String> one = result.get(0);
+        Recommendation<String> two = result.get(1);
+        Recommendation<String> three = result.get(2);
 
-        assertEquals("Reco1", one.first());
-        assertEquals("Reco0", two.first());
-        assertEquals("Reco2", three.first());
+        assertEquals("Reco1", one.getItem());
+        assertEquals("Reco0", two.getItem());
+        assertEquals("Reco2", three.getItem());
 
-        assertEquals(39997, one.second().getTotalScore());
-        assertEquals(35003, two.second().getTotalScore());
-        assertEquals(15000, three.second().getTotalScore());
+        assertEquals(39997, one.getScore().getTotalScore());
+        assertEquals(35003, two.getScore().getTotalScore());
+        assertEquals(15000, three.getScore().getTotalScore());
 
-        assertEquals(6664, one.second().get("Score0"));
-        assertEquals(20833, one.second().get("Score1"));
-        assertEquals(12500, one.second().get("Score3"));
+        assertEquals(6664, one.getScore().get("Score0"));
+        assertEquals(20833, one.getScore().get("Score1"));
+        assertEquals(12500, one.getScore().get("Score3"));
 
-        assertEquals(16666, two.second().get("Score0"));
-        assertEquals(8337, two.second().get("Score1"));
-        assertEquals(10000, two.second().get("Score2"));
+        assertEquals(16666, two.getScore().get("Score0"));
+        assertEquals(8337, two.getScore().get("Score1"));
+        assertEquals(10000, two.getScore().get("Score2"));
 
-        assertEquals(6670, three.second().get("Score0"));
-        assertEquals(8330, three.second().get("Score1"));
+        assertEquals(6670, three.getScore().get("Score0"));
+        assertEquals(8330, three.getScore().get("Score1"));
     }
 
     @Test
@@ -287,12 +289,12 @@ public class RecommendationsTest {
         r.add("Reco1", "Score2", 1);
         r.add("Reco1", "Score1", 1);
 
-        List<Pair<String, Score>> result = r.get(1);
+        List<Recommendation<String>> result = r.get(1);
 
         assertEquals(1, result.size());
-        Pair<String, Score> one = result.get(0);
+        Recommendation<String> one = result.get(0);
 
-        assertEquals("Reco1", one.first());
+        assertEquals("Reco1", one.getItem());
     }
 
     @Test

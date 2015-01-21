@@ -20,6 +20,7 @@ import com.graphaware.common.util.Pair;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.ContextFactory;
 import com.graphaware.reco.generic.context.Mode;
+import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.reco.generic.result.Score;
 
@@ -47,7 +48,7 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<OUT, Score>> recommend(IN input, Mode mode, int limit) {
+    public List<Recommendation<OUT>> recommend(IN input, Mode mode, int limit) {
         return recommend(input, contextFactory.produceContext(input, mode, limit)).get(limit);
     }
 

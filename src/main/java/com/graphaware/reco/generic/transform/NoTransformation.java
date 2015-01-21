@@ -34,7 +34,7 @@ public final class NoTransformation implements ScoreTransformer {
      * {@inheritDoc}
      */
     @Override
-    public <OUT> int transform(OUT recommendation, int score) {
+    public <OUT> int transform(OUT item, int score) {
         return score;
     }
 }

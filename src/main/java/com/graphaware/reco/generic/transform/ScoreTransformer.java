@@ -24,9 +24,9 @@ public interface ScoreTransformer {
     /**
      * Transform a score.
      *
-     * @param recommendation recommended item.
-     * @param score          score of the item.
+     * @param item  recommended item.
+     * @param score score of the item.
      * @return transformed score.
      */
-    <OUT> int transform(OUT recommendation, int score);
+    <OUT> int transform(OUT item, int score);
 }

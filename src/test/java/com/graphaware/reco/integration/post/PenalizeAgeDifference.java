@@ -17,6 +17,7 @@
 package com.graphaware.reco.integration.post;
 
 import com.graphaware.reco.generic.post.PostProcessor;
+import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.reco.generic.transform.ParetoScoreTransformer;
 import org.neo4j.graphdb.Node;
@@ -35,9 +36,9 @@ public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
     public void postProcess(Recommendations<Node> recommendations, Node input) {
         int age = getInt(input, "age", 40);
 
-        for (Node reco : recommendations.getItems()) {
-            int diff = Math.abs(getInt(reco, "age", 40) - age);
-            recommendations.add(reco, "ageDifference", -transformer.transform(reco, diff));
+        for (Recommendation<Node> reco : recommendations.get()) {
+            int diff = Math.abs(getInt(reco.getItem(), "age", 40) - age);
+            reco.add("ageDifference", -transformer.transform(reco, diff));
         }
     }
 }

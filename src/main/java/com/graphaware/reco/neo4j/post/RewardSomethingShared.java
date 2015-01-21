@@ -17,6 +17,7 @@
 package com.graphaware.reco.neo4j.post;
 
 import com.graphaware.reco.generic.post.PostProcessor;
+import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
@@ -45,14 +46,14 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
             return;
         }
 
-        for (Node recommendation : recommendations.getItems()) {
-            Node recommendationSharedNode = sharedNode(recommendation);
+        for (Recommendation<Node> recommendation : recommendations.get()) {
+            Node recommendationSharedNode = sharedNode(recommendation.getItem());
             if (recommendationSharedNode == null) {
                 continue;
             }
 
             if (recommendationSharedNode.getId() == inputSharedNode.getId()) {
-                recommendations.add(recommendation, scoreName(), scoreValue(recommendation, input, recommendationSharedNode));
+                recommendation.add(scoreName(), scoreValue(recommendation.getItem(), input, recommendationSharedNode));
             }
         }
     }

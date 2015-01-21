@@ -61,7 +61,7 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * {@inheritDoc}
      */
     @Override
-    public <OUT> int transform(OUT recommendation, int score) {
+    public <OUT> int transform(OUT item, int score) {
         if (score < minimumThreshold) {
             return 0;
         }

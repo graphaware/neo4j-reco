@@ -20,6 +20,7 @@ import com.graphaware.common.util.Pair;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.Mode;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
+import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.reco.generic.result.Score;
 
@@ -41,5 +42,5 @@ public interface TopLevelRecommendationEngine<OUT, IN> extends RecommendationEng
      * @param limit maximum number of recommendations desired.
      * @return recommendations sorted by decreasing relevance and trimmed to limit.
      */
-    List<Pair<OUT, Score>> recommend(IN input, Mode mode, int limit);
+    List<Recommendation<OUT>> recommend(IN input, Mode mode, int limit);
 }
