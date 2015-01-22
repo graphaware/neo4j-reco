@@ -55,13 +55,6 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
         );
     }
 
-//    @Override
-//    protected List<RecommendationLogger<Node, Node>> loggers() {
-//        return Arrays.<RecommendationLogger<Node, Node>>asList(
-//                new RecommendationsRememberingLogger()
-//        );
-//    }
-
     @Override
     public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {
         //noinspection unchecked
