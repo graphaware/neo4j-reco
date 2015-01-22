@@ -37,9 +37,9 @@ public class ScoreTest {
     public void newScoreShouldBeEmpty() {
         Score score = new Score();
 
-        assertEquals(0, score.getTotalScore());
+        assertEquals(0, score.getTotalScore(),0);
         assertTrue(score.getScoreParts().isEmpty());
-        assertEquals(0, score.get("someScore"));
+        assertEquals(0, score.get("someScore"),0);
     }
 
     @Test
@@ -50,12 +50,12 @@ public class ScoreTest {
         score.add("score2", 2);
         score.add("score1", 2);
 
-        assertEquals(7, score.getTotalScore());
+        assertEquals(7, score.getTotalScore(),0);
         assertEquals(2, score.getScoreParts().size());
         assertTrue(score.getScoreParts().keySet().contains("score1"));
         assertTrue(score.getScoreParts().keySet().contains("score2"));
-        assertEquals(2, score.get("score2"));
-        assertEquals(5, score.get("score1"));
+        assertEquals(2, score.get("score2"),0);
+        assertEquals(5, score.get("score1"),0);
     }
 
     @Test
@@ -77,18 +77,18 @@ public class ScoreTest {
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.SECONDS);
 
-        assertEquals(1000, score.getTotalScore());
+        assertEquals(1000, score.getTotalScore(),0);
         assertEquals(5, score.getScoreParts().size());
         assertTrue(score.getScoreParts().keySet().contains("score0"));
         assertTrue(score.getScoreParts().keySet().contains("score1"));
         assertTrue(score.getScoreParts().keySet().contains("score2"));
         assertTrue(score.getScoreParts().keySet().contains("score3"));
         assertTrue(score.getScoreParts().keySet().contains("score4"));
-        assertEquals(200, score.get("score0"));
-        assertEquals(200, score.get("score1"));
-        assertEquals(200, score.get("score2"));
-        assertEquals(200, score.get("score3"));
-        assertEquals(200, score.get("score4"));
+        assertEquals(200, score.get("score0"),0);
+        assertEquals(200, score.get("score1"),0);
+        assertEquals(200, score.get("score2"),0);
+        assertEquals(200, score.get("score3"),0);
+        assertEquals(200, score.get("score4"),0);
     }
 
     @Test
@@ -107,14 +107,14 @@ public class ScoreTest {
 
         Score merged = score1.merge(score2);
 
-        assertEquals(14, merged.getTotalScore());
+        assertEquals(14, merged.getTotalScore(),0);
         assertEquals(3, merged.getScoreParts().size());
         assertTrue(merged.getScoreParts().keySet().contains("score1"));
         assertTrue(merged.getScoreParts().keySet().contains("score2"));
         assertTrue(merged.getScoreParts().keySet().contains("score3"));
-        assertEquals(2, merged.get("score3"));
-        assertEquals(4, merged.get("score2"));
-        assertEquals(8, merged.get("score1"));
+        assertEquals(2, merged.get("score3"),0);
+        assertEquals(4, merged.get("score2"),0);
+        assertEquals(8, merged.get("score1"),0);
     }
 
     @Test
@@ -138,18 +138,18 @@ public class ScoreTest {
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.SECONDS);
 
-        assertEquals(1000, score.getTotalScore());
+        assertEquals(1000, score.getTotalScore(),0);
         assertEquals(5, score.getScoreParts().size());
         assertTrue(score.getScoreParts().keySet().contains("score0"));
         assertTrue(score.getScoreParts().keySet().contains("score1"));
         assertTrue(score.getScoreParts().keySet().contains("score2"));
         assertTrue(score.getScoreParts().keySet().contains("score3"));
         assertTrue(score.getScoreParts().keySet().contains("score4"));
-        assertEquals(200, score.get("score0"));
-        assertEquals(200, score.get("score1"));
-        assertEquals(200, score.get("score2"));
-        assertEquals(200, score.get("score3"));
-        assertEquals(200, score.get("score4"));
+        assertEquals(200, score.get("score0"),0);
+        assertEquals(200, score.get("score1"),0);
+        assertEquals(200, score.get("score2"),0);
+        assertEquals(200, score.get("score3"),0);
+        assertEquals(200, score.get("score4"),0);
     }
 
     @Test
@@ -171,7 +171,7 @@ public class ScoreTest {
         List<Score> scores = Arrays.asList(score1, score2);
         Collections.sort(scores);
 
-        assertEquals(7, scores.get(0).getTotalScore());
-        assertEquals(8, scores.get(1).getTotalScore());
+        assertEquals(7, scores.get(0).getTotalScore(),0);
+        assertEquals(8, scores.get(1).getTotalScore(),0);
     }
 }

@@ -66,17 +66,17 @@ public class RecommendationsTest {
         assertNotNull(one.getUuid());
         assertNotNull(two.getUuid());
 
-        assertEquals(2, one.getScore().get("Score1"));
-        assertEquals(1, one.getScore().get("Score2"));
-        assertEquals(2, two.getScore().get("Score1"));
+        assertEquals(2, one.getScore().get("Score1"), 0);
+        assertEquals(1, one.getScore().get("Score2"), 0);
+        assertEquals(2, two.getScore().get("Score1"), 0);
 
         assertEquals(2, r.get().size());
         assertTrue(r.get().contains(new Recommendation<>("Reco1")));
         assertTrue(r.get().contains(new Recommendation<>("Reco2")));
 
-        assertEquals(2, r.get("Reco1").getScore().get("Score1"));
-        assertEquals(1, r.get("Reco1").getScore().get("Score2"));
-        assertEquals(2, r.get("Reco2").getScore().get("Score1"));
+        assertEquals(2, r.get("Reco1").getScore().get("Score1"), 0);
+        assertEquals(1, r.get("Reco1").getScore().get("Score2"), 0);
+        assertEquals(2, r.get("Reco2").getScore().get("Score1"), 0);
 
         try {
             r.get("Unknown");
@@ -117,20 +117,20 @@ public class RecommendationsTest {
         assertEquals("Reco0", two.getItem());
         assertEquals("Reco2", three.getItem());
 
-        assertEquals(39997, one.getScore().getTotalScore());
-        assertEquals(35003, two.getScore().getTotalScore());
-        assertEquals(15000, three.getScore().getTotalScore());
+        assertEquals(39997, one.getScore().getTotalScore(), 0);
+        assertEquals(35003, two.getScore().getTotalScore(), 0);
+        assertEquals(15000, three.getScore().getTotalScore(), 0);
 
-        assertEquals(6664, one.getScore().get("Score0"));
-        assertEquals(20833, one.getScore().get("Score1"));
-        assertEquals(12500, one.getScore().get("Score3"));
+        assertEquals(6664, one.getScore().get("Score0"), 0);
+        assertEquals(20833, one.getScore().get("Score1"), 0);
+        assertEquals(12500, one.getScore().get("Score3"), 0);
 
-        assertEquals(16666, two.getScore().get("Score0"));
-        assertEquals(8337, two.getScore().get("Score1"));
-        assertEquals(10000, two.getScore().get("Score2"));
+        assertEquals(16666, two.getScore().get("Score0"), 0);
+        assertEquals(8337, two.getScore().get("Score1"), 0);
+        assertEquals(10000, two.getScore().get("Score2"), 0);
 
-        assertEquals(6670, three.getScore().get("Score0"));
-        assertEquals(8330, three.getScore().get("Score1"));
+        assertEquals(6670, three.getScore().get("Score0"), 0);
+        assertEquals(8330, three.getScore().get("Score1"), 0);
     }
 
     @Test
@@ -157,17 +157,17 @@ public class RecommendationsTest {
         assertEquals("Reco1", one.getItem());
         assertEquals("Reco2", two.getItem());
 
-        assertEquals(4, one.getScore().get("Score1"));
-        assertEquals(2, one.getScore().get("Score2"));
-        assertEquals(2, two.getScore().get("Score1"));
+        assertEquals(4, one.getScore().get("Score1"), 0);
+        assertEquals(2, one.getScore().get("Score2"), 0);
+        assertEquals(2, two.getScore().get("Score1"), 0);
 
         assertEquals(2, r.get().size());
         assertTrue(r.get().contains(new Recommendation<>("Reco1")));
         assertTrue(r.get().contains(new Recommendation<>("Reco2")));
 
-        assertEquals(4, r.get("Reco1").getScore().get("Score1"));
-        assertEquals(2, r.get("Reco1").getScore().get("Score2"));
-        assertEquals(2, r.get("Reco2").getScore().get("Score1"));
+        assertEquals(4, r.get("Reco1").getScore().get("Score1"), 0);
+        assertEquals(2, r.get("Reco1").getScore().get("Score2"), 0);
+        assertEquals(2, r.get("Reco2").getScore().get("Score1"), 0);
     }
 
     @Test
@@ -207,20 +207,20 @@ public class RecommendationsTest {
         assertEquals("Reco0", two.getItem());
         assertEquals("Reco2", three.getItem());
 
-        assertEquals(39997, one.getScore().getTotalScore());
-        assertEquals(35003, two.getScore().getTotalScore());
-        assertEquals(15000, three.getScore().getTotalScore());
+        assertEquals(39997, one.getScore().getTotalScore(), 0);
+        assertEquals(35003, two.getScore().getTotalScore(), 0);
+        assertEquals(15000, three.getScore().getTotalScore(), 0);
 
-        assertEquals(6664, one.getScore().get("Score0"));
-        assertEquals(20833, one.getScore().get("Score1"));
-        assertEquals(12500, one.getScore().get("Score3"));
+        assertEquals(6664, one.getScore().get("Score0"), 0);
+        assertEquals(20833, one.getScore().get("Score1"), 0);
+        assertEquals(12500, one.getScore().get("Score3"), 0);
 
-        assertEquals(16666, two.getScore().get("Score0"));
-        assertEquals(8337, two.getScore().get("Score1"));
-        assertEquals(10000, two.getScore().get("Score2"));
+        assertEquals(16666, two.getScore().get("Score0"), 0);
+        assertEquals(8337, two.getScore().get("Score1"), 0);
+        assertEquals(10000, two.getScore().get("Score2"), 0);
 
-        assertEquals(6670, three.getScore().get("Score0"));
-        assertEquals(8330, three.getScore().get("Score1"));
+        assertEquals(6670, three.getScore().get("Score0"), 0);
+        assertEquals(8330, three.getScore().get("Score1"), 0);
     }
 
     @Test
@@ -264,20 +264,20 @@ public class RecommendationsTest {
         assertEquals("Reco0", two.getItem());
         assertEquals("Reco2", three.getItem());
 
-        assertEquals(39997, one.getScore().getTotalScore());
-        assertEquals(35003, two.getScore().getTotalScore());
-        assertEquals(15000, three.getScore().getTotalScore());
+        assertEquals(39997, one.getScore().getTotalScore(), 0);
+        assertEquals(35003, two.getScore().getTotalScore(), 0);
+        assertEquals(15000, three.getScore().getTotalScore(), 0);
 
-        assertEquals(6664, one.getScore().get("Score0"));
-        assertEquals(20833, one.getScore().get("Score1"));
-        assertEquals(12500, one.getScore().get("Score3"));
+        assertEquals(6664, one.getScore().get("Score0"), 0);
+        assertEquals(20833, one.getScore().get("Score1"), 0);
+        assertEquals(12500, one.getScore().get("Score3"), 0);
 
-        assertEquals(16666, two.getScore().get("Score0"));
-        assertEquals(8337, two.getScore().get("Score1"));
-        assertEquals(10000, two.getScore().get("Score2"));
+        assertEquals(16666, two.getScore().get("Score0"), 0);
+        assertEquals(8337, two.getScore().get("Score1"), 0);
+        assertEquals(10000, two.getScore().get("Score2"), 0);
 
-        assertEquals(6670, three.getScore().get("Score0"));
-        assertEquals(8330, three.getScore().get("Score1"));
+        assertEquals(6670, three.getScore().get("Score0"), 0);
+        assertEquals(8330, three.getScore().get("Score1"), 0);
     }
 
     @Test
