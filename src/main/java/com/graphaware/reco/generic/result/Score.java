@@ -16,10 +16,7 @@
 
 package com.graphaware.reco.generic.result;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -90,7 +87,7 @@ public class Score implements Comparable<Score> {
      * @return composite score parts.
      */
     public Map<String, Integer> getScoreParts() {
-        Map<String, Integer> result = new HashMap<>();
+        Map<String, Integer> result = new TreeMap<>();
 
         for (Map.Entry<String, AtomicInteger> entry : scoreParts.entrySet()) {
             result.put(entry.getKey(), entry.getValue().get());
