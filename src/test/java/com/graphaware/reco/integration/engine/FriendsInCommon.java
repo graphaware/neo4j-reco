@@ -33,6 +33,11 @@ import static org.neo4j.graphdb.Direction.BOTH;
 public class FriendsInCommon extends SomethingInCommon {
 
     @Override
+    public String name() {
+        return "friendsInCommon";
+    }
+
+    @Override
     protected ScoreTransformer scoreTransformer() {
         return new ParetoScoreTransformer(100, 10);
     }
@@ -45,10 +50,5 @@ public class FriendsInCommon extends SomethingInCommon {
     @Override
     protected Direction getDirection() {
         return BOTH;
-    }
-
-    @Override
-    protected String scoreName() {
-        return "friendsInCommon";
     }
 }

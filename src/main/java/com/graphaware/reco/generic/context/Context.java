@@ -16,6 +16,8 @@
 
 package com.graphaware.reco.generic.context;
 
+import com.graphaware.reco.generic.stats.Statistics;
+
 /**
  * Context holding information about the recommendation-computing process. Contexts should be package-protected and
  * constructed using their respective public {@link com.graphaware.reco.generic.context.ContextFactory} implementations.
@@ -33,22 +35,16 @@ public interface Context<OUT, IN> {
     int limit();
 
     /**
-     * Initialize the context before computing recommendation for the given input. Must be called exactly once by the
-     * corresponding {@link com.graphaware.reco.generic.context.ContextFactory}, thus doesn't need to be thread-safe.
-     *
-     * @param input for which to compute recommendations.
-     */
-    void initialize(IN input);
-
-    /**
      * Check whether a produced recommendation is allowed for the given input in the current context. Can be called by
      * multiple threads simultaneously, must be thus thread-safe.
      *
      * @param recommendation produced. Must not be <code>null</code>.
      * @param input          for which the recommendation was produced. Must not be <code>null</code>.
+     * @param task           name of the task that is asking the "allow?" question. Must not be <code>null</code>.
+     *                       Used for statistics and logging.
      * @return true iff the recommendation is allowed for the given input.
      */
-    boolean allow(OUT recommendation, IN input);
+    boolean allow(OUT recommendation, IN input, String task);
 
     /**
      * Disallow the given recommendation. Intended for {@link com.graphaware.reco.generic.engine.RecommendationEngine}s
@@ -57,4 +53,11 @@ public interface Context<OUT, IN> {
      * @param recommendation to disallow.
      */
     void disallow(OUT recommendation);
+
+    /**
+     * Get the statistics of the computation process that this context is for.
+     *
+     * @return stats.
+     */
+    Statistics statistics();
 }

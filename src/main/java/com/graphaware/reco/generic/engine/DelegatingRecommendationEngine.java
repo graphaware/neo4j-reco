@@ -33,7 +33,7 @@ import static org.springframework.util.Assert.*;
  * have been consulted, results are tallied and post processed using provided {@link PostProcessor}s, before being returned
  * to the caller.
  */
-public class DelegatingRecommendationEngine<OUT, IN> implements RecommendationEngine<OUT, IN> {
+public class DelegatingRecommendationEngine<OUT, IN> extends BaseRecommendationEngine<OUT, IN> {
 
     private final List<RecommendationEngine<OUT, IN>> engines = new LinkedList<>();
     private final List<PostProcessor<OUT, IN>> postProcessors = new LinkedList<>();
@@ -41,6 +41,14 @@ public class DelegatingRecommendationEngine<OUT, IN> implements RecommendationEn
     public DelegatingRecommendationEngine() {
         addEngines(engines());
         addPostProcessors(postProcessors());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String name() {
+        return "Delegating Engine @" + this.hashCode();
     }
 
     /**
@@ -113,7 +121,7 @@ public class DelegatingRecommendationEngine<OUT, IN> implements RecommendationEn
      * {@inheritDoc}
      */
     @Override
-    public Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
+    public Recommendations<OUT> doRecommend(IN input, Context<OUT, IN> context) {
         Recommendations<OUT> recommendations = new Recommendations<>();
 
         for (RecommendationEngine<OUT, IN> engine : engines) {
@@ -131,12 +139,27 @@ public class DelegatingRecommendationEngine<OUT, IN> implements RecommendationEn
 
     /**
      * {@inheritDoc}
-     *
-     * @return {@link com.graphaware.reco.generic.policy.ParticipationPolicy#ALWAYS} by default.
      */
     @Override
-    public ParticipationPolicy<OUT, IN> participationPolicy(Context<OUT, IN> context) {
-        //noinspection unchecked
-        return ParticipationPolicy.ALWAYS;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DelegatingRecommendationEngine that = (DelegatingRecommendationEngine) o;
+
+        if (!engines.equals(that.engines)) return false;
+        if (!postProcessors.equals(that.postProcessors)) return false;
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        int result = engines.hashCode();
+        result = 31 * result + postProcessors.hashCode();
+        return result;
     }
 }

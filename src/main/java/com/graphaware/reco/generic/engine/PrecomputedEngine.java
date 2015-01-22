@@ -25,7 +25,7 @@ import static com.graphaware.common.util.PropertyContainerUtils.getInt;
 /**
  * A {@link RecommendationEngine} that reads pre-computed recommendations and their scores from an external source.
  * <p/>
- * {@link com.graphaware.reco.generic.context.Context#allow(Object, Object)} is still consulted filter out recommendations
+ * {@link com.graphaware.reco.generic.context.Context#allow(Object, Object, String)} is still consulted filter out recommendations
  * for which the situation has changed since they were pre-computed.
  * <p/>
  * Once a pre-computed recommendation has been read, it is disallowed by calling {@link com.graphaware.reco.generic.context.Context#disallow(Object)}
@@ -33,29 +33,26 @@ import static com.graphaware.common.util.PropertyContainerUtils.getInt;
  *
  * @param <SOURCE> type of the precomputed recommendation source. Could be an object from cache, a graph relationship, etc.
  */
-public abstract class PrecomputedEngine<OUT, IN, SOURCE> implements RecommendationEngine<OUT, IN> {
+public abstract class PrecomputedEngine<OUT, IN, SOURCE> extends BaseRecommendationEngine<OUT, IN> {
 
     /**
      * {@inheritDoc}
-     *
-     * @return {@link com.graphaware.reco.generic.policy.ParticipationPolicy#ALWAYS} by default.
      */
     @Override
-    public ParticipationPolicy<OUT, IN> participationPolicy(Context<OUT, IN> context) {
-        //noinspection unchecked
-        return ParticipationPolicy.ALWAYS;
+    public String name() {
+        return "Precomputed Engine @" + this.hashCode();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
+    public Recommendations<OUT> doRecommend(IN input, Context<OUT, IN> context) {
         Recommendations<OUT> result = new Recommendations<>();
 
         for (SOURCE source : produce(input)) {
             OUT recommendation = extract(source);
-            if (context.allow(recommendation, input)) {
+            if (context.allow(recommendation, input, name())) {
                 addToResult(result, recommendation, source);
                 context.disallow(recommendation);
             }

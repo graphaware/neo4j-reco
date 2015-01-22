@@ -133,10 +133,6 @@ public class FilteringContextFactory<OUT, IN> implements ContextFactory<OUT, IN>
             blacklist.addAll(blacklistBuilder.buildBlacklist(input));
         }
 
-        FilteringContext<OUT, IN> result = new FilteringContext<>(mode, limit, unmodifiableList(filters), blacklist);
-
-        result.initialize(input);
-
-        return result;
+        return new FilteringContext<>(input, mode, limit, unmodifiableList(filters), blacklist);
     }
 }

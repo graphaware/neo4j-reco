@@ -28,6 +28,11 @@ import org.neo4j.graphdb.Node;
 public class RandomPeople extends RandomRecommendations {
 
     @Override
+    public String name() {
+        return "random";
+    }
+
+    @Override
     protected NodeInclusionPolicy getPolicy() {
         return new NodeInclusionPolicy() {
             @Override
@@ -35,11 +40,6 @@ public class RandomPeople extends RandomRecommendations {
                 return node.hasLabel(DynamicLabel.label("Person"));
             }
         };
-    }
-
-    @Override
-    protected String scoreName() {
-        return "random";
     }
 
     @Override

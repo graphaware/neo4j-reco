@@ -16,6 +16,10 @@
 
 package com.graphaware.reco.generic.context;
 
+import com.graphaware.reco.generic.stats.DefaultStatistics;
+import com.graphaware.reco.generic.stats.Statistics;
+
+import static org.springframework.util.Assert.hasLength;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 
@@ -26,19 +30,23 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
 
     private final Mode mode;
     private final int limit;
+    private final Statistics statistics;
 
     /**
      * Construct a new context.
      *
+     * @param input for which recommendations are being computed.
      * @param mode  in which recommendations are being computed. Must not be <code>null</code>.
      * @param limit the maximum number of desired recommendations. Must be positive.
      */
-    SimpleContext(Mode mode, int limit) {
+    SimpleContext(IN input, Mode mode, int limit) {
+        notNull(input);
         notNull(mode);
         isTrue(limit > 0);
 
         this.mode = mode;
         this.limit = limit;
+        this.statistics = createStatistics(input);
     }
 
     /**
@@ -60,22 +68,13 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
     /**
      * {@inheritDoc}
      * <p/>
-     * no-op by default.
-     */
-    @Override
-    public void initialize(IN input) {
-        //no-op
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p/>
      * always returns true by default.
      */
     @Override
-    public boolean allow(OUT recommendation, IN input) {
+    public boolean allow(OUT recommendation, IN input, String task) {
         notNull(recommendation);
         notNull(input);
+        hasLength(task);
 
         return true;
     }
@@ -88,6 +87,24 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
     @Override
     public void disallow(OUT recommendation) {
         throw new UnsupportedOperationException("SimpleContext does not support blacklisting items. Please use FilteringContext");
+    }
+
+    /**
+     * Create a new statistics object. To be overridden by subclasses if needed.
+     *
+     * @param input for which recommendations are being computed.
+     * @return {@link com.graphaware.reco.generic.stats.DefaultStatistics} by default.
+     */
+    protected Statistics createStatistics(IN input) {
+        return new DefaultStatistics<>(input);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Statistics statistics() {
+        return statistics;
     }
 }
 

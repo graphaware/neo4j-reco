@@ -18,10 +18,8 @@ package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
-import com.graphaware.reco.generic.log.RecommendationLogger;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.post.PostProcessor;
-import com.graphaware.reco.integration.log.RememberingLogger;
 import com.graphaware.reco.integration.post.PenalizeAgeDifference;
 import com.graphaware.reco.integration.post.RewardSameLabels;
 import com.graphaware.reco.integration.post.RewardSameLocation;
@@ -57,12 +55,12 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
         );
     }
 
-    @Override
-    protected List<RecommendationLogger<Node, Node>> loggers() {
-        return Arrays.<RecommendationLogger<Node, Node>>asList(
-                new RememberingLogger()
-        );
-    }
+//    @Override
+//    protected List<RecommendationLogger<Node, Node>> loggers() {
+//        return Arrays.<RecommendationLogger<Node, Node>>asList(
+//                new RecommendationsRememberingLogger()
+//        );
+//    }
 
     @Override
     public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {

@@ -24,8 +24,6 @@ import com.graphaware.reco.generic.transform.ScoreTransformer;
 
 import java.util.Map;
 
-import static org.springframework.util.Assert.*;
-
 /**
  * Base class for {@link com.graphaware.reco.generic.engine.RecommendationEngine}s that compute recommendations using
  * a single criteria, thus producing one type of recommendation score. Intended as a base class for implementations
@@ -34,7 +32,7 @@ import static org.springframework.util.Assert.*;
  * There is an option to provide a {@link com.graphaware.reco.generic.transform.ScoreTransformer} by overriding
  * {@link #scoreTransformer()}, which is used to transform all the produced scores.
  */
-public abstract class SingleScoreRecommendationEngine<OUT, IN> implements RecommendationEngine<OUT, IN> {
+public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecommendationEngine<OUT, IN> {
 
     private final ScoreTransformer transformer;
 
@@ -43,17 +41,6 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> implements Recomm
      */
     protected SingleScoreRecommendationEngine() {
         this.transformer = scoreTransformer();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link com.graphaware.reco.generic.policy.ParticipationPolicy#ALWAYS} by default.
-     */
-    @Override
-    public ParticipationPolicy<OUT, IN> participationPolicy(Context context) {
-        //noinspection unchecked
-        return ParticipationPolicy.ALWAYS;
     }
 
     /**
@@ -69,12 +56,12 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> implements Recomm
      * {@inheritDoc}
      */
     @Override
-    public final Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
+    public final Recommendations<OUT> doRecommend(IN input, Context<OUT, IN> context) {
         Recommendations<OUT> result = new Recommendations<>();
 
-        for (Map.Entry<OUT, Integer> entry : doRecommend(input, context).entrySet()) {
-            if (context.allow(entry.getKey(), input)) {
-                result.add(entry.getKey(), scoreName(), transformer.transform(entry.getKey(), entry.getValue()));
+        for (Map.Entry<OUT, Integer> entry : doRecommendSingle(input, context).entrySet()) {
+            if (context.allow(entry.getKey(), input, name())) {
+                result.add(entry.getKey(), name(), transformer.transform(entry.getKey(), entry.getValue()));
             }
         }
 
@@ -82,15 +69,10 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> implements Recomm
     }
 
     /**
-     * @return name of the score this engine produces.
-     */
-    protected abstract String scoreName();
-
-    /**
      * Perform the computation of recommendations. Recommendations produced by this method have an associated {@link java.lang.Integer}
      * score, which is later transformed by the provided {@link com.graphaware.reco.generic.transform.ScoreTransformer}.
      * <p/>
-     * Context is provided for information, but its {@link com.graphaware.reco.generic.context.Context#allow(Object, Object)}
+     * Context is provided for information, but its {@link com.graphaware.reco.generic.context.Context#allow(Object, Object, String)}
      * method does not have to be used. I.e., implementations of this method should produce raw recommendations, expressing
      * core business logic of coming up with these recommendations, ignoring blacklists, filtering, etc, which is applied
      * by this class ({@link com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine}).
@@ -99,7 +81,7 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> implements Recomm
      * @param context of the current computation.
      * @return a map of recommended items and their scores.
      */
-    protected abstract Map<OUT, Integer> doRecommend(IN input, Context<OUT, IN> context);
+    protected abstract Map<OUT, Integer> doRecommendSingle(IN input, Context<OUT, IN> context);
 
     /**
      * A convenience method for subclasses for adding concrete recommendations to the result.

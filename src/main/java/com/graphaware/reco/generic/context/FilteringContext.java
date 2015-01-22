@@ -17,10 +17,12 @@
 package com.graphaware.reco.generic.context;
 
 import com.graphaware.reco.generic.filter.Filter;
+import com.graphaware.reco.generic.stats.Statistics;
 
 import java.util.List;
 import java.util.Set;
 
+import static com.graphaware.reco.generic.stats.Statistics.*;
 import static org.springframework.util.Assert.notNull;
 
 /**
@@ -35,13 +37,14 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
     /**
      * Construct a new context.
      *
+     * @param input     for which recommendations are being computed. Must not be <code>null</code>.
      * @param mode      in which recommendations are being computed. Must not be <code>null</code>.
      * @param limit     the maximum number of desired recommendations. Must be positive.
      * @param filters   used to filter out items. Can be empty, but must not be <code>null</code>.
      * @param blacklist a set of blacklisted items. Can be empty, but must not be <code>null</code>.
      */
-    FilteringContext(Mode mode, int limit, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
-        super(mode, limit);
+    FilteringContext(IN input, Mode mode, int limit, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
+        super(input, mode, limit);
 
         notNull(filters);
         notNull(blacklist);
@@ -57,21 +60,27 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
      * {@link com.graphaware.reco.generic.filter.Filter}s.
      */
     @Override
-    public boolean allow(OUT recommendation, IN input) {
-        if (!super.allow(recommendation, input)) {
+    public boolean allow(OUT recommendation, IN input, String task) {
+        statistics().incrementStatistic(task, CANDIDATE_ITEMS);
+
+        if (!super.allow(recommendation, input, task)) {
+            statistics().incrementStatistic(task, "NOT_ALLOWED_BY_SUPERCLASS");
             return false;
         }
 
         if (blacklist.contains(recommendation)) {
+            statistics().incrementStatistic(task, BLACKLISTED_ITEMS);
             return false;
         }
 
         for (Filter<OUT, IN> filter : filters) {
             if (!filter.include(recommendation, input)) {
+                statistics().incrementStatistic(task, FILTERED_ITEMS);
                 return false;
             }
         }
 
+//        statistics().incrementStatistic(task, TOTAL_ITEMS);
         return true;
     }
 

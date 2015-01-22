@@ -14,18 +14,25 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.generic.context;
+package com.graphaware.reco.generic.stats;
 
 /**
- * A {@link com.graphaware.reco.generic.context.ContextFactory} producing {@link com.graphaware.reco.generic.context.SimpleContext}.
+ * A component timing the execution of named tasks.
  */
-public class SimpleContextFactory<OUT, IN> implements ContextFactory<OUT, IN> {
+public interface TaskTimer {
 
     /**
-     * {@inheritDoc}
+     * Start timing a task.
+     *
+     * @param task name of the task, must not be <code>null</code> or blank.
      */
-    @Override
-    public Context<OUT, IN> produceContext(IN input, Mode mode, int limit) {
-        return new SimpleContext<>(input, mode, limit);
-    }
+    void startTiming(String task);
+
+    /**
+     * Get the time it has taken the given task to run up until now.
+     *
+     * @param task to find time for.
+     * @return time in ms, -1 if the task hasn't been started.
+     */
+    long getTime(String task);
 }

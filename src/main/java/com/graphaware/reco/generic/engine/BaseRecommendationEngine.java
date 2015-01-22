@@ -19,30 +19,46 @@ package com.graphaware.reco.generic.engine;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
+import com.graphaware.reco.generic.stats.Statistics;
+import com.graphaware.reco.generic.transform.NoTransformation;
+import com.graphaware.reco.generic.transform.ScoreTransformer;
+
+import java.util.Map;
 
 /**
- * A recommendation engine.
+ * Abstract base class for {@link com.graphaware.reco.generic.engine.RecommendationEngine} implementations. Takes care
+ * of collecting statistics.
  *
  * @param <OUT> type of the recommendations produced.
  * @param <IN>  type of the item recommendations are for / based on.
  */
-public interface RecommendationEngine<OUT, IN> {
+public abstract class BaseRecommendationEngine<OUT, IN> implements RecommendationEngine<OUT, IN> {
 
     /**
-     * Get the name of this engine. This name should be unique within the overall recommendation engine structure and
-     * will be used for naming scores produced by the engine, as well as for collecting {@link com.graphaware.reco.generic.stats.Statistics}.
+     * {@inheritDoc}
      *
-     * @return engine name.
+     * @return {@link com.graphaware.reco.generic.policy.ParticipationPolicy#ALWAYS} by default.
      */
-    String name();
+    @Override
+    public ParticipationPolicy<OUT, IN> participationPolicy(Context<OUT, IN> context) {
+        //noinspection unchecked
+        return ParticipationPolicy.ALWAYS;
+    }
 
     /**
-     * Get this engine's participation / involvement in producing recommendations in a specific context.
-     *
-     * @param context the context in which recommendations are being produced.
-     * @return participation policy.
+     * {@inheritDoc}
      */
-    ParticipationPolicy<OUT, IN> participationPolicy(Context<OUT, IN> context);
+    @Override
+    public final Recommendations<OUT> recommend(IN input, Context<OUT, IN> context) {
+        context.statistics().startTiming(name());
+
+        Recommendations<OUT> result = doRecommend(input, context);
+
+        context.statistics().stopTiming(name());
+        context.statistics().addStatistic(name(), Statistics.TOTAL_ITEMS, result.size());
+
+        return result;
+    }
 
     /**
      * Produce recommendations.
@@ -52,5 +68,5 @@ public interface RecommendationEngine<OUT, IN> {
      * @param context additional information about the recommendation process useful to the engine.
      * @return recommendations.
      */
-    Recommendations<OUT> recommend(IN input, Context<OUT, IN> context);
+    protected abstract Recommendations<OUT> doRecommend(IN input, Context<OUT, IN> context);
 }

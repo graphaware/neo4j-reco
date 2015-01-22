@@ -140,6 +140,13 @@ public class Recommendations<OUT> {
      * @return true iff enough.
      */
     public boolean hasEnough(int limit) {
-        return scoredItems.size() >= limit;
+        return size() >= limit;
+    }
+
+    /**
+     * @return total number of recommendations.
+     */
+    public int size() {
+        return scoredItems.size();
     }
 }

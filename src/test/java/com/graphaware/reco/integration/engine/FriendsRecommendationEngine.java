@@ -17,8 +17,10 @@
 package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.engine.RecommendationEngine;
-import com.graphaware.reco.generic.log.RecommendationLogger;
-import com.graphaware.reco.integration.log.RememberingLogger;
+import com.graphaware.reco.generic.log.Logger;
+import com.graphaware.reco.generic.log.Slf4jRecommendationLogger;
+import com.graphaware.reco.generic.log.Slf4jStatisticsLogger;
+import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
 import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import org.neo4j.graphdb.Node;
@@ -39,16 +41,18 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
-        return Arrays.asList(
+        return Arrays.<RecommendationEngine<Node, Node>>asList(
                 new Neo4jPrecomputedEngine(),
                 new FriendsComputingEngine()
         );
     }
 
     @Override
-    protected List<RecommendationLogger<Node, Node>> loggers() {
-        return Arrays.<RecommendationLogger<Node, Node>>asList(
-                new RememberingLogger()
+    protected List<Logger<Node, Node>> loggers() {
+        return Arrays.<Logger<Node, Node>>asList(
+                new RecommendationsRememberingLogger(),
+                new Slf4jRecommendationLogger<Node, Node>(),
+                new Slf4jStatisticsLogger<Node, Node>()
         );
     }
 }

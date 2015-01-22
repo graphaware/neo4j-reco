@@ -56,7 +56,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * node is determined by {@link #numberOfAttempts(com.graphaware.reco.generic.context.Context)}.
      */
     @Override
-    protected final Map<Node, Integer> doRecommend(Node input, Context<Node, Node> context) {
+    protected final Map<Node, Integer> doRecommendSingle(Node input, Context<Node, Node> context) {
         Map<Node, Integer> result = new HashMap<>();
         int attempts = 0;
 
