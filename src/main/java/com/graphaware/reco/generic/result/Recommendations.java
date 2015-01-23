@@ -125,7 +125,7 @@ public class Recommendations<OUT> {
      * @param scoreName name of the partial score this recommendation is receiving. Must not be <code>null</code> or empty.
      * @param score     value of the partial score.
      */
-    public void add(OUT item, String scoreName, int score) {
+    public void add(OUT item, String scoreName, float score) {
         notNull(item);
         notNull(scoreName);
         hasLength(scoreName);

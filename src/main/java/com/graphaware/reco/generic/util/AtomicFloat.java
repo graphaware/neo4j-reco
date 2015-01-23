@@ -7,13 +7,11 @@ import static java.lang.Float.*;
 /**
  * A {@code float} value that may be updated atomically.
  */
-public class AtomicFloat extends Number implements java.io.Serializable {
-    private static final long serialVersionUID = 0L;
+public class AtomicFloat extends Number {
 
     private transient volatile int value;
 
-    private static final AtomicIntegerFieldUpdater<AtomicFloat> updater =
-            AtomicIntegerFieldUpdater.newUpdater(AtomicFloat.class, "value");
+    private static final AtomicIntegerFieldUpdater<AtomicFloat> updater = AtomicIntegerFieldUpdater.newUpdater(AtomicFloat.class, "value");
 
     /**
      * Creates a new {@code AtomicFloat} with the given initial value.
@@ -92,6 +90,7 @@ public class AtomicFloat extends Number implements java.io.Serializable {
 
     /**
      * Returns the String representation of the current value.
+     *
      * @return the String representation of the current value
      */
     public String toString() {
@@ -127,27 +126,5 @@ public class AtomicFloat extends Number implements java.io.Serializable {
      */
     public double doubleValue() {
         return get();
-    }
-
-    /**
-     * Saves the state to a stream (that is, serializes it).
-     *
-     * @serialData The current value is emitted (a {@code double}).
-     */
-    private void writeObject(java.io.ObjectOutputStream s)
-            throws java.io.IOException {
-        s.defaultWriteObject();
-
-        s.writeFloat(get());
-    }
-
-    /**
-     * Reconstitutes the instance from a stream (that is, deserializes it).
-     */
-    private void readObject(java.io.ObjectInputStream s)
-            throws java.io.IOException, ClassNotFoundException {
-        s.defaultReadObject();
-
-        set(s.readFloat());
     }
 }

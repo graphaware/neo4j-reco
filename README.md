@@ -1,7 +1,7 @@
 GraphAware Neo4j Recommendation Engine
 ======================================
 
-[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.1.6.26.1
+[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.1.6.27.2
 
 GraphAware Neo4j Recommendation Engine is a library for building high-performance complex recommendation engines atop Neo4j.
 It is in production at a number of <a href="http://graphaware.com" target="_blank">GraphAware</a>'s clients producing real-time recommendations on graphs with hundreds of millions of nodes.
@@ -41,7 +41,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
         <dependency>
             <groupId>com.graphaware.neo4j</groupId>
             <artifactId>recommendation-engine</artifactId>
-            <version>2.1.6.26.1</version>
+            <version>2.1.6.27.2</version>
         </dependency>
         ...
     </dependencies>
@@ -49,7 +49,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
 #### Snapshots
 
 To use the latest development version, just clone this repository, run `mvn clean install` and change the version in the
-dependency above to 2.1.6.26.2-SNAPSHOT.
+dependency above to 2.1.6.27.3-SNAPSHOT.
 
 #### Note on Versioning Scheme
 
@@ -352,7 +352,7 @@ public class RewardSameLocation extends RewardSomethingShared {
     }
 
     @Override
-    protected int scoreValue(Node recommendation, Node input, Node sharedThing) {
+    protected float scoreValue(Node recommendation, Node input, Node sharedThing) {
         return 10;
     }
 
@@ -525,18 +525,16 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19,friendsInCommon:15,sameGender:10,ageDifference:-6}),(Luanne {total:8,friendsInCommon:15,ageDifference:-7})";
+            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:7.856705,ageDifference:-7.0093026,friendsInCommon:14.866008})";
 
-            assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
             assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
 
             //verify Adam
 
             List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
 
-            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19,friendsInCommon:15,sameGender:10,ageDifference:-6}),(Luanne {total:12,friendsInCommon:15,ageDifference:-3})";
+            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:11.553411,ageDifference:-3.312597,friendsInCommon:14.866008})";
 
-            assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
             assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
 
             //verify Luanne
@@ -544,16 +542,16 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
-            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore());
+            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
 
             assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
-            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore());
+            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
             assertEquals("Vince", recoForLuanne.get(2).getItem().getProperty("name"));
-            assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore());
+            assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
             assertEquals("Bob", recoForLuanne.get(3).getItem().getProperty("name"));
-            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore());
+            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
             tx.success();
         }

@@ -3,7 +3,6 @@ package com.graphaware.reco.integration.log;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.log.Slf4jRecommendationLogger;
 import com.graphaware.reco.generic.result.Recommendation;
-import com.graphaware.reco.neo4j.result.RecommendationsPrinter;
 import org.neo4j.graphdb.Node;
 
 import java.util.HashMap;

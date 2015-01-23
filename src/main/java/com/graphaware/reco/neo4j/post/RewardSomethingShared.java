@@ -101,5 +101,5 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
      * @param sharedThing    the node representing the thing in common.
      * @return score to add.
      */
-    protected abstract int scoreValue(Node recommendation, Node input, Node sharedThing);
+    protected abstract float scoreValue(Node recommendation, Node input, Node sharedThing);
 }

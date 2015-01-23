@@ -18,7 +18,6 @@ package com.graphaware.reco.neo4j.engine;
 
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine;
-import com.graphaware.reco.generic.transform.ScoreTransformer;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -45,8 +44,8 @@ public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<
      * {@inheritDoc}
      */
     @Override
-    protected final Map<Node, Integer> doRecommendSingle(Node input, Context<Node, Node> context) {
-        Map<Node, Integer> result = new HashMap<>();
+    protected final Map<Node, Float> doRecommendSingle(Node input, Context<Node, Node> context) {
+        Map<Node, Float> result = new HashMap<>();
 
         for (Relationship r1 : input.getRelationships(getType(), getDirection())) {
             Node thingInCommon = r1.getOtherNode(input);

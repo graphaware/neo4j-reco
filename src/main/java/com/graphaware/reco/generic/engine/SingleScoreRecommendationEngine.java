@@ -17,7 +17,6 @@
 package com.graphaware.reco.generic.engine;
 
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.reco.generic.transform.NoTransformation;
 import com.graphaware.reco.generic.transform.ScoreTransformer;
@@ -59,7 +58,7 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
     public final Recommendations<OUT> doRecommend(IN input, Context<OUT, IN> context) {
         Recommendations<OUT> result = new Recommendations<>();
 
-        for (Map.Entry<OUT, Integer> entry : doRecommendSingle(input, context).entrySet()) {
+        for (Map.Entry<OUT, Float> entry : doRecommendSingle(input, context).entrySet()) {
             if (context.allow(entry.getKey(), input, name())) {
                 result.add(entry.getKey(), name(), transformer.transform(entry.getKey(), entry.getValue()));
             }
@@ -81,7 +80,7 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
      * @param context of the current computation.
      * @return a map of recommended items and their scores.
      */
-    protected abstract Map<OUT, Integer> doRecommendSingle(IN input, Context<OUT, IN> context);
+    protected abstract Map<OUT, Float> doRecommendSingle(IN input, Context<OUT, IN> context);
 
     /**
      * A convenience method for subclasses for adding concrete recommendations to the result.
@@ -90,9 +89,9 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
      * @param recommendation to add.
      * @param score          of the recommendation.
      */
-    protected final void addToResult(Map<OUT, Integer> result, OUT recommendation, int score) {
+    protected final void addToResult(Map<OUT, Float> result, OUT recommendation, float score) {
         if (!result.containsKey(recommendation)) {
-            result.put(recommendation, 0);
+            result.put(recommendation, 0f);
         }
         result.put(recommendation, result.get(recommendation) + score);
     }

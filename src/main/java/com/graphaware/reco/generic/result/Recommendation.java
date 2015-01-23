@@ -66,7 +66,7 @@ public class Recommendation<OUT> implements Comparable<Recommendation<OUT>> {
      * @param scoreName  name of the score. Must not be <code>null</code> or empty.
      * @param scoreValue score value.
      */
-    public void add(String scoreName, int scoreValue) {
+    public void add(String scoreName, float scoreValue) {
         score.add(scoreName, scoreValue);
     }
 

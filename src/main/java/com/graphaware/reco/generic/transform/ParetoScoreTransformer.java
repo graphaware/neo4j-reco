@@ -29,9 +29,9 @@ package com.graphaware.reco.generic.transform;
  */
 public class ParetoScoreTransformer implements ScoreTransformer {
 
-    private final int maxScore;
-    private final int eightyPercentLevel;
-    private final int minimumThreshold;
+    private final float maxScore;
+    private final float eightyPercentLevel;
+    private final float minimumThreshold;
 
     /**
      * Construct a new transformer.
@@ -39,7 +39,7 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * @param maxScore           maximum score this transformer will produce.
      * @param eightyPercentLevel score at which the transformer will produce 80% of the maximum score.
      */
-    public ParetoScoreTransformer(int maxScore, int eightyPercentLevel) {
+    public ParetoScoreTransformer(float maxScore, float eightyPercentLevel) {
         this(maxScore, eightyPercentLevel, 0);
     }
 
@@ -51,7 +51,7 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * @param minimumThreshold   minimum input score that must be achieved to get a score higher than 0 out of this
      *                           transformer.
      */
-    public ParetoScoreTransformer(int maxScore, int eightyPercentLevel, int minimumThreshold) {
+    public ParetoScoreTransformer(float maxScore, float eightyPercentLevel, float minimumThreshold) {
         this.maxScore = maxScore;
         this.eightyPercentLevel = eightyPercentLevel;
         this.minimumThreshold = minimumThreshold;
@@ -61,13 +61,13 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * {@inheritDoc}
      */
     @Override
-    public <OUT> int transform(OUT item, int score) {
+    public <OUT> float transform(OUT item, float score) {
         if (score < minimumThreshold) {
             return 0;
         }
 
         double alpha = Math.log((double) 5) / eightyPercentLevel;
         double exp = Math.exp(-alpha * score);
-        return Math.round(new Double(maxScore * (1 - exp)).floatValue());
+        return new Double(maxScore * (1 - exp)).floatValue();
     }
 }

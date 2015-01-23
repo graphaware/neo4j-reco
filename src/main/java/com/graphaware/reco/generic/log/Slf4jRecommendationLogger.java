@@ -19,7 +19,6 @@ package com.graphaware.reco.generic.log;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Score;
-import org.neo4j.graphdb.Node;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -92,7 +91,7 @@ public class Slf4jRecommendationLogger<OUT, IN> implements Logger<OUT, IN> {
     protected String scoreToString(Score score) {
         StringBuilder builder = new StringBuilder();
         builder.append("{total:").append(score.getTotalScore());
-        for (Map.Entry<String, Integer> entry : score.getScoreParts().entrySet()) {
+        for (Map.Entry<String, Float> entry : score.getScoreParts().entrySet()) {
             builder.append(",").append(entry.getKey()).append(":").append(entry.getValue());
         }
         builder.append("}");

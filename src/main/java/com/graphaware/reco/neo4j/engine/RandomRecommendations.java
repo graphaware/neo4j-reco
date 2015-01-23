@@ -19,13 +19,13 @@ package com.graphaware.reco.neo4j.engine;
 import com.graphaware.common.policy.NodeInclusionPolicy;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine;
-import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.runtime.walk.NodeSelector;
 import com.graphaware.runtime.walk.RandomNodeSelector;
 import org.neo4j.graphdb.Node;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link SingleScoreRecommendationEngine} that randomly recommends {@link org.neo4j.graphdb.Node}s which comply with
@@ -56,8 +56,8 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * node is determined by {@link #numberOfAttempts(com.graphaware.reco.generic.context.Context)}.
      */
     @Override
-    protected final Map<Node, Integer> doRecommendSingle(Node input, Context<Node, Node> context) {
-        Map<Node, Integer> result = new HashMap<>();
+    protected final Map<Node, Float> doRecommendSingle(Node input, Context<Node, Node> context) {
+        Map<Node, Float> result = new HashMap<>();
         int attempts = 0;
 
         int numberOfAttempts = numberOfAttempts(context);
@@ -77,7 +77,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * @param node to score.
      * @return score, 0 by default.
      */
-    protected int score(Node node) {
+    protected float score(Node node) {
         return 0;
     }
 

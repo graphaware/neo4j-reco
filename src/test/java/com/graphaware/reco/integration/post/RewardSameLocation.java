@@ -41,7 +41,7 @@ public class RewardSameLocation extends RewardSomethingShared {
     }
 
     @Override
-    protected int scoreValue(Node recommendation, Node input, Node sharedThing) {
+    protected float scoreValue(Node recommendation, Node input, Node sharedThing) {
         return 10;
     }
 

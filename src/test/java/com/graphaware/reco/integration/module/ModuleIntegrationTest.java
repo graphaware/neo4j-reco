@@ -18,8 +18,6 @@ package com.graphaware.reco.integration.module;
 
 import com.graphaware.common.util.IterableUtils;
 import com.graphaware.reco.generic.context.Mode;
-import com.graphaware.reco.generic.log.Logger;
-import com.graphaware.reco.generic.log.Slf4jRecommendationLogger;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.integration.engine.FriendsComputingEngine;
 import com.graphaware.reco.integration.engine.FriendsRecommendationEngine;
@@ -27,7 +25,6 @@ import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import com.graphaware.reco.neo4j.module.RecommendationModule;
 import com.graphaware.reco.neo4j.module.RecommendationModuleConfiguration;
-import com.graphaware.reco.neo4j.result.RecommendationsPrinter;
 import com.graphaware.runtime.GraphAwareRuntime;
 import com.graphaware.runtime.GraphAwareRuntimeFactory;
 import com.graphaware.runtime.config.FluentRuntimeConfiguration;
@@ -42,7 +39,6 @@ import org.neo4j.graphdb.Transaction;
 
 import java.util.List;
 
-import static com.graphaware.reco.neo4j.result.RecommendationsPrinter.*;
 import static org.junit.Assert.assertEquals;
 
 public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
@@ -91,7 +87,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19,ageDifference:-6,friendsInCommon:15,sameGender:10}),(Luanne {total:8,ageDifference:-7,friendsInCommon:15})";
+            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:7.856705,ageDifference:-7.0093026,friendsInCommon:14.866008})";
 
             assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
             assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
@@ -100,7 +96,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
 
-            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19,ageDifference:-6,friendsInCommon:15,sameGender:10}),(Luanne {total:12,ageDifference:-3,friendsInCommon:15})";
+            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:11.553411,ageDifference:-3.312597,friendsInCommon:14.866008})";
 
             assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
             assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
@@ -110,16 +106,16 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
-            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore());
+            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
 
             assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
-            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore());
+            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
             assertEquals("Vince", recoForLuanne.get(2).getItem().getProperty("name"));
-            assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore());
+            assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
             assertEquals("Bob", recoForLuanne.get(3).getItem().getProperty("name"));
-            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore());
+            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
             tx.success();
         }
@@ -151,7 +147,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19,ageDifference:-6,friendsInCommon:15,sameGender:10}),(Luanne {total:8,ageDifference:-7,friendsInCommon:15})";
+            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:7.856705,ageDifference:-7.0093026,friendsInCommon:14.866008})";
 
             assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
             assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
@@ -160,7 +156,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
 
-            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19,ageDifference:-6,friendsInCommon:15,sameGender:10}),(Luanne {total:12,ageDifference:-3,friendsInCommon:15})";
+            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:11.553411,ageDifference:-3.312597,friendsInCommon:14.866008})";
 
             assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
             assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
@@ -170,16 +166,16 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
-            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore());
+            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
 
             assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
-            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore());
+            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
             assertEquals("Vince", recoForLuanne.get(2).getItem().getProperty("name"));
-            assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore());
+            assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
             assertEquals("Bob", recoForLuanne.get(3).getItem().getProperty("name"));
-            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore());
+            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
             tx.success();
         }

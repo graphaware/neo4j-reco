@@ -28,5 +28,5 @@ public interface ScoreTransformer {
      * @param score score of the item.
      * @return transformed score.
      */
-    <OUT> int transform(OUT item, int score);
+    <OUT> float transform(OUT item, float score);
 }
