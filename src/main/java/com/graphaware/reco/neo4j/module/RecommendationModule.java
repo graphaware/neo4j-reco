@@ -136,7 +136,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
                 for (Recommendation<Node> recommendation : recommendations) {
                     Relationship created = node.createRelationshipTo(recommendation.getItem(), config.getRelationshipType());
-                    for (Map.Entry<String, Integer> entry : recommendation.getScore().getScoreParts().entrySet()) {
+                    for (Map.Entry<String, Float> entry : recommendation.getScore().getScoreParts().entrySet()) {
                         created.setProperty(entry.getKey(), entry.getValue());
                     }
                 }

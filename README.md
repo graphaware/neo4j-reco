@@ -116,7 +116,7 @@ will be discussed shortly.
 #### Scores and Score Transformers
 
 `Recommendations` are a collection of tuples/pairs, where each pair is composed of a recommended item (again, typically a `Node`)
-and associated relevance **Score**. The `Score` is composed of **Partial Scores**. Each _Partial Score_ has a name and an integer
+and associated relevance **Score**. The `Score` is composed of **Partial Scores**. Each _Partial Score_ has a name and a float
 value. Typically, a single `SingleScoreRecommendationEngine`, as the name suggest, is responsible for a single _Partial Score_.
 
 When an item has been discovered as a potential recommendation by multiple `SingleScoreRecommendationEngine`s, its _Parial Scores_
@@ -482,11 +482,13 @@ integration test though in order to smoke-test our brand new recommendation engi
 public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
     private Neo4jTopLevelDelegatingEngine recommendationEngine;
+    private RecommendationsRememberingLogger rememberingLogger = new RecommendationsRememberingLogger();
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        recommendationEngine = new FriendsComputingEngine();
+        recommendationEngine = new FriendsRecommendationEngine();
+        rememberingLogger.clear();
     }
 
     @Override
@@ -518,34 +520,40 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
     @Test
     public void shouldRecommendRealTime() {
         try (Transaction tx = getDatabase().beginTx()) {
-            List<Recommendation<Node>> result;
 
-            result = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
-            assertEquals("" +
-                    "(:Male:Person {age: 30, name: Adam}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
-                    "(:Female:Person {age: 25, name: Luanne}): total:8, ageDifference:-7, friendsInCommon:15",
-                    RecommendationsPrinter.toString(result));
+            //verify Vince
 
-            result = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
+            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
 
-            assertEquals("" +
-                    "(:Male:Person {age: 40, name: Vince}): total:19, ageDifference:-6, friendsInCommon:15, sameGender:10" + LINE_SEPARATOR +
-                    "(:Female:Person {age: 25, name: Luanne}): total:12, ageDifference:-3, friendsInCommon:15",
-                    RecommendationsPrinter.toString(result));
+            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19,friendsInCommon:15,sameGender:10,ageDifference:-6}),(Luanne {total:8,friendsInCommon:15,ageDifference:-7})";
 
-            result = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
+            assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
+            assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
 
-            assertEquals("Daniela", result.get(0).getItem().getProperty("name"));
-            assertEquals(22, result.get(0).getScore().getTotalScore());
+            //verify Adam
 
-            assertEquals("Adam", result.get(1).getItem().getProperty("name"));
-            assertEquals(12, result.get(1).getScore().getTotalScore());
+            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
 
-            assertEquals("Vince", result.get(2).getItem().getProperty("name"));
-            assertEquals(8, result.get(2).getScore().getTotalScore());
+            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19,friendsInCommon:15,sameGender:10,ageDifference:-6}),(Luanne {total:12,friendsInCommon:15,ageDifference:-3})";
 
-            assertEquals("Bob", result.get(3).getItem().getProperty("name"));
-            assertEquals(-9, result.get(3).getScore().getTotalScore());
+            assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
+            assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
+
+            //verify Luanne
+
+            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
+
+            assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
+            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore());
+
+            assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
+            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore());
+
+            assertEquals("Vince", recoForLuanne.get(2).getItem().getProperty("name"));
+            assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore());
+
+            assertEquals("Bob", recoForLuanne.get(3).getItem().getProperty("name"));
+            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore());
 
             tx.success();
         }
