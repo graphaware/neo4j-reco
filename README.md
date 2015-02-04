@@ -688,7 +688,7 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
 In order to record produced recommendations, you can add provided or your own `Logger` implementations to the top-level
 engine, e.g.:
 
-```
+```java
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
  * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
