@@ -181,6 +181,14 @@ input, we could pre-compute a number of recommendations and link them to the inp
 When serving recommendations, we could read them directly from the database, rather than computing them in real-time.
 Blacklists and `Filter`s are still consulted in case the situation has changed since the time recommendations were pre-computed.
 
+#### Logging
+
+Each produced `Recommendation` has a String UUID, so that it can be uniquely identified. This is useful, for example,
+when we want to measure the quality of recommendations. We can store the `Score`s of different `Recommendation`s as well
+as how users reacted to them against their UUIDs. For this purpose, we can use a `Logger` implementation. A `Logger`
+records recommendations for later analysis. There are provided implementation for logging using slf4j, but you can create
+your own to store the data in Cassandra or wherever you want.
+
 Using GraphAware Neo4j Recommendation Engine
 --------------------------------------------
 
@@ -258,7 +266,7 @@ public class FriendsInCommon extends SomethingInCommon {
     }
 
     @Override
-    protected String scoreName() {
+    protected String name() {
         return "friendsInCommon";
     }
 }
@@ -293,7 +301,7 @@ public class FriendsInCommon extends SomethingInCommon {
     }
 
     @Override
-    protected String scoreName() {
+    protected String name() {
         return "friendsInCommon";
     }
 }
@@ -670,6 +678,41 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
         return Arrays.asList(
                 new Neo4jPrecomputedEngine(),
                 new FriendsComputingEngine()
+        );
+    }
+}
+```
+
+### Logging
+
+In order to record produced recommendations, you can add provided or your own `Logger` implementations to the top-level
+engine, e.g.:
+
+```
+/**
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
+ * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
+ * real-time using {@link com.graphaware.reco.integration.engine.FriendsComputingEngine}.
+ */
+public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
+
+    public FriendsRecommendationEngine() {
+        super(new FriendsContextFactory());
+    }
+
+    @Override
+    protected List<RecommendationEngine<Node, Node>> engines() {
+        return Arrays.<RecommendationEngine<Node, Node>>asList(
+                new Neo4jPrecomputedEngine(),
+                new FriendsComputingEngine()
+        );
+    }
+
+    @Override
+    protected List<Logger<Node, Node>> loggers() {
+        return Arrays.asList(
+                new Slf4jRecommendationLogger<Node, Node>(),
+                new Slf4jStatisticsLogger<Node, Node>()
         );
     }
 }
