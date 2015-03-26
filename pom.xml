@@ -19,7 +19,7 @@
 
     <groupId>com.graphaware.neo4j</groupId>
     <artifactId>recommendation-engine</artifactId>
-    <version>2.2.0.28.2-SNAPSHOT</version>
+    <version>2.2.0.28.2</version>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
