@@ -26,8 +26,7 @@ package com.graphaware.reco.generic.context;
 public interface ContextFactory<OUT, IN> {
 
     /**
-     * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process. Must call
-     * {@link com.graphaware.reco.generic.context.Context#initialize(Object)} before returning the context.
+     * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process.
      *
      * @param input for which recommendations are about to be computed.
      * @param mode  in which the computation takes place.
