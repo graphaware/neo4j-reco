@@ -132,15 +132,14 @@ friend in common might not bear the same relevance for the recommendation. Thus,
 **Score Transformer** applied to it. A ScoreTransformer can apply an arbitrary mathematical function to the _Partial Score_
 computed by a `SingleScoreRecommendationEngine`.
 
-#### Contexts, Context Factories, and Mode
+#### Context
 
 `Recommendations` are always computed within a **Context**. Whist each recommendation-computing process for a single input
 might involve multiple `RecommendationEngine`s and other components, there is usually a single `Context` per computation
 that encapsulates information relevant to the process. For example, the `Context` provides information about the **Mode**
 of computation, i.e. whether it is `REAL_TIME` or `BATCH` (pre-computing). It also knows, how many recommendations should
 be produced, and is able to decide, whether a potential recommendation discovered by a `RecommendationEngine` is allowed
-to be served to the user. For each computation, a new `Context` is produced and this is typically achieved using a
-singleton **ContextFactory**.
+to be served to the user. For each computation, a new `Context` is produced by `TopLevelRecommendationEngine`.
 
 #### Blacklist Builders and Filters
 
@@ -423,43 +422,13 @@ already provided by the library, as we will see shortly.
 
 #### Putting it all together
 
-Now that we have all the components that satisfy all 8 requirements, we just need to combine them into a `ContextFactory` and
-a top-level `RecommendationEngine`. The following `ContextFactory` will produce `Context`s that do not allow existing
-friends, or the person we are computing recommendations for, to be recommended as potential friends:
-
-```java
-/**
- * {@link com.graphaware.reco.neo4j.context.Neo4jContextFactory} for recommending friends.
- */
-public final class FriendsContextFactory extends Neo4jContextFactory {
-
-    @Override
-    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
-        return Arrays.asList(
-                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
-        );
-    }
-
-    @Override
-    protected List<Filter<Node, Node>> filters() {
-        return Arrays.<Filter<Node, Node>>asList(
-                new ExcludeSelf()
-        );
-    }
-}
-```
-
-Finally, we will combine everything into a top-level engine:
+Now that we have all the components that satisfy all 8 requirements, we just need to combine them into a `TopLevelRecommendationEngine`:
 
 ```java
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
  */
 public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
-
-    public FriendsComputingEngine() {
-        super(new FriendsContextFactory());
-    }
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
@@ -477,8 +446,21 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
                 new PenalizeAgeDifference()
         );
     }
-}
 
+    @Override
+    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
+        return Arrays.asList(
+                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
+    }
+
+    @Override
+    protected List<Filter<Node, Node>> filters() {
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
+        );
+    }
+}
 ```
 
 #### A quick integration test
@@ -628,10 +610,6 @@ in order to indicate that it should only be used if there aren't enough pre-comp
  */
 public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
 
-    public FriendsComputingEngine() {
-        super(new FriendsContextFactory());
-    }
-
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
         return Arrays.<RecommendationEngine<Node, Node>>asList(
@@ -650,6 +628,21 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
     }
 
     @Override
+    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
+        return Arrays.asList(
+                new ExcludeSelf(),
+                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
+    }
+
+    @Override
+    protected List<Filter<Node, Node>> filters() {
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
+        );
+    }
+
+    @Override
     public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {
         //noinspection unchecked
         return ParticipationPolicy.IF_MORE_RESULTS_NEEDED;
@@ -659,7 +652,8 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
 
 Finally, we need a new top-level `RecommendationEngine` that is exposed to our controllers or whatever component of your
 application is consuming the recommendations. The new top-level engine will first delegate to a `Neo4jPrecomputedEngine`,
-then to our `FriendsComputingEngine`.
+then to our `FriendsComputingEngine`. `BlacklistBuilder`s and `Filter`s have to be provided to this engine as well, because
+it will now be responsible for constructing `Context`s, since it is a top-level engine.
 
 ```java
 /**
@@ -669,15 +663,26 @@ then to our `FriendsComputingEngine`.
  */
 public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
 
-    public FriendsRecommendationEngine() {
-        super(new FriendsContextFactory());
+    @Override
+    protected List<RecommendationEngine<Node, Node>> engines() {
+        return Arrays.<RecommendationEngine<Node, Node>>asList(
+                new Neo4jPrecomputedEngine(),
+                new FriendsComputingEngine()
+        );
     }
 
     @Override
-    protected List<RecommendationEngine<Node, Node>> engines() {
+    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
         return Arrays.asList(
-                new Neo4jPrecomputedEngine(),
-                new FriendsComputingEngine()
+                new ExcludeSelf(),
+                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
+    }
+
+    @Override
+    protected List<Filter<Node, Node>> filters() {
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
         );
     }
 }
@@ -696,10 +701,6 @@ engine, e.g.:
  */
 public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
 
-    public FriendsRecommendationEngine() {
-        super(new FriendsContextFactory());
-    }
-
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
         return Arrays.<RecommendationEngine<Node, Node>>asList(
@@ -709,8 +710,24 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
     }
 
     @Override
+    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
+        return Arrays.asList(
+                new ExcludeSelf(),
+                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
+    }
+
+    @Override
+    protected List<Filter<Node, Node>> filters() {
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
+        );
+    }
+
+    @Override
     protected List<Logger<Node, Node>> loggers() {
         return Arrays.asList(
+                new RecommendationsRememberingLogger(),
                 new Slf4jRecommendationLogger<Node, Node>(),
                 new Slf4jStatisticsLogger<Node, Node>()
         );

@@ -17,36 +17,45 @@
 package com.graphaware.reco.generic.engine;
 
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.context.ContextFactory;
+import com.graphaware.reco.generic.context.FilteringContext;
 import com.graphaware.reco.generic.context.Mode;
+import com.graphaware.reco.generic.filter.BlacklistBuilder;
+import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.log.Logger;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
+import static java.util.Collections.unmodifiableList;
 import static org.springframework.util.Assert.notNull;
 
 /**
  * A {@link com.graphaware.reco.generic.engine.TopLevelRecommendationEngine} {@link com.graphaware.reco.generic.engine.DelegatingRecommendationEngine}.
- * It holds its own {@link com.graphaware.reco.generic.context.ContextFactory}, which is accepts at construction-time.
- * It also holds a list of {@link com.graphaware.reco.generic.log.Logger}s, to which it delegates logging of computed recommendations.
+ * <p/>
+ * The engine can be configured with a list of {@link com.graphaware.reco.generic.filter.BlacklistBuilder}s that produce
+ * blacklists of items passed onto the context, and a list of {@link com.graphaware.reco.generic.filter.Filter}s, which
+ * are passed to the produced contexts directly. By default, it uses a {@link com.graphaware.reco.generic.context.FilteringContext}.
+ * <p/>
+ * Configuration can be either done by instantiating this class and calling {@link #addFilter(com.graphaware.reco.generic.filter.Filter)}
+ * and {@link #addBlacklistBuilder(com.graphaware.reco.generic.filter.BlacklistBuilder)} (or their plural equivalents), or
+ * by extending this class and overriding {@link #blacklistBuilders()} and {@link #filters()}.
+ * <p/>
+ * This engine also holds a list of {@link com.graphaware.reco.generic.log.Logger}s, to which it delegates logging of computed recommendations.
  */
 public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingRecommendationEngine<OUT, IN> implements TopLevelRecommendationEngine<OUT, IN> {
 
-    private final ContextFactory<OUT, IN> contextFactory;
+    private final List<BlacklistBuilder<OUT, IN>> blacklistBuilders = new LinkedList<>();
+    private final List<Filter<OUT, IN>> filters = new LinkedList<>();
     private final List<Logger<OUT, IN>> loggers = new LinkedList<>();
 
     /**
      * Create a new engine.
-     *
-     * @param contextFactory to use for producing contexts.
      */
-    public TopLevelDelegatingRecommendationEngine(ContextFactory<OUT, IN> contextFactory) {
+    public TopLevelDelegatingRecommendationEngine() {
         super();
-        this.contextFactory = contextFactory;
+        addBlacklistBuilders(blacklistBuilders());
+        addFilters(filters());
         addLoggers(loggers());
     }
 
@@ -54,8 +63,35 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
      * {@inheritDoc}
      */
     @Override
+    public final Context<OUT, IN> produceContext(IN input, Mode mode, int limit) {
+        Set<OUT> blacklist = new HashSet<>();
+        for (BlacklistBuilder<OUT, IN> blacklistBuilder : blacklistBuilders) {
+            blacklist.addAll(blacklistBuilder.buildBlacklist(input));
+        }
+
+        return productContext(input, mode, limit, unmodifiableList(filters), blacklist);
+    }
+
+    /**
+     * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process.
+     *
+     * @param input     for which recommendations are about to be computed.
+     * @param mode      in which the computation takes place.
+     * @param limit     maximum number of recommendations desired.
+     * @param filters   for filtering out items.
+     * @param blacklist for blaclisting items.
+     * @return context.
+     */
+    protected FilteringContext<OUT, IN> productContext(IN input, Mode mode, int limit, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
+        return new FilteringContext<>(input, mode, limit, filters, blacklist);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Recommendation<OUT>> recommend(IN input, Mode mode, int limit) {
-        Context<OUT, IN> context = contextFactory.produceContext(input, mode, limit);
+        Context<OUT, IN> context = produceContext(input, mode, limit);
 
         List<Recommendation<OUT>> recommendations = recommend(input, context).get(limit);
 
@@ -77,6 +113,54 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
     }
 
     /**
+     * Add a {@link com.graphaware.reco.generic.filter.BlacklistBuilder} used by this factory to produce blacklists of items.
+     *
+     * @param blacklistBuilder to be used. Must not be <code>null</code>.
+     */
+    public final void addBlacklistBuilder(BlacklistBuilder<OUT, IN> blacklistBuilder) {
+        notNull(blacklistBuilder);
+
+        blacklistBuilders.add(blacklistBuilder);
+    }
+
+    /**
+     * Add {@link com.graphaware.reco.generic.filter.BlacklistBuilder}s used by this factory to produce blacklists of items.
+     *
+     * @param blacklistBuilders to be used. Must not be <code>null</code> and all of the elements must not be <code>null</code>.
+     */
+    public final void addBlacklistBuilders(List<BlacklistBuilder<OUT, IN>> blacklistBuilders) {
+        notNull(blacklistBuilders);
+
+        for (BlacklistBuilder<OUT, IN> blacklistBuilder : blacklistBuilders) {
+            addBlacklistBuilder(blacklistBuilder);
+        }
+    }
+
+    /**
+     * Add a {@link com.graphaware.reco.generic.filter.Filter} passed to the produced {@link com.graphaware.reco.generic.context.Context}s.
+     *
+     * @param filter to be used. Must not be <code>null</code>.
+     */
+    public final void addFilter(Filter<OUT, IN> filter) {
+        notNull(filter);
+
+        filters.add(filter);
+    }
+
+    /**
+     * Add {@link com.graphaware.reco.generic.filter.Filter}s passed to the produced {@link com.graphaware.reco.generic.context.Context}s.
+     *
+     * @param filters to be used. Must not be <code>null</code> and all of the elements must not be <code>null</code>.
+     */
+    public final void addFilters(List<Filter<OUT, IN>> filters) {
+        notNull(filters);
+
+        for (Filter<OUT, IN> filter : filters) {
+            addFilter(filter);
+        }
+    }
+
+    /**
      * Get {@link com.graphaware.reco.generic.log.Logger}s to use for recording / logging produced recommendations. Designed to be overridden.
      *
      * @return empty list by default.
@@ -92,6 +176,7 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
      */
     public final void addLogger(Logger<OUT, IN> logger) {
         notNull(logger);
+
         loggers.add(logger);
     }
 
@@ -103,6 +188,7 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
      */
     public final void addLoggers(List<Logger<OUT, IN>> loggers) {
         notNull(loggers);
+
         for (Logger<OUT, IN> logger : loggers) {
             addLogger(logger);
         }

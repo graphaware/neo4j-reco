@@ -19,8 +19,7 @@ package com.graphaware.reco.generic.context;
 import com.graphaware.reco.generic.stats.Statistics;
 
 /**
- * Context holding information about the recommendation-computing process. Contexts should be package-protected and
- * constructed using their respective public {@link com.graphaware.reco.generic.context.ContextFactory} implementations.
+ * Context holding information about the recommendation-computing process.
  */
 public interface Context<OUT, IN> {
 

@@ -20,10 +20,6 @@ import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.reco.generic.stats.Statistics;
-import com.graphaware.reco.generic.transform.NoTransformation;
-import com.graphaware.reco.generic.transform.ScoreTransformer;
-
-import java.util.Map;
 
 /**
  * Abstract base class for {@link com.graphaware.reco.generic.engine.RecommendationEngine} implementations. Takes care

@@ -17,16 +17,16 @@
 package com.graphaware.reco.generic.engine;
 
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.policy.ParticipationPolicy;
+import com.graphaware.reco.generic.filter.BlacklistBuilder;
+import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendations;
-import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.springframework.util.Assert.*;
+import static org.springframework.util.Assert.notNull;
 
 /**
  * A {@link RecommendationEngine} that delegates to other {@link RecommendationEngine}s. Once all interested {@link RecommendationEngine}s
@@ -66,6 +66,24 @@ public class DelegatingRecommendationEngine<OUT, IN> extends BaseRecommendationE
      * @return empty list by default.
      */
     protected List<PostProcessor<OUT, IN>> postProcessors() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Get {@link com.graphaware.reco.generic.filter.BlacklistBuilder}s to be used by this factory. Designed to be overridden.
+     *
+     * @return empty list by default.
+     */
+    protected List<BlacklistBuilder<OUT, IN>> blacklistBuilders() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Get {@link com.graphaware.reco.generic.filter.Filter}s to be used by this factory. Designed to be overridden.
+     *
+     * @return empty list by default.
+     */
+    protected List<Filter<OUT, IN>> filters() {
         return Collections.emptyList();
     }
 

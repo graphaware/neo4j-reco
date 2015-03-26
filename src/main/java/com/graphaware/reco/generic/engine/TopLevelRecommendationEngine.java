@@ -16,13 +16,9 @@
 
 package com.graphaware.reco.generic.engine;
 
-import com.graphaware.common.util.Pair;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.Mode;
-import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendation;
-import com.graphaware.reco.generic.result.Recommendations;
-import com.graphaware.reco.generic.result.Score;
 
 import java.util.List;
 
@@ -33,6 +29,16 @@ import java.util.List;
  * @param <IN>  type of the item recommendations are for / based on.
  */
 public interface TopLevelRecommendationEngine<OUT, IN> extends RecommendationEngine<OUT, IN> {
+
+    /**
+     * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process.
+     *
+     * @param input for which recommendations are about to be computed.
+     * @param mode  in which the computation takes place.
+     * @param limit maximum number of recommendations desired.
+     * @return context.
+     */
+    Context<OUT, IN> produceContext(IN input, Mode mode, int limit);
 
     /**
      * Produce recommendations.

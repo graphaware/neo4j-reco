@@ -16,14 +16,8 @@
 
 package com.graphaware.reco.neo4j.module;
 
-import com.graphaware.common.util.Pair;
-import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.context.ContextFactory;
 import com.graphaware.reco.generic.context.Mode;
-import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.result.Recommendation;
-import com.graphaware.reco.generic.result.Recommendations;
-import com.graphaware.reco.generic.result.Score;
 import com.graphaware.runtime.RuntimeRegistry;
 import com.graphaware.runtime.metadata.NodeBasedContext;
 import com.graphaware.runtime.module.BaseRuntimeModule;

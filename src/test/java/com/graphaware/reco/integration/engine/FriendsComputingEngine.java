@@ -18,25 +18,28 @@ package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
+import com.graphaware.reco.generic.filter.BlacklistBuilder;
+import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.integration.post.PenalizeAgeDifference;
 import com.graphaware.reco.integration.post.RewardSameLabels;
 import com.graphaware.reco.integration.post.RewardSameLocation;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
+import com.graphaware.reco.neo4j.filter.ExcludeSelf;
+import com.graphaware.reco.neo4j.filter.ExistingRelationshipBlacklistBuilder;
 import org.neo4j.graphdb.Node;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static com.graphaware.reco.integration.domain.Relationships.FRIEND_OF;
+import static org.neo4j.graphdb.Direction.BOTH;
+
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
  */
 public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
-
-    public FriendsComputingEngine() {
-        super(new FriendsContextFactory());
-    }
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
@@ -52,6 +55,21 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
                 new RewardSameLabels(),
                 new RewardSameLocation(),
                 new PenalizeAgeDifference()
+        );
+    }
+
+    @Override
+    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
+        return Arrays.asList(
+                new ExcludeSelf(),
+                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
+    }
+
+    @Override
+    protected List<Filter<Node, Node>> filters() {
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
         );
     }
 

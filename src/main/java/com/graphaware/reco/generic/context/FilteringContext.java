@@ -17,7 +17,6 @@
 package com.graphaware.reco.generic.context;
 
 import com.graphaware.reco.generic.filter.Filter;
-import com.graphaware.reco.generic.stats.Statistics;
 
 import java.util.List;
 import java.util.Set;
@@ -43,7 +42,7 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
      * @param filters   used to filter out items. Can be empty, but must not be <code>null</code>.
      * @param blacklist a set of blacklisted items. Can be empty, but must not be <code>null</code>.
      */
-    FilteringContext(IN input, Mode mode, int limit, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
+    public FilteringContext(IN input, Mode mode, int limit, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
         super(input, mode, limit);
 
         notNull(filters);
@@ -80,7 +79,6 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
             }
         }
 
-//        statistics().incrementStatistic(task, TOTAL_ITEMS);
         return true;
     }
 

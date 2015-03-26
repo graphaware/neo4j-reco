@@ -39,7 +39,7 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
      * @param mode  in which recommendations are being computed. Must not be <code>null</code>.
      * @param limit the maximum number of desired recommendations. Must be positive.
      */
-    SimpleContext(IN input, Mode mode, int limit) {
+    public SimpleContext(IN input, Mode mode, int limit) {
         notNull(input);
         notNull(mode);
         isTrue(limit > 0);

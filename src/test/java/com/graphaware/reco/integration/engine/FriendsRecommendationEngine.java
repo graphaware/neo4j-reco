@@ -17,16 +17,23 @@
 package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.generic.engine.RecommendationEngine;
+import com.graphaware.reco.generic.filter.BlacklistBuilder;
+import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.log.Logger;
 import com.graphaware.reco.generic.log.Slf4jRecommendationLogger;
 import com.graphaware.reco.generic.log.Slf4jStatisticsLogger;
 import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
 import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
+import com.graphaware.reco.neo4j.filter.ExcludeSelf;
+import com.graphaware.reco.neo4j.filter.ExistingRelationshipBlacklistBuilder;
 import org.neo4j.graphdb.Node;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static com.graphaware.reco.integration.domain.Relationships.FRIEND_OF;
+import static org.neo4j.graphdb.Direction.BOTH;
 
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
@@ -35,15 +42,26 @@ import java.util.List;
  */
 public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
 
-    public FriendsRecommendationEngine() {
-        super(new FriendsContextFactory());
-    }
-
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
         return Arrays.<RecommendationEngine<Node, Node>>asList(
                 new Neo4jPrecomputedEngine(),
                 new FriendsComputingEngine()
+        );
+    }
+
+    @Override
+    protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
+        return Arrays.asList(
+                new ExcludeSelf(),
+                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
+    }
+
+    @Override
+    protected List<Filter<Node, Node>> filters() {
+        return Arrays.<Filter<Node, Node>>asList(
+                new ExcludeSelf()
         );
     }
 
