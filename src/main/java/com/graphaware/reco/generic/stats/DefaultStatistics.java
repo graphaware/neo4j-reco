@@ -50,6 +50,8 @@ public class DefaultStatistics<IN> implements Statistics {
      */
     public DefaultStatistics(IN input) {
         this.input = input;
+
+        startTiming(TOTAL_TIME);
     }
 
     /**
@@ -70,6 +72,13 @@ public class DefaultStatistics<IN> implements Statistics {
         hasLength(task);
 
         addStatistic(task, ELAPSED_TIME, timer.getTime(task));
+    }
+
+    @Override
+    public long getTime(String task) {
+        hasLength(task);
+
+        return timer.getTime(task);
     }
 
     /**

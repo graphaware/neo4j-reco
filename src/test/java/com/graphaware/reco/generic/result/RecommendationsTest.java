@@ -304,8 +304,8 @@ public class RecommendationsTest {
         r.add("Reco1", "Score1", 1);
         r.add("Reco2", "Score1", 2);
 
-        assertTrue(r.hasEnough(1));
-        assertTrue(r.hasEnough(2));
-        assertFalse(r.hasEnough(3));
+        assertTrue(r.hasEnoughResults(1));
+        assertTrue(r.hasEnoughResults(2));
+        assertFalse(r.hasEnoughResults(3));
     }
 }

@@ -17,7 +17,6 @@
 package com.graphaware.reco.generic.engine;
 
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.context.Mode;
 import com.graphaware.reco.generic.result.Recommendation;
 
 import java.util.List;
@@ -33,20 +32,29 @@ public interface TopLevelRecommendationEngine<OUT, IN> extends RecommendationEng
     /**
      * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process.
      *
-     * @param input for which recommendations are about to be computed.
-     * @param mode  in which the computation takes place.
-     * @param limit maximum number of recommendations desired.
+     * @param input   for which recommendations are about to be computed.
+     * @param maxTime the maximum number of millis the recommendation-computing process should last. Must be positive.
+     * @param limit   maximum number of recommendations desired.
      * @return context.
      */
-    Context<OUT, IN> produceContext(IN input, Mode mode, int limit);
+    Context<OUT, IN> produceContext(IN input, int limit, long maxTime);
 
     /**
      * Produce recommendations.
      *
      * @param input for which recommendations are about to be computed.
-     * @param mode  in which the computation takes place.
      * @param limit maximum number of recommendations desired.
      * @return recommendations sorted by decreasing relevance and trimmed to limit.
      */
-    List<Recommendation<OUT>> recommend(IN input, Mode mode, int limit);
+    List<Recommendation<OUT>> recommend(IN input, int limit);
+
+    /**
+     * Produce recommendations.
+     *
+     * @param input   for which recommendations are about to be computed.
+     * @param maxTime the maximum number of millis the recommendation-computing process should last. Must be positive.
+     * @param limit   maximum number of recommendations desired.
+     * @return recommendations sorted by decreasing relevance and trimmed to limit.
+     */
+    List<Recommendation<OUT>> recommend(IN input, int limit, long maxTime);
 }

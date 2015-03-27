@@ -16,7 +16,6 @@
 
 package com.graphaware.reco.neo4j.module;
 
-import com.graphaware.reco.generic.context.Mode;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.runtime.RuntimeRegistry;
 import com.graphaware.runtime.metadata.NodeBasedContext;
@@ -83,7 +82,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
         LOG.info("Computing for " + node.getId());
 
-        List<Recommendation<Node>> recommendations = config.getEngine().recommend(node, Mode.BATCH, config.getMaxRecommendations());
+        List<Recommendation<Node>> recommendations = config.getEngine().recommend(node, config.getMaxRecommendations());
 
         persistRecommendations(node, recommendations);
 

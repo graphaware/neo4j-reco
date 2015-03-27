@@ -18,6 +18,7 @@ package com.graphaware.reco.integration.engine;
 
 import com.graphaware.common.policy.NodeInclusionPolicy;
 import com.graphaware.reco.generic.context.Context;
+import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.neo4j.engine.RandomRecommendations;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.Node;
@@ -45,5 +46,16 @@ public class RandomPeople extends RandomRecommendations {
     @Override
     protected int numberOfRecommendations(Context<Node, Node> context) {
         return context.limit() * 5;
+    }
+
+    @Override
+    public ParticipationPolicy<Node, Node> participationPolicy(Context context) {
+        try {
+            Thread.sleep(1); //waste 1 ms
+        } catch (InterruptedException e) {
+
+        }
+
+        return ParticipationPolicy.IF_MORE_RESULTS_NEEDED_AND_ENOUGH_TIME;
     }
 }

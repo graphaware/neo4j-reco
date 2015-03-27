@@ -139,7 +139,7 @@ public class Recommendations<OUT> {
      * @param limit desired number.
      * @return true iff enough.
      */
-    public boolean hasEnough(int limit) {
+    public boolean hasEnoughResults(int limit) {
         return size() >= limit;
     }
 

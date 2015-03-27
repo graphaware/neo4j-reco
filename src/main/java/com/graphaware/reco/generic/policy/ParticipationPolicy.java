@@ -42,7 +42,28 @@ public interface ParticipationPolicy<OUT, IN> {
     static ParticipationPolicy IF_MORE_RESULTS_NEEDED = new ParticipationPolicy() {
         @Override
         public boolean participate(Object input, Context context, Recommendations recommendations) {
-            return !recommendations.hasEnough(context.limit());
+            return !recommendations.hasEnoughResults(context.limit());
+        }
+    };
+
+    static ParticipationPolicy IF_ENOUGH_TIME = new ParticipationPolicy() {
+        @Override
+        public boolean participate(Object input, Context context, Recommendations recommendations) {
+            return context.hasEnoughTime();
+        }
+    };
+
+    static ParticipationPolicy IF_MORE_RESULTS_NEEDED_AND_ENOUGH_TIME = new ParticipationPolicy() {
+        @Override
+        public boolean participate(Object input, Context context, Recommendations recommendations) {
+            return IF_MORE_RESULTS_NEEDED.participate(input, context, recommendations) && IF_ENOUGH_TIME.participate(input, context, recommendations);
+        }
+    };
+
+    static ParticipationPolicy IF_MORE_RESULTS_NEEDED_OR_ENOUGH_TIME = new ParticipationPolicy() {
+        @Override
+        public boolean participate(Object input, Context context, Recommendations recommendations) {
+            return IF_MORE_RESULTS_NEEDED.participate(input, context, recommendations) || IF_ENOUGH_TIME.participate(input, context, recommendations);
         }
     };
 

@@ -136,9 +136,9 @@ computed by a `SingleScoreRecommendationEngine`.
 
 `Recommendations` are always computed within a **Context**. Whist each recommendation-computing process for a single input
 might involve multiple `RecommendationEngine`s and other components, there is usually a single `Context` per computation
-that encapsulates information relevant to the process. For example, the `Context` provides information about the **Mode**
-of computation, i.e. whether it is `REAL_TIME` or `BATCH` (pre-computing). It also knows, how many recommendations should
-be produced, and is able to decide, whether a potential recommendation discovered by a `RecommendationEngine` is allowed
+that encapsulates information relevant to the process. For example, the `Context` knows, how many recommendations should
+be produced, what is the maximum time the recommendation-computing process should take, and whether a potential
+recommendation discovered by a `RecommendationEngine` is allowed
 to be served to the user. For each computation, a new `Context` is produced by `TopLevelRecommendationEngine`.
 
 #### Blacklist Builders and Filters
@@ -513,7 +513,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Vince
 
-            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), Mode.REAL_TIME, 2);
+            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 2);
 
             String expectedForVince = "Computed recommendations for Vince: (Adam {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:7.856705,ageDifference:-7.0093026,friendsInCommon:14.866008})";
 
@@ -521,7 +521,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Adam
 
-            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), Mode.REAL_TIME, 2);
+            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), 2);
 
             String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:11.553411,ageDifference:-3.312597,friendsInCommon:14.866008})";
 
@@ -529,7 +529,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Luanne
 
-            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), Mode.REAL_TIME, 4);
+            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), 4);
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
             assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);

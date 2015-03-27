@@ -24,14 +24,14 @@ import com.graphaware.reco.generic.stats.Statistics;
 public interface Context<OUT, IN> {
 
     /**
-     * @return {@link Mode} in which recommendations are being computed.
-     */
-    Mode mode();
-
-    /**
      * @return desired maximum number of produced recommendations.
      */
     int limit();
+
+    /**
+     * @return <code>true</code> iff there's still time to compute more.
+     */
+    boolean hasEnoughTime();
 
     /**
      * Check whether a produced recommendation is allowed for the given input in the current context. Can be called by

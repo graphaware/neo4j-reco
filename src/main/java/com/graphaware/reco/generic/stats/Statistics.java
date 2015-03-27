@@ -7,6 +7,8 @@ import java.util.Map;
  */
 public interface Statistics {
 
+    public static final String TOTAL_TIME = "total time";
+
     static final String ELAPSED_TIME = "elapsed time";
     static final String CANDIDATE_ITEMS = "candidate items";
     static final String BLACKLISTED_ITEMS = "blacklisted items";
@@ -26,6 +28,13 @@ public interface Statistics {
      * @param task name of the task, must not be <code>null</code> or blank. Typically name of a {@link com.graphaware.reco.generic.engine.RecommendationEngine}.
      */
     void stopTiming(String task);
+
+    /**
+     * Return the number of milliseconds the task has been running so far.
+     * @param task name of the task, must not be <code>null</code> or blank. Typically name of a {@link com.graphaware.reco.generic.engine.RecommendationEngine}.
+     * @return number of milliseconds the task has been running so far.
+     */
+    long getTime(String task);
 
     /**
      * Collect a generic statistic.

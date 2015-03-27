@@ -37,13 +37,13 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
      * Construct a new context.
      *
      * @param input     for which recommendations are being computed. Must not be <code>null</code>.
-     * @param mode      in which recommendations are being computed. Must not be <code>null</code>.
      * @param limit     the maximum number of desired recommendations. Must be positive.
+     * @param maxTime   the maximum number of millis the recommendation-computing process should last. Must be positive.
      * @param filters   used to filter out items. Can be empty, but must not be <code>null</code>.
      * @param blacklist a set of blacklisted items. Can be empty, but must not be <code>null</code>.
      */
-    public FilteringContext(IN input, Mode mode, int limit, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
-        super(input, mode, limit);
+    public FilteringContext(IN input, int limit, long maxTime, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
+        super(input, limit, maxTime);
 
         notNull(filters);
         notNull(blacklist);

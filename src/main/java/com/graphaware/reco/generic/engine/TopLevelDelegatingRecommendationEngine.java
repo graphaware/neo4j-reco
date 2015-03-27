@@ -18,7 +18,6 @@ package com.graphaware.reco.generic.engine;
 
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.FilteringContext;
-import com.graphaware.reco.generic.context.Mode;
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
 import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.log.Logger;
@@ -63,37 +62,47 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
      * {@inheritDoc}
      */
     @Override
-    public final Context<OUT, IN> produceContext(IN input, Mode mode, int limit) {
+    public final Context<OUT, IN> produceContext(IN input, int limit, long maxTime) {
         Set<OUT> blacklist = new HashSet<>();
         for (BlacklistBuilder<OUT, IN> blacklistBuilder : blacklistBuilders) {
             blacklist.addAll(blacklistBuilder.buildBlacklist(input));
         }
 
-        return productContext(input, mode, limit, unmodifiableList(filters), blacklist);
+        return productContext(input, limit, maxTime, unmodifiableList(filters), blacklist);
     }
 
     /**
      * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process.
      *
      * @param input     for which recommendations are about to be computed.
-     * @param mode      in which the computation takes place.
      * @param limit     maximum number of recommendations desired.
+     * @param maxTime   the maximum number of millis the recommendation-computing process should last. Must be positive.
      * @param filters   for filtering out items.
      * @param blacklist for blaclisting items.
      * @return context.
      */
-    protected FilteringContext<OUT, IN> productContext(IN input, Mode mode, int limit, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
-        return new FilteringContext<>(input, mode, limit, filters, blacklist);
+    protected FilteringContext<OUT, IN> productContext(IN input, int limit, long maxTime, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
+        return new FilteringContext<>(input, limit, maxTime, filters, blacklist);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Recommendation<OUT>> recommend(IN input, Mode mode, int limit) {
-        Context<OUT, IN> context = produceContext(input, mode, limit);
+    public List<Recommendation<OUT>> recommend(IN input, int limit) {
+        return produceAndLogRecommendations(input, produceContext(input, limit, Long.MAX_VALUE));
+    }
 
-        List<Recommendation<OUT>> recommendations = recommend(input, context).get(limit);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Recommendation<OUT>> recommend(IN input, int limit, long maxTime) {
+        return produceAndLogRecommendations(input, produceContext(input, limit, maxTime));
+    }
+
+    private List<Recommendation<OUT>> produceAndLogRecommendations(IN input, Context<OUT, IN> context) {
+        List<Recommendation<OUT>> recommendations = recommend(input, context).get(context.limit());
 
         for (Logger<OUT, IN> logger : loggers) {
             logger.log(input, recommendations, context);
