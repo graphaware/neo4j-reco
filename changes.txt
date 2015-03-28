@@ -1,0 +1,3 @@
+2.2.0.28.4:
+    - ability to limit the recommendation process by time
+    - ability to expose additional details (on top of the score) about why a recommendation has been served

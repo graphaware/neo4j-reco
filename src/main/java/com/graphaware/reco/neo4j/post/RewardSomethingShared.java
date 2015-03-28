@@ -19,7 +19,7 @@ package com.graphaware.reco.neo4j.post;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
-import com.graphaware.reco.generic.result.ScorePart;
+import com.graphaware.reco.generic.result.PartialScore;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -54,7 +54,7 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
             }
 
             if (recommendationSharedNode.getId() == inputSharedNode.getId()) {
-                recommendation.add(scoreName(), scoreValue(recommendation.getItem(), input, recommendationSharedNode));
+                recommendation.add(scoreName(), partialScore(recommendation.getItem(), input, recommendationSharedNode));
             }
         }
     }
@@ -95,12 +95,12 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
     protected abstract String scoreName();
 
     /**
-     * Get the score value this post processor adds if subject and recommendation have a thing in common.
+     * Get the partial score this post processor adds if subject and recommendation have a thing in common.
      *
      * @param recommendation the recommendation.
      * @param input          the input (subject).
      * @param sharedThing    the node representing the thing in common.
      * @return score to add.
      */
-    protected abstract ScorePart scoreValue(Node recommendation, Node input, Node sharedThing);
+    protected abstract PartialScore partialScore(Node recommendation, Node input, Node sharedThing);
 }

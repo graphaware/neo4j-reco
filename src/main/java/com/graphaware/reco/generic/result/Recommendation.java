@@ -65,10 +65,10 @@ public class Recommendation<OUT> implements Comparable<Recommendation<OUT>> {
      * Add a partial score to this recommendation's score.
      *
      * @param scoreName name of the partial score. Must not be <code>null</code> or empty.
-     * @param scorePart partial score.
+     * @param partialScore partial score.
      */
-    public void add(String scoreName, ScorePart scorePart) {
-        score.add(scoreName, scorePart);
+    public void add(String scoreName, PartialScore partialScore) {
+        score.add(scoreName, partialScore);
     }
 
     /**

@@ -20,7 +20,7 @@ import com.graphaware.common.policy.NodeInclusionPolicy;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
-import com.graphaware.reco.generic.result.ScorePart;
+import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.runtime.walk.NodeSelector;
 import com.graphaware.runtime.walk.RandomNodeSelector;
 import org.neo4j.graphdb.Node;
@@ -57,8 +57,8 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * node is determined by {@link #numberOfAttempts(com.graphaware.reco.generic.context.Context)}.
      */
     @Override
-    protected final Map<Node, ScorePart> doRecommendSingle(Node input, Context<Node, Node> context) {
-        Map<Node, ScorePart> result = new HashMap<>();
+    protected final Map<Node, PartialScore> doRecommendSingle(Node input, Context<Node, Node> context) {
+        Map<Node, PartialScore> result = new HashMap<>();
         int attempts = 0;
 
         int numberOfAttempts = numberOfAttempts(context);
@@ -78,8 +78,8 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * @param node to score.
      * @return score, 0 by default.
      */
-    protected ScorePart score(Node node) {
-        return new ScorePart();
+    protected PartialScore score(Node node) {
+        return new PartialScore();
     }
 
     /**

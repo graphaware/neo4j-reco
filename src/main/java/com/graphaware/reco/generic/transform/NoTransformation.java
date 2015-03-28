@@ -16,7 +16,7 @@
 
 package com.graphaware.reco.generic.transform;
 
-import com.graphaware.reco.generic.result.ScorePart;
+import com.graphaware.reco.generic.result.PartialScore;
 
 /**
  * {@link ScoreTransformer} that performs no transformation. Singleton.
@@ -36,7 +36,7 @@ public final class NoTransformation implements ScoreTransformer {
      * {@inheritDoc}
      */
     @Override
-    public <OUT> ScorePart transform(OUT item, ScorePart score) {
+    public <OUT> PartialScore transform(OUT item, PartialScore score) {
         return score;
     }
 }

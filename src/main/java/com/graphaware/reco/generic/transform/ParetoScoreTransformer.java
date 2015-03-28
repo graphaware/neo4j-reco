@@ -16,7 +16,7 @@
 
 package com.graphaware.reco.generic.transform;
 
-import com.graphaware.reco.generic.result.ScorePart;
+import com.graphaware.reco.generic.result.PartialScore;
 
 /**
  * A {@link ScoreTransformer} that transforms the score based on an exponential (Pareto) function
@@ -59,7 +59,7 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * {@inheritDoc}
      */
     @Override
-    public <OUT> ScorePart transform(OUT item, ScorePart score) {
+    public <OUT> PartialScore transform(OUT item, PartialScore score) {
         score.setValue(function.transform(score.getValue()));
 
         return score;

@@ -123,14 +123,14 @@ public class Recommendations<OUT> {
      *
      * @param item      to add. Must not be <code>null</code>.
      * @param scoreName name of the partial score this recommendation is receiving. Must not be <code>null</code> or empty.
-     * @param scorePart partial score.
+     * @param partialScore partial score.
      */
-    public void add(OUT item, String scoreName, ScorePart scorePart) {
+    public void add(OUT item, String scoreName, PartialScore partialScore) {
         notNull(item);
         notNull(scoreName);
         hasLength(scoreName);
 
-        getOrCreate(item).add(scoreName, scorePart);
+        getOrCreate(item).add(scoreName, partialScore);
     }
 
     /**

@@ -25,58 +25,58 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A contribution to the total score of a particular recommendation that has been discovered. Typically, there will
- * be a single {@link com.graphaware.reco.generic.result.ScorePart} for each {@link com.graphaware.reco.generic.engine.RecommendationEngine}
+ * be a single {@link PartialScore} for each {@link com.graphaware.reco.generic.engine.RecommendationEngine}
  * (i.e., logical reason) that has discovered a particular recommendation.
  * <p/>
  * For example, when building a "people you should be friends with" recommendation engine, for each recommendation discovered,
- * there would be one {@link com.graphaware.reco.generic.result.ScorePart} representing "friends in common" score contribution,
- * and another {@link com.graphaware.reco.generic.result.ScorePart} representing "common interests" score contribution.
+ * there would be one {@link PartialScore} representing "friends in common" score contribution,
+ * and another {@link PartialScore} representing "common interests" score contribution.
  * <p/>
  * The total numerical value of the contribution can be obtained by {@link #getValue()} and is kept up-to-date at all times.
  * <p/>
  * Optionally, details about the actual contribution, such as the number of and the names of friends in common, are encapsulated
- * by {@link com.graphaware.reco.generic.result.ScorePart} in the form of {@link com.graphaware.reco.generic.result.Reason}s.
+ * by {@link PartialScore} in the form of {@link com.graphaware.reco.generic.result.Reason}s.
  * <p/>
- * Please note that {@link com.graphaware.reco.generic.transform.ScoreTransformer}s can be applied to the {@link com.graphaware.reco.generic.result.ScorePart}
+ * Please note that {@link com.graphaware.reco.generic.transform.ScoreTransformer}s can be applied to the {@link PartialScore}
  * and change the total score only. In these cases, the value returned by {@link #getValue()} could end up being different from
  * the sum of individual {@link com.graphaware.reco.generic.result.Reason}s values.
  * <p/>
  * This class is thread-safe.
  */
-public class ScorePart {
+public class PartialScore {
 
     private final AtomicFloat value = new AtomicFloat(0);
     private final Set<Reason> reasons = Collections.newSetFromMap(new ConcurrentHashMap<Reason, Boolean>());
 
     /**
-     * Create a new score part with value = 0 and no further details.
+     * Create a new partial score with value = 0 and no further details.
      */
-    public ScorePart() {
+    public PartialScore() {
     }
 
     /**
-     * Create a new score part with the given value and no further details.
+     * Create a new partial score with the given value and no further details.
      *
-     * @param value of this score part's contribution to the total score. Can be negative in case of penalties, for instance.
+     * @param value of this partial score's contribution to the total score. Can be negative in case of penalties, for instance.
      */
-    public ScorePart(float value) {
+    public PartialScore(float value) {
         add(value, null);
     }
 
     /**
-     * Create a new score part with the given value and details about the value. The value and details will become an immutable
+     * Create a new partial score with the given value and details about the value. The value and details will become an immutable
      * {@link com.graphaware.reco.generic.result.Reason}. Additionally, the value will become the total value of
-     * this score part and can be later modified, for example, by {@link com.graphaware.reco.generic.transform.ScoreTransformer}s.
+     * this partial score and can be later modified, for example, by {@link com.graphaware.reco.generic.transform.ScoreTransformer}s.
      *
-     * @param value   of this score part's contribution to the total score. Can be negative in case of penalties, for instance.
+     * @param value   of this partial score's contribution to the total score. Can be negative in case of penalties, for instance.
      * @param details about the value as arbitrary key-value pairs.
      */
-    public ScorePart(float value, Map<String, Object> details) {
+    public PartialScore(float value, Map<String, Object> details) {
         add(value, details);
     }
 
     /**
-     * Add a number to the total value of this score part with no additional details.
+     * Add a number to the total value of this partial score with no additional details.
      *
      * @param value to add.
      */
@@ -85,9 +85,9 @@ public class ScorePart {
     }
 
     /**
-     * Add a number to the total value of this score part with additional details about the value. The value and details
+     * Add a number to the total value of this partial score with additional details about the value. The value and details
      * will become an immutable {@link com.graphaware.reco.generic.result.Reason}. Additionally, the value will be added to
-     * the total value of this score part, which can be later modified, for example, by {@link com.graphaware.reco.generic.transform.ScoreTransformer}s.
+     * the total value of this partial score, which can be later modified, for example, by {@link com.graphaware.reco.generic.transform.ScoreTransformer}s.
      *
      * @param value   to add.
      * @param details about the value as arbitrary key-value pairs.
@@ -98,19 +98,19 @@ public class ScorePart {
     }
 
     /**
-     * Add the contents (value and details) of another score part to this score part.
+     * Add the contents (value and details) of another partial score to this partial score.
      *
-     * @param scorePart to add.
+     * @param partialScore to add.
      */
-    public void add(ScorePart scorePart) {
-        add(scorePart.getValue());
-        addReasons(scorePart.getReasons());
+    public void add(PartialScore partialScore) {
+        add(partialScore.getValue());
+        addReasons(partialScore.getReasons());
     }
 
     /**
-     * Add a reason to this score part. The reason is built from the provided value and details, iff the details aren't <code>null</code>.
-     * Calling this method with <code>null</code> details has no effect. Please note that the total value of this score
-     * part remains unchanged, which is why this method is (and must remain) private.
+     * Add a reason to this partial score. The reason is built from the provided value and details, iff the details aren't <code>null</code>.
+     * Calling this method with <code>null</code> details has no effect. Please note that the total value of this partial score
+     * remains unchanged, which is why this method is (and must remain) private.
      *
      * @param value   of the reason to add.
      * @param details of the reason to add.
@@ -124,8 +124,8 @@ public class ScorePart {
     }
 
     /**
-     * Add a reason to this score part. Please note that the total value of this score
-     * part remains unchanged, which is why this method is (and must remain) private.
+     * Add a reason to this partial score. Please note that the total value of this partial score remains unchanged,
+     * which is why this method is (and must remain) private.
      *
      * @param reason to add.
      */
@@ -134,8 +134,8 @@ public class ScorePart {
     }
 
     /**
-     * Add reasons to this score part. Please note that the total value of this score
-     * part remains unchanged, which is why this method is (and must remain) private.
+     * Add reasons to this partial score. Please note that the total value of this partial score remains unchanged,
+     * which is why this method is (and must remain) private.
      *
      * @param reasons to add.
      */
@@ -146,7 +146,7 @@ public class ScorePart {
     }
 
     /**
-     * Get the total value of this score part.
+     * Get the total value of this partial score.
      *
      * @return value.
      */
@@ -155,7 +155,7 @@ public class ScorePart {
     }
 
     /**
-     * Set a new total value of this score part. Intended to be used by {@link com.graphaware.reco.generic.transform.ScoreTransformer}s.
+     * Set a new total value of this partial score. Intended to be used by {@link com.graphaware.reco.generic.transform.ScoreTransformer}s.
      * Will not change anything about the encapsulated {@link com.graphaware.reco.generic.result.Reason}s.
      *
      * @param value new total value.
@@ -165,7 +165,7 @@ public class ScorePart {
     }
 
     /**
-     * Get the reasons encapsulated by this score part.
+     * Get the reasons encapsulated by this partial score.
      *
      * @return reasons, may be empty but will never be <code>null</code>.
      */

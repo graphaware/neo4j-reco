@@ -27,16 +27,16 @@ import static org.springframework.util.Assert.hasLength;
 import static org.springframework.util.Assert.notNull;
 
 /**
- * A recommendation score that is composed of multiple named partial scores ({@link com.graphaware.reco.generic.result.ScorePart}s).
- * The {@link #getTotalScore()} is kept up-to-date at all times as the sum of {@link ScorePart#getValue()} of all
- * encapsulated {@link com.graphaware.reco.generic.result.ScorePart}s.
+ * A recommendation score that is composed of multiple named partial scores ({@link PartialScore}s).
+ * The {@link #getTotalScore()} is kept up-to-date at all times as the sum of {@link PartialScore#getValue()} of all
+ * encapsulated {@link PartialScore}s.
  * <p/>
  * This class is thread-safe.
  */
 public class Score implements Comparable<Score> {
 
     private final AtomicFloat totalScore = new AtomicFloat(0);
-    private final ConcurrentMap<String, ScorePart> scoreParts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, PartialScore> scoreParts = new ConcurrentHashMap<>();
 
     /**
      * Add a partial score to this composite score.
@@ -56,32 +56,32 @@ public class Score implements Comparable<Score> {
      * @param details   of the value. Can be <code>null</code> or empty if no details are available.
      */
     public void add(String scoreName, float value, Map<String, Object> details) {
-        add(scoreName, new ScorePart(value, details));
+        add(scoreName, new PartialScore(value, details));
     }
 
     /**
      * Add a partial score to this composite score.
      *
      * @param scoreName name of the partial score. Must not be <code>null</code> or empty.
-     * @param scorePart partial score. Must not be <code>null</code>.
+     * @param partialScore partial score. Must not be <code>null</code>.
      */
-    public void add(String scoreName, ScorePart scorePart) {
+    public void add(String scoreName, PartialScore partialScore) {
         notNull(scoreName);
         hasLength(scoreName);
-        notNull(scorePart);
+        notNull(partialScore);
 
-        ScorePart score = scoreParts.get(scoreName);
+        PartialScore score = scoreParts.get(scoreName);
 
         if (score == null) {
-            score = scoreParts.putIfAbsent(scoreName, new ScorePart());
+            score = scoreParts.putIfAbsent(scoreName, new PartialScore());
         }
 
         if (score == null) {
             score = scoreParts.get(scoreName);
         }
 
-        score.add(scorePart);
-        totalScore.addAndGet(scorePart.getValue());
+        score.add(partialScore);
+        totalScore.addAndGet(partialScore.getValue());
     }
 
     /**
@@ -92,7 +92,7 @@ public class Score implements Comparable<Score> {
     public void add(Score score) {
         notNull(score);
 
-        for (Map.Entry<String, ScorePart> entry : score.scoreParts.entrySet()) {
+        for (Map.Entry<String, PartialScore> entry : score.scoreParts.entrySet()) {
             add(entry.getKey(), entry.getValue());
         }
     }
@@ -111,10 +111,10 @@ public class Score implements Comparable<Score> {
      *
      * @return composite score parts.
      */
-    public Map<String, ScorePart> getScoreParts() {
-        Map<String, ScorePart> result = new TreeMap<>();
+    public Map<String, PartialScore> getScoreParts() {
+        Map<String, PartialScore> result = new TreeMap<>();
 
-        for (Map.Entry<String, ScorePart> entry : scoreParts.entrySet()) {
+        for (Map.Entry<String, PartialScore> entry : scoreParts.entrySet()) {
             result.put(entry.getKey(), entry.getValue());
         }
 
@@ -150,7 +150,7 @@ public class Score implements Comparable<Score> {
     public String toString() {
         StringBuilder builder = new StringBuilder("{total:").append(getTotalScore());
 
-        for (Map.Entry<String, ScorePart> entry : getScoreParts().entrySet()) {
+        for (Map.Entry<String, PartialScore> entry : getScoreParts().entrySet()) {
             builder.append(", ").append(entry.getKey()).append(":").append(entry.getValue());
         }
 

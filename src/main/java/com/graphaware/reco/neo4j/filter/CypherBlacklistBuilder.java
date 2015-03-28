@@ -17,7 +17,6 @@
 package com.graphaware.reco.neo4j.filter;
 
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
-import org.neo4j.cypher.javacompat.ExecutionEngine;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterator;
@@ -26,18 +25,18 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.springframework.util.Assert.*;
+import static org.springframework.util.Assert.notNull;
 
 /**
  * {@link BlacklistBuilder} based on finding blacklisted {@link Node}s by executing a Cypher query.
  */
 public abstract class CypherBlacklistBuilder implements BlacklistBuilder<Node, Node> {
 
-    private final ExecutionEngine executionEngine;
+    private final GraphDatabaseService database;
     private final String query;
 
     protected CypherBlacklistBuilder(GraphDatabaseService database) {
-        executionEngine = new ExecutionEngine(database);
+        this.database = database;
         query = getQuery();
     }
 
@@ -50,7 +49,7 @@ public abstract class CypherBlacklistBuilder implements BlacklistBuilder<Node, N
 
         Set<Node> excluded = new HashSet<>();
 
-        ResourceIterator<Node> it = executionEngine.execute(query, Collections.singletonMap("id", (Object) input.getId())).columnAs("blacklist");
+        ResourceIterator<Node> it = database.execute(query, Collections.singletonMap("id", (Object) input.getId())).columnAs("blacklist");
 
         while (it.hasNext()) {
             excluded.add(it.next());

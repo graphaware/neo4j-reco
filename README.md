@@ -1,10 +1,20 @@
 GraphAware Neo4j Recommendation Engine
 ======================================
 
-[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.2.0.28.3
+[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.2.0.28.4
 
 GraphAware Neo4j Recommendation Engine is a library for building high-performance complex recommendation engines atop Neo4j.
 It is in production at a number of <a href="http://graphaware.com" target="_blank">GraphAware</a>'s clients producing real-time recommendations on graphs with hundreds of millions of nodes.
+
+Key Features:
+
+* Clean and flexible design
+* High performance
+* Ability to trade off recommendation quality for speed
+* Ability to pre-compute recommendations
+* Built-in algorithms and functions
+* Ability to measure recommendation quality
+* Ability to easily run in A/B test environments
 
 The library imposes a specific recommendation engine architecture, which has emerged from our experience building recommendation
 engines on top of Neo4j. In return, it offers high performance and handles most of the plumbing so that you only write
@@ -41,7 +51,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
         <dependency>
             <groupId>com.graphaware.neo4j</groupId>
             <artifactId>recommendation-engine</artifactId>
-            <version>2.2.0.28.3</version>
+            <version>2.2.0.28.4</version>
         </dependency>
         ...
     </dependencies>
@@ -49,7 +59,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
 #### Snapshots
 
 To use the latest development version, just clone this repository, run `mvn clean install` and change the version in the
-dependency above to 2.2.0.28.4-SNAPSHOT.
+dependency above to 2.2.0.28.5-SNAPSHOT.
 
 #### Note on Versioning Scheme
 
@@ -116,8 +126,9 @@ will be discussed shortly.
 #### Scores and Score Transformers
 
 `Recommendations` are a collection of tuples/pairs, where each pair is composed of a recommended item (again, typically a `Node`)
-and associated relevance **Score**. The `Score` is composed of **Partial Scores**. Each _Partial Score_ has a name and a float
-value. Typically, a single `SingleScoreRecommendationEngine`, as the name suggest, is responsible for a single _Partial Score_.
+and associated relevance **Score**. The `Score` is composed of named **Partial Scores**. Each _Partial Score_ has a float
+value and optionally some extra details about how and why it has been computed that we with to expose to the users. Typically,
+a single `SingleScoreRecommendationEngine`, as the name suggest, is responsible for a single _Partial Score_.
 
 When an item has been discovered as a potential recommendation by multiple `SingleScoreRecommendationEngine`s, its _Parial Scores_
 will be tallied by the `Score` object. For example, an item that is currently trending and matches the user's preferred
@@ -209,21 +220,29 @@ thus ignore the direction of the `FRIEND_OF` relationship. A sample graph, expre
     (v:Person:Male {name:'Vince', age:40}),
     (a:Person:Male {name:'Adam', age:30}),
     (l:Person:Female {name:'Luanne', age:25}),
-    (c:Person:Male {name:'Christophe', age:60}),
+    (b:Person:Male {name:'Christophe', age:60}),
+    (j:Person:Male {name:'Jim', age:40}),
 
     (lon:City {name:'London'}),
     (mum:City {name:'Mumbai'}),
+    (br:City {name:'Bruges'}),
 
     (m)-[:FRIEND_OF]->(d),
     (m)-[:FRIEND_OF]->(l),
     (m)-[:FRIEND_OF]->(a),
     (m)-[:FRIEND_OF]->(v),
     (d)-[:FRIEND_OF]->(v),
-    (c)-[:FRIEND_OF]->(v),
+    (b)-[:FRIEND_OF]->(v),
+    (j)-[:FRIEND_OF]->(v),
+    (j)-[:FRIEND_OF]->(m),
+    (j)-[:FRIEND_OF]->(a),
+    (a)-[:LIVES_IN]->(lon),
     (d)-[:LIVES_IN]->(lon),
     (v)-[:LIVES_IN]->(lon),
     (m)-[:LIVES_IN]->(lon),
-    (l)-[:LIVES_IN]->(mum));
+    (j)-[:LIVES_IN]->(lon),
+    (c)-[:LIVES_IN]->(br),
+    (l)-[:LIVES_IN]->(mum);
 ```
 
 Our intention will be recommending people a person should be friends with, based on the following requirements:
@@ -236,7 +255,7 @@ Our intention will be recommending people a person should be friends with, based
 5. The bigger the age difference between two people, the lower the chance they will become friends
 6. People should not be friends with themselves
 7. People who are already friends should not be recommended as potential friends
-8. If we don't have enough recommendations, we will recommend some random people
+8. If we don't have enough recommendations, we will recommend some random people, but only if there is enough time
 
 Let's start tackling the requirements one by one.
 
@@ -255,6 +274,11 @@ common, the relevance score will increase by 1. Since this is a single-criterion
 public class FriendsInCommon extends SomethingInCommon {
 
     @Override
+    protected String name() {
+        return "friendsInCommon";
+    }
+
+    @Override
     protected RelationshipType getType() {
         return Relationships.FRIEND_OF;
     }
@@ -263,18 +287,13 @@ public class FriendsInCommon extends SomethingInCommon {
     protected Direction getDirection() {
         return Direction.BOTH;
     }
-
-    @Override
-    protected String name() {
-        return "friendsInCommon";
-    }
 }
 ```
 
 The code above tackles requirement (1). Let's modify the code to account for requirement (2) as well by providing an
 exponential `ScoreTransformer`, called the `ParetoScoreTransformer`. Please read the Javadoc of the class to find out
 exactly how it works. For now, it is sufficient to say that it will transform the number of friends in common to a score
-with a theoretical upper value of 100, with 80% of the total score being achieved by 10 friends in common.
+with a theoretical upper value of 100, with 80% of the total score being achieved by having 10 friends in common.
 
 ```java
 /**
@@ -283,6 +302,11 @@ with a theoretical upper value of 100, with 80% of the total score being achieve
  * The score is increasing by Pareto function, achieving 80% score with 10 friends in common. The maximum score is 100.
  */
 public class FriendsInCommon extends SomethingInCommon {
+
+    @Override
+    protected String name() {
+        return "friendsInCommon";
+    }
 
     @Override
     protected ScoreTransformer scoreTransformer() {
@@ -298,23 +322,25 @@ public class FriendsInCommon extends SomethingInCommon {
     protected Direction getDirection() {
         return BOTH;
     }
-
-    @Override
-    protected String name() {
-        return "friendsInCommon";
-    }
 }
 ```
 
 #### FriendsInCommon
 
-Whilst we're at it, we will also build the other `SingleScoreRecommendationEngine` that we'll need to satisfy requirement (8):
+Whilst we're at it, we will also build the other `SingleScoreRecommendationEngine` that we'll need to satisfy requirement (8).
+Notice that we are overriding the `participationPolicy` method to specify that this engine should only be employed if
+there aren't enough results and there is time left.
 
 ```java
  /**
   * {@link com.graphaware.reco.neo4j.engine.RandomRecommendations} selecting random nodes with "Person" label.
   */
  public class RandomPeople extends RandomRecommendations {
+
+     @Override
+     public String name() {
+         return "random";
+     }
 
      @Override
      protected NodeInclusionPolicy getPolicy() {
@@ -327,13 +353,11 @@ Whilst we're at it, we will also build the other `SingleScoreRecommendationEngin
      }
 
      @Override
-     protected String scoreName() {
-         return "random";
+     public ParticipationPolicy<Node, Node> participationPolicy(Context context) {
+         return ParticipationPolicy.IF_MORE_RESULTS_NEEDED_AND_ENOUGH_TIME;
      }
  }
 ```
-
-Note that this engine will (automatically) only be used if there aren't enough genuine recommendations.
 
 #### RewardSameLocation and RewardSameLabels
 
@@ -359,8 +383,8 @@ public class RewardSameLocation extends RewardSomethingShared {
     }
 
     @Override
-    protected float scoreValue(Node recommendation, Node input, Node sharedThing) {
-        return 10;
+    protected PartialScore partialScore(Node recommendation, Node input, Node sharedThing) {
+        return new PartialScore(10);
     }
 
     @Override
@@ -401,7 +425,7 @@ score with 80% being subtracted when the difference in age is 20 years.
  */
 public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
 
-    private final ParetoScoreTransformer transformer = new ParetoScoreTransformer(10, 20);
+    private final TransformationFunction function = new ParetoFunction(10, 20);
 
     @Override
     public void postProcess(Recommendations<Node> recommendations, Node input) {
@@ -409,7 +433,7 @@ public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
 
         for (Recommendation<Node> reco : recommendations.get()) {
             int diff = Math.abs(getInt(reco.getItem(), "age", 40) - age);
-            reco.add("ageDifference", -transformer.transform(reco, diff));
+            reco.add("ageDifference", -function.transform(diff));
         }
     }
 }
@@ -483,17 +507,19 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
     @Override
     protected void populateDatabase(GraphDatabaseService database) {
-        new ExecutionEngine(database).execute(
+        database.execute(
                 "CREATE " +
                         "(m:Person:Male {name:'Michal', age:30})," +
                         "(d:Person:Female {name:'Daniela', age:20})," +
                         "(v:Person:Male {name:'Vince', age:40})," +
                         "(a:Person:Male {name:'Adam', age:30})," +
                         "(l:Person:Female {name:'Luanne', age:25})," +
-                        "(b:Person:Male {name:'Bob', age:60})," +
+                        "(b:Person:Male {name:'Christophe', age:60})," +
+                        "(j:Person:Male {name:'Jim', age:40})," +
 
                         "(lon:City {name:'London'})," +
                         "(mum:City {name:'Mumbai'})," +
+                        "(br:City {name:'Bruges'})," +
 
                         "(m)-[:FRIEND_OF]->(d)," +
                         "(m)-[:FRIEND_OF]->(l)," +
@@ -501,9 +527,15 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
                         "(m)-[:FRIEND_OF]->(v)," +
                         "(d)-[:FRIEND_OF]->(v)," +
                         "(b)-[:FRIEND_OF]->(v)," +
+                        "(j)-[:FRIEND_OF]->(v)," +
+                        "(j)-[:FRIEND_OF]->(m)," +
+                        "(j)-[:FRIEND_OF]->(a)," +
+                        "(a)-[:LIVES_IN]->(lon)," +
                         "(d)-[:LIVES_IN]->(lon)," +
                         "(v)-[:LIVES_IN]->(lon)," +
                         "(m)-[:LIVES_IN]->(lon)," +
+                        "(j)-[:LIVES_IN]->(lon)," +
+                        "(c)-[:LIVES_IN]->(br)," +
                         "(l)-[:LIVES_IN]->(mum)");
     }
 
@@ -515,16 +547,18 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 2);
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:7.856705,ageDifference:-7.0093026,friendsInCommon:14.866008})";
+            String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}})";
 
+            assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
             assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
 
             //verify Adam
 
             List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), 2);
 
-            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:11.553411,ageDifference:-3.312597,friendsInCommon:14.866008})";
+            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Daniela {total:19.338144, ageDifference:-5.527864, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}, sameLocation: {value:10.0, {value:10.0, location:London}}})";
 
+            assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
             assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
 
             //verify Luanne
@@ -537,18 +571,18 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
             assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
-            assertEquals("Vince", recoForLuanne.get(2).getItem().getProperty("name"));
+            assertEquals("Jim", recoForLuanne.get(2).getItem().getProperty("name"));
             assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
-            assertEquals("Bob", recoForLuanne.get(3).getItem().getProperty("name"));
-            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
+            assertEquals("Vince", recoForLuanne.get(3).getItem().getProperty("name"));
+            assertEquals(8, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
             tx.success();
         }
     }
 
     private Node getPersonByName(String name) {
-        return IterableUtils.getSingle(getDatabase().findNodesByLabelAndProperty(DynamicLabel.label("Person"), "name", name));
+        return IterableUtils.getSingle(getDatabase().findNodes(DynamicLabel.label("Person"), "name", name));
     }
 }
 ```
@@ -560,8 +594,9 @@ we would like to demonstrate the capability of using the very same engine to pre
 
 It is worth mentioning that in this simple example, the exact same recommendations will be pre-computed as would have
 been computed in real-time. However, in real-life scenarios, `RecommendationEngine`s can choose to perform a quicker
-computation in `REAL_TIME` scenarios, but take a more accurate and slower approach in `BATCH` `Mode`. The information
-about the `Mode` of computation is available to each `RecommendationEngine` from the `Context` object.
+computation in real-time scenarios, but take a more accurate and slower approach for batch computations. The information
+about how long a computation can take can be passed into the `recommend` method of a `RecommendationEngine` as another
+parameter. It is then available from the `Context` object, where we can also find the total time already elapsed.
 
 #### Pre-Computing
 
@@ -644,7 +679,6 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
 
     @Override
     public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {
-        //noinspection unchecked
         return ParticipationPolicy.IF_MORE_RESULTS_NEEDED;
     }
 }
@@ -674,7 +708,6 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
     @Override
     protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
         return Arrays.asList(
-                new ExcludeSelf(),
                 new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
         );
     }
@@ -712,7 +745,6 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
     @Override
     protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
         return Arrays.asList(
-                new ExcludeSelf(),
                 new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
         );
     }
@@ -727,7 +759,6 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
     @Override
     protected List<Logger<Node, Node>> loggers() {
         return Arrays.asList(
-                new RecommendationsRememberingLogger(),
                 new Slf4jRecommendationLogger<Node, Node>(),
                 new Slf4jStatisticsLogger<Node, Node>()
         );
