@@ -22,6 +22,8 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 
+import java.util.Collections;
+
 import static com.graphaware.reco.integration.domain.Relationships.LIVES_IN;
 import static org.neo4j.graphdb.Direction.OUTGOING;
 
@@ -42,7 +44,7 @@ public class RewardSameLocation extends RewardSomethingShared {
 
     @Override
     protected PartialScore partialScore(Node recommendation, Node input, Node sharedThing) {
-        return new PartialScore(10);
+        return new PartialScore(10, Collections.singletonMap("location", sharedThing.getProperty("name")));
     }
 
     @Override

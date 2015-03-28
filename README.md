@@ -384,7 +384,7 @@ public class RewardSameLocation extends RewardSomethingShared {
 
     @Override
     protected PartialScore partialScore(Node recommendation, Node input, Node sharedThing) {
-        return new PartialScore(10);
+        return new PartialScore(10, Collections.singletonMap("location", sharedThing.getProperty("name")));
     }
 
     @Override
@@ -412,6 +412,9 @@ public class RewardSameLabels implements PostProcessor<Node, Node> {
     }
 }
 ```
+
+Please note that we have chosen to provide the shared location's name as details to `PartialScore`, so that it can
+be eventually exposed to users.
 
 #### PenalizeAgeDifference
 
