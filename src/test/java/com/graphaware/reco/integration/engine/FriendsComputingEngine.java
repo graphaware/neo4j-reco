@@ -39,7 +39,7 @@ import static org.neo4j.graphdb.Direction.BOTH;
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
  */
-public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
+public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
