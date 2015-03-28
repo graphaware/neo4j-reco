@@ -16,9 +16,9 @@
 
 package com.graphaware.reco.generic.result;
 
-import com.google.common.collect.Sets;
 import com.graphaware.reco.generic.util.AtomicFloat;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ScorePart {
 
     private final AtomicFloat value = new AtomicFloat(0);
-    private final Set<Reason> reasons = Sets.newSetFromMap(new ConcurrentHashMap<Reason, Boolean>());
+    private final Set<Reason> reasons = Collections.newSetFromMap(new ConcurrentHashMap<Reason, Boolean>());
 
     /**
      * Create a new score part with value = 0 and no further details.
