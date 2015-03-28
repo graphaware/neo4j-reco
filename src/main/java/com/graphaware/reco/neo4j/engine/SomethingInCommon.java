@@ -18,6 +18,7 @@ package com.graphaware.reco.neo4j.engine;
 
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine;
+import com.graphaware.reco.generic.result.ScorePart;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -44,20 +45,32 @@ public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<
      * {@inheritDoc}
      */
     @Override
-    protected final Map<Node, Float> doRecommendSingle(Node input, Context<Node, Node> context) {
-        Map<Node, Float> result = new HashMap<>();
+    protected final Map<Node, ScorePart> doRecommendSingle(Node input, Context<Node, Node> context) {
+        Map<Node, ScorePart> result = new HashMap<>();
 
         for (Relationship r1 : input.getRelationships(getType(), getDirection())) {
             Node thingInCommon = r1.getOtherNode(input);
             for (Relationship r2 : thingInCommon.getRelationships(getType(), reverse(getDirection()))) {
                 Node node = r2.getOtherNode(thingInCommon);
                 if (node.getId() != input.getId()) {
-                    addToResult(result, node, scoreNode(node));
+                    addToResult(result, node, new ScorePart(scoreNode(node), details(thingInCommon, r1, r2)));
                 }
             }
         }
 
         return result;
+    }
+
+    /**
+     * Produce details about something in common to be stored as a {@link com.graphaware.reco.generic.result.Reason} inside a {@link com.graphaware.reco.generic.result.ScorePart}.
+     *
+     * @param thingInCommon node representing the thing thing in common.
+     * @param withInput     relationship of the input with the thing in common.
+     * @param withOutput    relationships of the output (recommended item) with the thing in common.
+     * @return details as a map of arbitrary key-value pairs.
+     */
+    protected Map<String, Object> details(Node thingInCommon, Relationship withInput, Relationship withOutput) {
+        return null;
     }
 
     /**

@@ -16,17 +16,19 @@
 
 package com.graphaware.reco.generic.transform;
 
+import com.graphaware.reco.generic.result.ScorePart;
+
 /**
  * A component that can transform recommendation scores.
  */
 public interface ScoreTransformer {
 
     /**
-     * Transform a score.
+     * Transform a partial score.
      *
-     * @param item  recommended item.
-     * @param score score of the item.
-     * @return transformed score.
+     * @param item      recommended item.
+     * @param scorePart partial score of the item.
+     * @return transformed partial score.
      */
-    <OUT> float transform(OUT item, float score);
+    <OUT> ScorePart transform(OUT item, ScorePart scorePart);
 }

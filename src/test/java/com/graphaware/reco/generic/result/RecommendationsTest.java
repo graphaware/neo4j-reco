@@ -138,11 +138,11 @@ public class RecommendationsTest {
         Recommendations<String> r = new Recommendations<>();
 
         Score s1 = new Score();
-        s1.add("Score1", 2);
-        s1.add("Score2", 1);
+        s1.add("Score1", 2, null);
+        s1.add("Score2", 1, null);
 
         Score s2 = new Score();
-        s2.add("Score1", 2);
+        s2.add("Score1", 2, null);
 
         r.add("Reco1", s1);
         r.add("Reco2", s2);
@@ -240,7 +240,7 @@ public class RecommendationsTest {
                     s1.add("Score" + (j % 2), (j % 10));
 
                     Score s2 = new Score();
-                    s2.add("Score" + (j % 4), (j % 10));
+                    s2.add("Score" + (j % 4), (j % 10), null);
 
                     toMerge.add("Reco" + (j % 3), s1);
                     toMerge.add("Reco" + (j % 2), s2);

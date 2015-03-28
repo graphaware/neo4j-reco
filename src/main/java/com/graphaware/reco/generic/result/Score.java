@@ -21,56 +21,80 @@ import com.graphaware.reco.generic.util.AtomicFloat;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static org.springframework.util.Assert.hasLength;
 import static org.springframework.util.Assert.notNull;
 
 /**
- * A recommendation score that is composed of multiple partial scores. Each partial score has a name and a float value.
+ * A recommendation score that is composed of multiple named partial scores ({@link com.graphaware.reco.generic.result.ScorePart}s).
+ * The {@link #getTotalScore()} is kept up-to-date at all times as the sum of {@link ScorePart#getValue()} of all
+ * encapsulated {@link com.graphaware.reco.generic.result.ScorePart}s.
  * <p/>
  * This class is thread-safe.
  */
 public class Score implements Comparable<Score> {
 
     private final AtomicFloat totalScore = new AtomicFloat(0);
-    private final ConcurrentHashMap<String, AtomicFloat> scoreParts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, ScorePart> scoreParts = new ConcurrentHashMap<>();
 
     /**
      * Add a partial score to this composite score.
-     *  @param scoreName name of the partial score. Must not be <code>null</code> or empty.
+     *
+     * @param scoreName name of the partial score. Must not be <code>null</code> or empty.
      * @param value     score value.
      */
     public void add(String scoreName, float value) {
+        add(scoreName, value, null);
+    }
+
+    /**
+     * Add a partial score to this composite score.
+     *
+     * @param scoreName name of the partial score. Must not be <code>null</code> or empty.
+     * @param value     score value.
+     * @param details   of the value. Can be <code>null</code> or empty if no details are available.
+     */
+    public void add(String scoreName, float value, Map<String, Object> details) {
+        add(scoreName, new ScorePart(value, details));
+    }
+
+    /**
+     * Add a partial score to this composite score.
+     *
+     * @param scoreName name of the partial score. Must not be <code>null</code> or empty.
+     * @param scorePart partial score. Must not be <code>null</code>.
+     */
+    public void add(String scoreName, ScorePart scorePart) {
         notNull(scoreName);
         hasLength(scoreName);
+        notNull(scorePart);
 
-        AtomicFloat score = scoreParts.get(scoreName);
+        ScorePart score = scoreParts.get(scoreName);
 
         if (score == null) {
-            score = scoreParts.putIfAbsent(scoreName, new AtomicFloat(0f));
+            score = scoreParts.putIfAbsent(scoreName, new ScorePart());
         }
 
         if (score == null) {
             score = scoreParts.get(scoreName);
         }
 
-        score.addAndGet(value);
-        totalScore.addAndGet(value);
+        score.add(scorePart);
+        totalScore.addAndGet(scorePart.getValue());
     }
 
     /**
-     * Merge another score into this score.
+     * Add another score to this score.
      *
-     * @param score to merge.
-     * @return merged score (this instance). The returned object should be used after merging, rather than the instance
-     * merged to.
+     * @param score to add. Must not be <code>null</code>.
      */
-    public Score merge(Score score) {
-        for (Map.Entry<String, AtomicFloat> entry : score.scoreParts.entrySet()) {
-            this.add(entry.getKey(), entry.getValue().get());
-        }
+    public void add(Score score) {
+        notNull(score);
 
-        return this;
+        for (Map.Entry<String, ScorePart> entry : score.scoreParts.entrySet()) {
+            add(entry.getKey(), entry.getValue());
+        }
     }
 
     /**
@@ -87,11 +111,11 @@ public class Score implements Comparable<Score> {
      *
      * @return composite score parts.
      */
-    public Map<String, Float> getScoreParts() {
-        Map<String, Float> result = new TreeMap<>();
+    public Map<String, ScorePart> getScoreParts() {
+        Map<String, ScorePart> result = new TreeMap<>();
 
-        for (Map.Entry<String, AtomicFloat> entry : scoreParts.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().get());
+        for (Map.Entry<String, ScorePart> entry : scoreParts.entrySet()) {
+            result.put(entry.getKey(), entry.getValue());
         }
 
         return result;
@@ -105,7 +129,7 @@ public class Score implements Comparable<Score> {
      */
     public float get(String scoreName) {
         if (scoreParts.containsKey(scoreName)) {
-            return scoreParts.get(scoreName).get();
+            return scoreParts.get(scoreName).getValue();
         } else {
             return 0;
         }
@@ -117,5 +141,20 @@ public class Score implements Comparable<Score> {
     @Override
     public int compareTo(Score o) {
         return Float.compare(getTotalScore(), o.getTotalScore());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("{total:").append(getTotalScore());
+
+        for (Map.Entry<String, ScorePart> entry : getScoreParts().entrySet()) {
+            builder.append(", ").append(entry.getKey()).append(":").append(entry.getValue());
+        }
+
+        builder.append("}");
+        return builder.toString();
     }
 }

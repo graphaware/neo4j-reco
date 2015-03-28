@@ -105,16 +105,16 @@ public class ScoreTest {
         score2.add("score2", 2);
         score2.add("score3", 2);
 
-        Score merged = score1.merge(score2);
+        score1.add(score2);
 
-        assertEquals(14, merged.getTotalScore(), 0);
-        assertEquals(3, merged.getScoreParts().size());
-        assertTrue(merged.getScoreParts().keySet().contains("score1"));
-        assertTrue(merged.getScoreParts().keySet().contains("score2"));
-        assertTrue(merged.getScoreParts().keySet().contains("score3"));
-        assertEquals(2, merged.get("score3"), 0);
-        assertEquals(4, merged.get("score2"), 0);
-        assertEquals(8, merged.get("score1"), 0);
+        assertEquals(14, score1.getTotalScore(), 0);
+        assertEquals(3, score1.getScoreParts().size());
+        assertTrue(score1.getScoreParts().keySet().contains("score1"));
+        assertTrue(score1.getScoreParts().keySet().contains("score2"));
+        assertTrue(score1.getScoreParts().keySet().contains("score3"));
+        assertEquals(2, score1.get("score3"), 0);
+        assertEquals(4, score1.get("score2"), 0);
+        assertEquals(8, score1.get("score1"), 0);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ScoreTest {
                 public void run() {
                     Score newScore = new Score();
                     newScore.add("score" + (j % 5), 1);
-                    score.merge(newScore);
+                    score.add(newScore);
                 }
             });
         }

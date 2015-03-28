@@ -16,9 +16,10 @@
 
 package com.graphaware.reco.generic.result;
 
+import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.util.Assert.*;
+import static org.springframework.util.Assert.notNull;
 
 /**
  * Encapsulates a recommended item together with its UUID and {@link com.graphaware.reco.generic.result.Score}.
@@ -57,17 +58,38 @@ public class Recommendation<OUT> implements Comparable<Recommendation<OUT>> {
     public void add(Score score) {
         notNull(score);
 
-        this.score.merge(score);
+        this.score.add(score);
     }
 
     /**
-     * Add a score to recommendation.
+     * Add a partial score to this recommendation's score.
      *
-     * @param scoreName  name of the score. Must not be <code>null</code> or empty.
-     * @param scoreValue score value.
+     * @param scoreName name of the partial score. Must not be <code>null</code> or empty.
+     * @param scorePart partial score.
+     */
+    public void add(String scoreName, ScorePart scorePart) {
+        score.add(scoreName, scorePart);
+    }
+
+    /**
+     * Add a partial score to this recommendation's score.
+     *
+     * @param scoreName  name of the partial score. Must not be <code>null</code> or empty.
+     * @param scoreValue partial score value.
      */
     public void add(String scoreName, float scoreValue) {
         score.add(scoreName, scoreValue);
+    }
+
+    /**
+     * Add a partial score to this recommendation's score.
+     *
+     * @param scoreName  name of the partial score. Must not be <code>null</code> or empty.
+     * @param scoreValue partial score value.
+     * @param details    of the partial score value.
+     */
+    public void add(String scoreName, float scoreValue, Map<String, Object> details) {
+        score.add(scoreName, scoreValue, details);
     }
 
     public String getUuid() {

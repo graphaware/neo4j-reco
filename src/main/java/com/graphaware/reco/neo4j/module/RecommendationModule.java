@@ -17,6 +17,7 @@
 package com.graphaware.reco.neo4j.module;
 
 import com.graphaware.reco.generic.result.Recommendation;
+import com.graphaware.reco.generic.result.ScorePart;
 import com.graphaware.runtime.RuntimeRegistry;
 import com.graphaware.runtime.metadata.NodeBasedContext;
 import com.graphaware.runtime.module.BaseRuntimeModule;
@@ -129,8 +130,8 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
                 for (Recommendation<Node> recommendation : recommendations) {
                     Relationship created = node.createRelationshipTo(recommendation.getItem(), config.getRelationshipType());
-                    for (Map.Entry<String, Float> entry : recommendation.getScore().getScoreParts().entrySet()) {
-                        created.setProperty(entry.getKey(), entry.getValue());
+                    for (Map.Entry<String, ScorePart> entry : recommendation.getScore().getScoreParts().entrySet()) {
+                        created.setProperty(entry.getKey(), entry.getValue().getValue());
                     }
                 }
             }

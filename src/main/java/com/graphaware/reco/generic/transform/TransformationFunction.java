@@ -14,17 +14,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.generic.context;
+package com.graphaware.reco.generic.transform;
 
 /**
- * An indication whether the recommendations being computed are meant to be {@link #REAL_TIME}
- * or {@link #BATCH}. Implementations of {@link com.graphaware.reco.generic.engine.RecommendationEngine} can choose to
- * ignore it, but they can also choose to make the recommendation process faster and less accurate for real-time
- * scenarios and slower but more accurate for pre-computed (batch) scenarios.
+ * A function that transforms a value.
  */
-public enum Mode {
+public interface TransformationFunction {
 
-    REAL_TIME,
-
-    BATCH,
+    /**
+     * Transform a value.
+     *
+     * @param value to transform.
+     * @return transformed value.
+     */
+     float transform(float value);
 }

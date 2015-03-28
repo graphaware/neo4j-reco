@@ -16,14 +16,16 @@
 
 package com.graphaware.reco.integration.post;
 
+import com.graphaware.reco.generic.result.ScorePart;
 import com.graphaware.reco.neo4j.post.RewardSomethingShared;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 
-import static com.graphaware.reco.integration.domain.Relationships.*;
-import static org.neo4j.graphdb.Direction.*;
-import static org.neo4j.helpers.collection.Iterables.toArray;
+import java.util.Collections;
+
+import static com.graphaware.reco.integration.domain.Relationships.LIVES_IN;
+import static org.neo4j.graphdb.Direction.OUTGOING;
 
 /**
  * Rewards same location by 10 points.
@@ -41,8 +43,8 @@ public class RewardSameLocation extends RewardSomethingShared {
     }
 
     @Override
-    protected float scoreValue(Node recommendation, Node input, Node sharedThing) {
-        return 10;
+    protected ScorePart scoreValue(Node recommendation, Node input, Node sharedThing) {
+        return new ScorePart(10, Collections.singletonMap("location", sharedThing.getProperty("name")));
     }
 
     @Override

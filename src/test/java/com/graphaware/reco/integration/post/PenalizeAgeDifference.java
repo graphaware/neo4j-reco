@@ -19,7 +19,8 @@ package com.graphaware.reco.integration.post;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
-import com.graphaware.reco.generic.transform.ParetoScoreTransformer;
+import com.graphaware.reco.generic.transform.ParetoFunction;
+import com.graphaware.reco.generic.transform.TransformationFunction;
 import org.neo4j.graphdb.Node;
 
 import static com.graphaware.common.util.PropertyContainerUtils.getInt;
@@ -30,7 +31,7 @@ import static com.graphaware.common.util.PropertyContainerUtils.getInt;
  */
 public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
 
-    private final ParetoScoreTransformer transformer = new ParetoScoreTransformer(10, 20);
+    private final TransformationFunction function = new ParetoFunction(10, 20);
 
     @Override
     public void postProcess(Recommendations<Node> recommendations, Node input) {
@@ -38,7 +39,7 @@ public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
 
         for (Recommendation<Node> reco : recommendations.get()) {
             int diff = Math.abs(getInt(reco.getItem(), "age", 40) - age);
-            reco.add("ageDifference", -transformer.transform(reco, diff));
+            reco.add("ageDifference", -function.transform(diff));
         }
     }
 }

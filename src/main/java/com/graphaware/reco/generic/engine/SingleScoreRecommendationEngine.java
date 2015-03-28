@@ -18,6 +18,7 @@ package com.graphaware.reco.generic.engine;
 
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.result.Recommendations;
+import com.graphaware.reco.generic.result.ScorePart;
 import com.graphaware.reco.generic.transform.NoTransformation;
 import com.graphaware.reco.generic.transform.ScoreTransformer;
 
@@ -58,7 +59,7 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
     public final Recommendations<OUT> doRecommend(IN input, Context<OUT, IN> context) {
         Recommendations<OUT> result = new Recommendations<>();
 
-        for (Map.Entry<OUT, Float> entry : doRecommendSingle(input, context).entrySet()) {
+        for (Map.Entry<OUT, ScorePart> entry : doRecommendSingle(input, context).entrySet()) {
             if (context.allow(entry.getKey(), input, name())) {
                 result.add(entry.getKey(), name(), transformer.transform(entry.getKey(), entry.getValue()));
             }
@@ -68,8 +69,8 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
     }
 
     /**
-     * Perform the computation of recommendations. Recommendations produced by this method have an associated {@link java.lang.Integer}
-     * score, which is later transformed by the provided {@link com.graphaware.reco.generic.transform.ScoreTransformer}.
+     * Perform the computation of recommendations. Recommendations produced by this method have an associated {@link com.graphaware.reco.generic.result.ScorePart},
+     * which is later transformed by the provided {@link com.graphaware.reco.generic.transform.ScoreTransformer}.
      * <p/>
      * Context is provided for information, but its {@link com.graphaware.reco.generic.context.Context#allow(Object, Object, String)}
      * method does not have to be used. I.e., implementations of this method should produce raw recommendations, expressing
@@ -80,19 +81,20 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
      * @param context of the current computation.
      * @return a map of recommended items and their scores.
      */
-    protected abstract Map<OUT, Float> doRecommendSingle(IN input, Context<OUT, IN> context);
+    protected abstract Map<OUT, ScorePart> doRecommendSingle(IN input, Context<OUT, IN> context);
 
     /**
      * A convenience method for subclasses for adding concrete recommendations to the result.
      *
      * @param result         to add to.
      * @param recommendation to add.
-     * @param score          of the recommendation.
+     * @param scorePart      recommendation's score part.
      */
-    protected final void addToResult(Map<OUT, Float> result, OUT recommendation, float score) {
+    protected final void addToResult(Map<OUT, ScorePart> result, OUT recommendation, ScorePart scorePart) {
         if (!result.containsKey(recommendation)) {
-            result.put(recommendation, 0f);
+            result.put(recommendation, new ScorePart());
         }
-        result.put(recommendation, result.get(recommendation) + score);
+
+        result.get(recommendation).add(scorePart);
     }
 }

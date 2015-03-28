@@ -63,7 +63,7 @@ public class Neo4jPrecomputedEngine extends PrecomputedEngine<Node, Node, Relati
         Score score = new Score();
 
         for (String scoreName : relationship.getPropertyKeys()) {
-            score.add(scoreName, getFloat(relationship, scoreName, 0));
+            score.add(scoreName, getFloat(relationship, scoreName, 0), null); //todo fix null
         }
 
         recommendations.add(recommendation, score);

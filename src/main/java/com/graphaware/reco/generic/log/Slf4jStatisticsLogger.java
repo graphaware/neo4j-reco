@@ -50,7 +50,7 @@ public class Slf4jStatisticsLogger<OUT, IN> implements Logger<OUT, IN> {
         for (Map.Entry<String, ? extends Map<String, Object>> statsForTask : context.statistics().get().entrySet()) {
             builder.append("(").append(statsForTask.getKey()).append(": {");
             for (Map.Entry<String, Object> entry : statsForTask.getValue().entrySet()) {
-                builder.append(entry.getKey()).append(":").append(entry.getValue()).append(",");
+                builder.append(entry.getKey()).append(":").append(entry.getValue()).append(", ");
             }
             builder.deleteCharAt(builder.length() - 1);
             builder.append("}),");

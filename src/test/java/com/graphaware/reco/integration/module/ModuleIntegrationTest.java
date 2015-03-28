@@ -60,10 +60,12 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
                         "(v:Person:Male {name:'Vince', age:40})," +
                         "(a:Person:Male {name:'Adam', age:30})," +
                         "(l:Person:Female {name:'Luanne', age:25})," +
-                        "(b:Person:Male {name:'Bob', age:60})," +
+                        "(b:Person:Male {name:'Christophe', age:60})," +
+                        "(j:Person:Male {name:'Jim', age:40})," +
 
                         "(lon:City {name:'London'})," +
                         "(mum:City {name:'Mumbai'})," +
+                        "(br:City {name:'Bruges'})," +
 
                         "(m)-[:FRIEND_OF]->(d)," +
                         "(m)-[:FRIEND_OF]->(l)," +
@@ -71,9 +73,15 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
                         "(m)-[:FRIEND_OF]->(v)," +
                         "(d)-[:FRIEND_OF]->(v)," +
                         "(b)-[:FRIEND_OF]->(v)," +
+                        "(j)-[:FRIEND_OF]->(v)," +
+                        "(j)-[:FRIEND_OF]->(m)," +
+                        "(j)-[:FRIEND_OF]->(a)," +
+                        "(a)-[:LIVES_IN]->(lon)," +
                         "(d)-[:LIVES_IN]->(lon)," +
                         "(v)-[:LIVES_IN]->(lon)," +
                         "(m)-[:LIVES_IN]->(lon)," +
+                        "(j)-[:LIVES_IN]->(lon)," +
+                        "(c)-[:LIVES_IN]->(br)," +
                         "(l)-[:LIVES_IN]->(mum)");
     }
 
@@ -85,7 +93,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 2);
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:7.856705,ageDifference:-7.0093026,friendsInCommon:14.866008})";
+            String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}})";
 
             assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
             assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
@@ -94,7 +102,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), 2);
 
-            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:11.553411,ageDifference:-3.312597,friendsInCommon:14.866008})";
+            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Daniela {total:19.338144, ageDifference:-5.527864, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}, sameLocation: {value:10.0, {value:10.0, location:London}}})";
 
             assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
             assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
@@ -109,11 +117,11 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
             assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
-            assertEquals("Vince", recoForLuanne.get(2).getItem().getProperty("name"));
+            assertEquals("Jim", recoForLuanne.get(2).getItem().getProperty("name"));
             assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
-            assertEquals("Bob", recoForLuanne.get(3).getItem().getProperty("name"));
-            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
+            assertEquals("Vince", recoForLuanne.get(3).getItem().getProperty("name"));
+            assertEquals(8, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
             tx.success();
         }
@@ -127,7 +135,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 10, 1);
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:7.856705,ageDifference:-7.0093026,friendsInCommon:14.866008})";
+            String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}})";
 
             assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
             assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
@@ -162,7 +170,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 2);
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:7.856705,ageDifference:-7.0093026,friendsInCommon:14.866008})";
+            String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon:27.522034, sameGender:10.0, sameLocation:10.0}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon:14.866008})";
 
             assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
             assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
@@ -171,7 +179,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), 2);
 
-            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:19.338144,ageDifference:-5.527864,friendsInCommon:14.866008,sameGender:10.0}),(Luanne {total:11.553411,ageDifference:-3.312597,friendsInCommon:14.866008})";
+            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:41.99417, ageDifference:-5.527864, friendsInCommon:27.522034, sameGender:10.0, sameLocation:10.0}), (Daniela {total:19.338144, ageDifference:-5.527864, friendsInCommon:14.866008, sameLocation:10.0})";
 
             assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
             assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
@@ -186,17 +194,17 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
             assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
-            assertEquals("Vince", recoForLuanne.get(2).getItem().getProperty("name"));
+            assertEquals("Jim", recoForLuanne.get(2).getItem().getProperty("name"));
             assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
-            assertEquals("Bob", recoForLuanne.get(3).getItem().getProperty("name"));
-            assertEquals(-9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
+            assertEquals("Vince", recoForLuanne.get(3).getItem().getProperty("name"));
+            assertEquals(8, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
             tx.success();
         }
     }
 
     private Node getPersonByName(String name) {
-        return IterableUtils.getSingle(getDatabase().findNodesByLabelAndProperty(DynamicLabel.label("Person"), "name", name));
+        return IterableUtils.getSingle(getDatabase().findNodes(DynamicLabel.label("Person"), "name", name));
     }
 }

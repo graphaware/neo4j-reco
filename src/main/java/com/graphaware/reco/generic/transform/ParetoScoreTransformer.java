@@ -16,6 +16,8 @@
 
 package com.graphaware.reco.generic.transform;
 
+import com.graphaware.reco.generic.result.ScorePart;
+
 /**
  * A {@link ScoreTransformer} that transforms the score based on an exponential (Pareto) function
  * <p/>
@@ -29,9 +31,7 @@ package com.graphaware.reco.generic.transform;
  */
 public class ParetoScoreTransformer implements ScoreTransformer {
 
-    private final float maxScore;
-    private final float eightyPercentLevel;
-    private final float minimumThreshold;
+    private final TransformationFunction function;
 
     /**
      * Construct a new transformer.
@@ -52,22 +52,16 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      *                           transformer.
      */
     public ParetoScoreTransformer(float maxScore, float eightyPercentLevel, float minimumThreshold) {
-        this.maxScore = maxScore;
-        this.eightyPercentLevel = eightyPercentLevel;
-        this.minimumThreshold = minimumThreshold;
+        function = new ParetoFunction(maxScore, eightyPercentLevel, minimumThreshold);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <OUT> float transform(OUT item, float score) {
-        if (score < minimumThreshold) {
-            return 0;
-        }
+    public <OUT> ScorePart transform(OUT item, ScorePart score) {
+        score.setValue(function.transform(score.getValue()));
 
-        double alpha = Math.log((double) 5) / eightyPercentLevel;
-        double exp = Math.exp(-alpha * score);
-        return new Double(maxScore * (1 - exp)).floatValue();
+        return score;
     }
 }

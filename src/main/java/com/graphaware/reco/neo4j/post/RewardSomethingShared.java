@@ -19,6 +19,7 @@ package com.graphaware.reco.neo4j.post;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
+import com.graphaware.reco.generic.result.ScorePart;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -101,5 +102,5 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
      * @param sharedThing    the node representing the thing in common.
      * @return score to add.
      */
-    protected abstract float scoreValue(Node recommendation, Node input, Node sharedThing);
+    protected abstract ScorePart scoreValue(Node recommendation, Node input, Node sharedThing);
 }

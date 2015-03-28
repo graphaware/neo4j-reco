@@ -93,7 +93,7 @@ public class Recommendations<OUT> {
     /**
      * Merge the given recommendations to this instance.
      *
-     * @param recommendations to merge.
+     * @param recommendations to add.
      * @return merged recommendations, instance of this class. The returned object should be used after merging,
      * rather than the instance merged to.
      */
@@ -123,14 +123,41 @@ public class Recommendations<OUT> {
      *
      * @param item      to add. Must not be <code>null</code>.
      * @param scoreName name of the partial score this recommendation is receiving. Must not be <code>null</code> or empty.
-     * @param score     value of the partial score.
+     * @param scorePart partial score.
      */
-    public void add(OUT item, String scoreName, float score) {
+    public void add(OUT item, String scoreName, ScorePart scorePart) {
         notNull(item);
         notNull(scoreName);
         hasLength(scoreName);
 
-        getOrCreate(item).add(scoreName, score);
+        getOrCreate(item).add(scoreName, scorePart);
+    }
+
+    /**
+     * Add a recommendation.
+     *
+     * @param item      to add. Must not be <code>null</code>.
+     * @param scoreName name of the partial score this recommendation is receiving. Must not be <code>null</code> or empty.
+     * @param score     value of the partial score.
+     * @param details   of the partial score value.
+     */
+    public void add(OUT item, String scoreName, float score, Map<String, Object> details) {
+        notNull(item);
+        notNull(scoreName);
+        hasLength(scoreName);
+
+        getOrCreate(item).add(scoreName, score, details);
+    }
+
+    /**
+     * Add a recommendation.
+     *
+     * @param item      to add. Must not be <code>null</code>.
+     * @param scoreName name of the partial score this recommendation is receiving. Must not be <code>null</code> or empty.
+     * @param score     value of the partial score.
+     */
+    public void add(OUT item, String scoreName, float score) {
+        add(item, scoreName, score, null);
     }
 
     /**

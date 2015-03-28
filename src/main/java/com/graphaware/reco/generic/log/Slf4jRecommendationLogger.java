@@ -22,7 +22,6 @@ import com.graphaware.reco.generic.result.Score;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * A logger logging recommended items and their scores using {@link org.slf4j.Logger}.
@@ -47,9 +46,9 @@ public class Slf4jRecommendationLogger<OUT, IN> implements Logger<OUT, IN> {
      */
     @Override
     public String toString(IN input, List<Recommendation<OUT>> recommendations, Context<OUT, IN> context) {
-        StringBuilder builder = new StringBuilder("Computed recommendations for ").append(inputToString(input)).append(": ");
+        StringBuilder builder = new StringBuilder("Computed recommendations for ").append(inputToString(input)).append(":");
         for (Recommendation<OUT> recommendation : recommendations) {
-            builder.append("(");
+            builder.append(" (");
             if (logUuid()) {
                 builder.append(recommendation.getUuid()).append(":");
             }
@@ -89,13 +88,7 @@ public class Slf4jRecommendationLogger<OUT, IN> implements Logger<OUT, IN> {
      * @return converted score.
      */
     protected String scoreToString(Score score) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{total:").append(score.getTotalScore());
-        for (Map.Entry<String, Float> entry : score.getScoreParts().entrySet()) {
-            builder.append(",").append(entry.getKey()).append(":").append(entry.getValue());
-        }
-        builder.append("}");
-        return builder.toString();
+        return score.toString();
     }
 
     /**

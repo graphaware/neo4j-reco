@@ -21,7 +21,12 @@ import com.graphaware.reco.generic.transform.ScoreTransformer;
 import com.graphaware.reco.integration.domain.Relationships;
 import com.graphaware.reco.neo4j.engine.SomethingInCommon;
 import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
+
+import java.util.Collections;
+import java.util.Map;
 
 import static org.neo4j.graphdb.Direction.BOTH;
 
@@ -50,5 +55,10 @@ public class FriendsInCommon extends SomethingInCommon {
     @Override
     protected Direction getDirection() {
         return BOTH;
+    }
+
+    @Override
+    protected Map<String, Object> details(Node thingInCommon, Relationship withInput, Relationship withOutput) {
+        return Collections.singletonMap("name", thingInCommon.getProperty("name"));
     }
 }
