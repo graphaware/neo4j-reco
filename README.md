@@ -40,7 +40,7 @@ Unlike with other GraphAware Framework Modules, you will need to write at least 
 Java developers that use Neo4j in <a href="http://docs.neo4j.org/chunked/stable/tutorials-java-embedded.html" target="_blank">embedded mode</a>
 and those developing Neo4j <a href="http://docs.neo4j.org/chunked/stable/server-plugins.html" target="_blank">server plugins</a>,
 <a href="http://docs.neo4j.org/chunked/stable/server-unmanaged-extensions.html" target="_blank">unmanaged extensions</a>,
-GraphAware Runtime Modules, or Spring MVC Controllers can include use the module as a dependency for their Java project.
+GraphAware Runtime Modules, or Spring MVC Controllers can include the module as a dependency for their Java project.
 
 #### Releases
 
