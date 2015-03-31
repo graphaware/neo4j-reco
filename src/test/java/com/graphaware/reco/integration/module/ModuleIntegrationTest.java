@@ -61,7 +61,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
                         "(a:Person:Male {name:'Adam', age:30})," +
                         "(l:Person:Female {name:'Luanne', age:25})," +
                         "(b:Person:Male {name:'Christophe', age:60})," +
-                        "(j:Person:Male {name:'Jim', age:40})," +
+                        "(j:Person:Male {name:'Jim', age:38})," +
 
                         "(lon:City {name:'London'})," +
                         "(mum:City {name:'Mumbai'})," +
