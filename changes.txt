@@ -1,3 +1,6 @@
+2.2.0.30.6:
+    - fixed issue #4 (blocked threads when using secure random from Java)
+
 2.2.0.28.5:
     - ability to limit the recommendation process by time
     - ability to expose additional details (on top of the score) about why a recommendation has been served
