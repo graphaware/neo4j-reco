@@ -1,3 +1,6 @@
+2.2.1.30.6:
+    - no changes
+
 2.2.0.30.6:
     - fixed issue #4 (blocked threads when using secure random from Java)
 
