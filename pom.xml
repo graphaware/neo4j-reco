@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>recommendation-engine</artifactId>
-    <version>2.2.1.30.6</version>
+    <version>2.2.1.30.7-SNAPSHOT</version>
 
     <parent>
         <groupId>com.graphaware.neo4j</groupId>
