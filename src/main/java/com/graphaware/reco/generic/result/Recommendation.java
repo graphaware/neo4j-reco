@@ -17,6 +17,7 @@
 package com.graphaware.reco.generic.result;
 
 import com.graphaware.common.uuid.EaioUuidGenerator;
+import com.graphaware.common.uuid.UuidGenerator;
 
 import java.util.Map;
 
@@ -34,7 +35,7 @@ import static org.springframework.util.Assert.notNull;
  */
 public class Recommendation<OUT> implements Comparable<Recommendation<OUT>> {
 
-    private static final EaioUuidGenerator uuidGenerator = new EaioUuidGenerator();
+    private static final UuidGenerator uuidGenerator = new EaioUuidGenerator();
 
     private final String uuid;
     private final OUT item;
