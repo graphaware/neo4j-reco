@@ -68,7 +68,7 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
             blacklist.addAll(blacklistBuilder.buildBlacklist(input));
         }
 
-        return productContext(input, limit, maxTime, unmodifiableList(filters), blacklist);
+        return produceContext(input, limit, maxTime, unmodifiableList(filters), blacklist);
     }
 
     /**
@@ -81,7 +81,7 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
      * @param blacklist for blaclisting items.
      * @return context.
      */
-    protected FilteringContext<OUT, IN> productContext(IN input, int limit, long maxTime, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
+    protected FilteringContext<OUT, IN> produceContext(IN input, int limit, long maxTime, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
         return new FilteringContext<>(input, limit, maxTime, filters, blacklist);
     }
 
