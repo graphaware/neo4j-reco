@@ -18,13 +18,14 @@ package com.graphaware.reco.generic.stats;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.springframework.util.StringUtils.hasLength;
+import static org.springframework.util.Assert.*;
 
 /**
  * Default production implementation of {@link com.graphaware.reco.generic.stats.Statistics}.

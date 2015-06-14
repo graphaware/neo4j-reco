@@ -18,12 +18,12 @@ package com.graphaware.reco.generic.stats;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static org.springframework.util.StringUtils.*;
+import static org.springframework.util.Assert.*;
+
 
 /**
  * Default production implementation of {@link com.graphaware.reco.generic.stats.TaskTimer}.
