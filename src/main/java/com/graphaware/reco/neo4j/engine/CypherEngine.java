@@ -25,6 +25,8 @@ import org.neo4j.graphdb.Result;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.util.Assert.hasLength;
+
 /**
  * {@link SingleScoreRecommendationEngine} based on finding recommendations by executing a Cypher query.
  * <p/>
@@ -41,13 +43,16 @@ public class CypherEngine extends SingleScoreRecommendationEngine<Node, Node> {
     /**
      * Construct a new blacklist builder.
      *
-     * @param name  name of the engine for logging purposes.
+     * @param name  name of the engine for logging purposes. Must not be <code>null</code> or empty.
      * @param query the Cypher query that returns recommendations. Can have {@link #idParamName()} as a placeholder
      *              representing the ID of the input node. Must return a set of nodes named {@link #recoResultName()}.
      *              Should return a score, i.e. a numerical value for each recommendation named {@link #scoreResultName()}.
-     *              Can use {@link #limitParamName()} as a placeholder for Cypher LIMIT value.
+     *              Can use {@link #limitParamName()} as a placeholder for Cypher LIMIT value. Must not be <code>null</code> or empty.
      */
     public CypherEngine(String name, String query) {
+        hasLength(name);
+        hasLength(query);
+
         this.name = name;
         this.query = query;
     }
@@ -150,5 +155,30 @@ public class CypherEngine extends SingleScoreRecommendationEngine<Node, Node> {
      */
     protected float defaultScore() {
         return 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CypherEngine that = (CypherEngine) o;
+
+        if (!name.equals(that.name)) return false;
+        return query.equals(that.query);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + query.hashCode();
+        return result;
     }
 }
