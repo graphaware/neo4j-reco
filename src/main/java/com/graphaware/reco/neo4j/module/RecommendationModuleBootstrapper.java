@@ -17,6 +17,7 @@
 package com.graphaware.reco.neo4j.module;
 
 import com.graphaware.common.policy.NodeInclusionPolicy;
+import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import com.graphaware.runtime.config.function.StringToNodeInclusionPolicy;
 import com.graphaware.runtime.module.RuntimeModuleBootstrapper;
@@ -59,10 +60,11 @@ public class RecommendationModuleBootstrapper implements RuntimeModuleBootstrapp
             configuration = configuration.with(policy);
         }
 
+        //todo allow for an FQN of config class
         if (config.get(MAX_RECOMMENDATIONS) != null) {
             int maxRecommendations = Integer.valueOf(config.get(MAX_RECOMMENDATIONS));
             LOG.info("Max recommendations set to {}", maxRecommendations);
-            configuration = configuration.withMaxRecommendations(maxRecommendations);
+            configuration = configuration.withConfig(new SimpleConfig(maxRecommendations));
         }
 
         if (config.get(REL_TYPE) != null) {

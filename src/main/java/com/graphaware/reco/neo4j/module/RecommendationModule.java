@@ -83,7 +83,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
         LOG.info("Computing for " + node.getId());
 
-        List<Recommendation<Node>> recommendations = config.getEngine().recommend(node, config.getMaxRecommendations());
+        List<Recommendation<Node>> recommendations = config.getEngine().recommend(node, config.getConfig());
 
         persistRecommendations(node, recommendations);
 

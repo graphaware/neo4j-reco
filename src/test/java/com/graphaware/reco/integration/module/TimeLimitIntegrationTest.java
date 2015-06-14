@@ -17,6 +17,7 @@
 package com.graphaware.reco.integration.module;
 
 import com.graphaware.common.util.IterableUtils;
+import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
@@ -104,10 +105,10 @@ public class TimeLimitIntegrationTest extends DatabaseIntegrationTest {
     public void shouldRecommendRandomPeopleOnlyIfThereIsTime() {
         try (Transaction tx = getDatabase().beginTx()) {
 
-            assertEquals(6, recommendationEngine.recommend(getPersonByName("Vince"), 10).size());
+            assertEquals(6, recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(10)).size());
 
             //now limited to 100 ms
-            assertEquals(2, recommendationEngine.recommend(getPersonByName("Vince"), 10, 100).size());
+            assertEquals(2, recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(10, 100)).size());
 
             tx.success();
         }

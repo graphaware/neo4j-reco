@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.engine;
 
+import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.result.Recommendation;
 
@@ -32,29 +33,18 @@ public interface TopLevelRecommendationEngine<OUT, IN> extends RecommendationEng
     /**
      * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process.
      *
-     * @param input   for which recommendations are about to be computed.
-     * @param maxTime the maximum number of millis the recommendation-computing process should last. Must be positive.
-     * @param limit   maximum number of recommendations desired.
+     * @param input  for which recommendations are about to be computed.
+     * @param config for the computation. Must not be <code>null</code>.
      * @return context.
      */
-    Context<OUT, IN> produceContext(IN input, int limit, long maxTime);
+    Context<OUT, IN> produceContext(IN input, Config config);
 
     /**
      * Produce recommendations.
      *
-     * @param input for which recommendations are about to be computed.
-     * @param limit maximum number of recommendations desired.
+     * @param input  for which recommendations are about to be computed.
+     * @param config for the computation.
      * @return recommendations sorted by decreasing relevance and trimmed to limit.
      */
-    List<Recommendation<OUT>> recommend(IN input, int limit);
-
-    /**
-     * Produce recommendations.
-     *
-     * @param input   for which recommendations are about to be computed.
-     * @param maxTime the maximum number of millis the recommendation-computing process should last. Must be positive.
-     * @param limit   maximum number of recommendations desired.
-     * @return recommendations sorted by decreasing relevance and trimmed to limit.
-     */
-    List<Recommendation<OUT>> recommend(IN input, int limit, long maxTime);
+    List<Recommendation<OUT>> recommend(IN input, Config config);
 }

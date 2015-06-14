@@ -45,7 +45,7 @@ public class RandomPeople extends RandomRecommendations {
 
     @Override
     protected int numberOfRecommendations(Context<Node, Node> context) {
-        return context.limit() * 5;
+        return context.config().limit() * 5;
     }
 
     @Override

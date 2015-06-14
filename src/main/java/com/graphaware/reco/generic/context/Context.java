@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.context;
 
+import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.stats.Statistics;
 
 /**
@@ -24,9 +25,9 @@ import com.graphaware.reco.generic.stats.Statistics;
 public interface Context<OUT, IN> {
 
     /**
-     * @return desired maximum number of produced recommendations.
+     * @return user-originating configuration for the recommendation-computing process.
      */
-    int limit();
+    Config config();
 
     /**
      * @return <code>true</code> iff there's still time to compute more.

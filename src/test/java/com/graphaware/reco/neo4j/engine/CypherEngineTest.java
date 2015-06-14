@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.neo4j.engine;
 
+import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.context.SimpleContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.result.Recommendation;
@@ -75,7 +76,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
 
         try (Transaction tx = getDatabase().beginTx()) {
             Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
-            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
 
             assertEquals(2, result.size());
             assertEquals("Adam", result.get(0).getItem().getProperty("name"));
@@ -97,7 +98,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
 
         try (Transaction tx = getDatabase().beginTx()) {
             Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
-            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 1, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(1))).get(Integer.MAX_VALUE);
 
             assertEquals(1, result.size());
             assertEquals("Adam", result.get(0).getItem().getProperty("name"));
@@ -137,7 +138,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
 
         try (Transaction tx = getDatabase().beginTx()) {
             Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
-            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 1, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(1))).get(Integer.MAX_VALUE);
 
             assertEquals(1, result.size());
             assertEquals("Adam", result.get(0).getItem().getProperty("name"));
@@ -156,7 +157,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
 
         try (Transaction tx = getDatabase().beginTx()) {
             Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
-            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
 
             assertEquals(2, result.size());
             assertEquals("Adam", result.get(0).getItem().getProperty("name"));
@@ -175,7 +176,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
 
         try (Transaction tx = getDatabase().beginTx()) {
             Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
-            engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+            engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
         }
     }
 
@@ -186,7 +187,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
 
         try (Transaction tx = getDatabase().beginTx()) {
             Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
-            engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+            engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
         }
     }
 
@@ -199,7 +200,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
 
         try (Transaction tx = getDatabase().beginTx()) {
             Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
-            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
 
             assertEquals(0, result.size());
 

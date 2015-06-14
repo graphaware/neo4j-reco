@@ -42,7 +42,7 @@ public interface ParticipationPolicy<OUT, IN> {
     static ParticipationPolicy IF_MORE_RESULTS_NEEDED = new ParticipationPolicy() {
         @Override
         public boolean participate(Object input, Context context, Recommendations recommendations) {
-            return !recommendations.hasEnoughResults(context.limit());
+            return !recommendations.hasEnoughResults(context.config().limit());
         }
     };
 

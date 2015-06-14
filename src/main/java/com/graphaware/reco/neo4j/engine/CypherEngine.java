@@ -93,7 +93,7 @@ public class CypherEngine extends SingleScoreRecommendationEngine<Node, Node> {
     protected Map<String, Object> buildParams(Node input, Context<Node, Node> context) {
         Map<String, Object> params = new HashMap<>();
         params.put(idParamName(), input.getId());
-        params.put(limitParamName(), context.limit());
+        params.put(limitParamName(), context.config().limit());
         return params;
     }
 

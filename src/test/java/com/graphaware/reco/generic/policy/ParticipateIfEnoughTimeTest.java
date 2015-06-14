@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.policy;
 
+import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.SimpleContext;
 import com.graphaware.reco.generic.result.Recommendations;
@@ -30,7 +31,7 @@ public class ParticipateIfEnoughTimeTest {
     @Test
     public void shouldParticipateIfThereIsEnoughTime() throws InterruptedException {
         Object input = new Object();
-        Context<Object, Object> context = new SimpleContext<>(input, 10, 100);
+        Context<Object, Object> context = new SimpleContext<>(input, new SimpleConfig(10, 100));
 
         Thread.sleep(50);
 
@@ -41,7 +42,7 @@ public class ParticipateIfEnoughTimeTest {
     @Test
     public void shouldNotParticipateIfThereIsNotEnoughTime() throws InterruptedException {
         Object input = new Object();
-        Context<Object, Object> context = new SimpleContext<>(input, 10, 100);
+        Context<Object, Object> context = new SimpleContext<>(input, new SimpleConfig(10, 100));
 
         Thread.sleep(101);
 

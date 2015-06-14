@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.engine;
 
+import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.context.FilteringContext;
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
@@ -62,47 +63,39 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
      * {@inheritDoc}
      */
     @Override
-    public final Context<OUT, IN> produceContext(IN input, int limit, long maxTime) {
+    public final Context<OUT, IN> produceContext(IN input, Config config) {
         Set<OUT> blacklist = new HashSet<>();
+
         for (BlacklistBuilder<OUT, IN> blacklistBuilder : blacklistBuilders) {
             blacklist.addAll(blacklistBuilder.buildBlacklist(input));
         }
 
-        return produceContext(input, limit, maxTime, unmodifiableList(filters), blacklist);
+        return produceContext(input, config, unmodifiableList(filters), blacklist);
     }
 
     /**
      * Produce a {@link com.graphaware.reco.generic.context.Context} for the recommendation-computing process.
      *
      * @param input     for which recommendations are about to be computed.
-     * @param limit     maximum number of recommendations desired.
-     * @param maxTime   the maximum number of millis the recommendation-computing process should last. Must be positive.
+     * @param config    for the computation. Must not be <code>null</code>.
      * @param filters   for filtering out items.
      * @param blacklist for blaclisting items.
      * @return context.
      */
-    protected FilteringContext<OUT, IN> produceContext(IN input, int limit, long maxTime, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
-        return new FilteringContext<>(input, limit, maxTime, filters, blacklist);
+    protected FilteringContext<OUT, IN> produceContext(IN input, Config config, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
+        return new FilteringContext<>(input, config, filters, blacklist);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Recommendation<OUT>> recommend(IN input, int limit) {
-        return produceAndLogRecommendations(input, produceContext(input, limit, Long.MAX_VALUE));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Recommendation<OUT>> recommend(IN input, int limit, long maxTime) {
-        return produceAndLogRecommendations(input, produceContext(input, limit, maxTime));
+    public List<Recommendation<OUT>> recommend(IN input, Config config) {
+        return produceAndLogRecommendations(input, produceContext(input, config));
     }
 
     private List<Recommendation<OUT>> produceAndLogRecommendations(IN input, Context<OUT, IN> context) {
-        List<Recommendation<OUT>> recommendations = recommend(input, context).get(context.limit());
+        List<Recommendation<OUT>> recommendations = recommend(input, context).get(context.config().limit());
 
         for (Logger<OUT, IN> logger : loggers) {
             logger.log(input, recommendations, context);

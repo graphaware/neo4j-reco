@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.context;
 
+import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.stats.DefaultStatistics;
 import com.graphaware.reco.generic.stats.Statistics;
 
@@ -29,24 +30,20 @@ import static org.springframework.util.Assert.notNull;
  */
 public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
 
-    private final int limit;
-    private final long maxTime;
+    private final Config config;
     private final Statistics statistics;
 
     /**
      * Construct a new context.
      *
-     * @param input for which recommendations are being computed.
-     * @param limit the maximum number of desired recommendations. Must be positive.
-     * @param maxTime the maximum number of millis the recommendation-computing process should last. Must be positive.
+     * @param input for which recommendations are being computed. Must not be <code>null</code>.
+     * @param config for the computation. Must not be <code>null</code>.
      */
-    public SimpleContext(IN input, int limit, long maxTime) {
+    public SimpleContext(IN input, Config config) {
         notNull(input);
-        isTrue(limit > 0);
-        isTrue(maxTime > 0);
+        notNull(config);
 
-        this.limit = limit;
-        this.maxTime = maxTime;
+        this.config = config;
         this.statistics = createStatistics(input);
     }
 
@@ -54,8 +51,8 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
      * {@inheritDoc}
      */
     @Override
-    public final int limit() {
-        return limit;
+    public final Config config() {
+        return config;
     }
 
     /**
@@ -63,7 +60,7 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
      */
     @Override
     public boolean hasEnoughTime() {
-        return maxTime > statistics.getTime(TOTAL_TIME);
+        return config.maxTime() > statistics.getTime(TOTAL_TIME);
     }
 
     /**

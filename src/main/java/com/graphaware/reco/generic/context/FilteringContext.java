@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.context;
 
+import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.filter.Filter;
 
 import java.util.List;
@@ -37,13 +38,12 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
      * Construct a new context.
      *
      * @param input     for which recommendations are being computed. Must not be <code>null</code>.
-     * @param limit     the maximum number of desired recommendations. Must be positive.
-     * @param maxTime   the maximum number of millis the recommendation-computing process should last. Must be positive.
+     * @param config    for the computation. Must not be <code>null</code>.
      * @param filters   used to filter out items. Can be empty, but must not be <code>null</code>.
      * @param blacklist a set of blacklisted items. Can be empty, but must not be <code>null</code>.
      */
-    public FilteringContext(IN input, int limit, long maxTime, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
-        super(input, limit, maxTime);
+    public FilteringContext(IN input, Config config, List<Filter<OUT, IN>> filters, Set<OUT> blacklist) {
+        super(input, config);
 
         notNull(filters);
         notNull(blacklist);

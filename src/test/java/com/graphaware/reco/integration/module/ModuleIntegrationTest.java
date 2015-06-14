@@ -17,6 +17,7 @@
 package com.graphaware.reco.integration.module;
 
 import com.graphaware.common.util.IterableUtils;
+import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.integration.engine.FriendsComputingEngine;
 import com.graphaware.reco.integration.engine.FriendsRecommendationEngine;
@@ -91,7 +92,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Vince
 
-            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 2);
+            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(2));
 
             String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}})";
 
@@ -100,7 +101,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Adam
 
-            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), 2);
+            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), new SimpleConfig(2));
 
             String expectedForAdam = "Computed recommendations for Adam: (Vince {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Daniela {total:19.338144, ageDifference:-5.527864, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}, sameLocation: {value:10.0, {value:10.0, location:London}}})";
 
@@ -109,7 +110,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Luanne
 
-            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), 4);
+            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), new SimpleConfig(4));
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
             assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
@@ -133,7 +134,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Vince
 
-            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 10, 1);
+            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(10, 1));
 
             String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}})";
 
@@ -157,7 +158,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
         runtime.registerModule(new RecommendationModule(
                 "RECO",
-                RecommendationModuleConfiguration.defaultConfiguration(new FriendsComputingEngine()).withMaxRecommendations(2),
+                RecommendationModuleConfiguration.defaultConfiguration(new FriendsComputingEngine()).withConfig(new SimpleConfig(2)),
                 getDatabase()));
 
         runtime.start();
@@ -168,7 +169,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Vince
 
-            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 2);
+            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(2));
 
             String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon:27.522034, sameGender:10.0, sameLocation:10.0}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon:14.866008})";
 
@@ -177,7 +178,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Adam
 
-            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), 2);
+            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), new SimpleConfig(2));
 
             String expectedForAdam = "Computed recommendations for Adam: (Vince {total:41.99417, ageDifference:-5.527864, friendsInCommon:27.522034, sameGender:10.0, sameLocation:10.0}), (Daniela {total:19.338144, ageDifference:-5.527864, friendsInCommon:14.866008, sameLocation:10.0})";
 
@@ -186,7 +187,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Luanne
 
-            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), 4);
+            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), new SimpleConfig(4));
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
             assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);

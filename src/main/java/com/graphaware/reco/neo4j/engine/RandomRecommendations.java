@@ -89,7 +89,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * @return maximum number of attempts. By default 10 * {@link com.graphaware.reco.generic.context.Context#limit()}
      */
     protected int numberOfAttempts(Context<Node, Node> context) {
-        return context.limit() * 10;
+        return context.config().limit() * 10;
     }
 
     /**
@@ -105,7 +105,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * @return maximum number of recommendations. By default 2 * {@link com.graphaware.reco.generic.context.Context#limit()}
      */
     protected int numberOfRecommendations(Context<Node, Node> context) {
-        return context.limit() * 2;
+        return context.config().limit() * 2;
     }
 
     /**
