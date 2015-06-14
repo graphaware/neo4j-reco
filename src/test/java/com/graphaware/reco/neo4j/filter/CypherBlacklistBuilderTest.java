@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.neo4j.filter;
 
+import com.graphaware.reco.generic.filter.BlacklistBuilder;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
@@ -53,20 +54,16 @@ public class CypherBlacklistBuilderTest extends DatabaseIntegrationTest {
             tx.success();
         }
 
-        CypherBlacklistBuilder cypherBlacklist = new CypherBlacklistBuilder(getDatabase()) {
-            @Override
-            protected String getQuery() {
-                return "MATCH (p:Person)-[:WORKS_FOR]->(c) WHERE id(p)={id} RETURN c AS blacklist";
-            }
-        };
+        String query = "MATCH (p:Person)-[:WORKS_FOR]->(c) WHERE id(p)={id} RETURN c AS blacklist";
+        BlacklistBuilder<Node, Node> blacklistBuilder = new CypherBlacklistBuilder(query);
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Set<Node> blacklist = cypherBlacklist.buildBlacklist(getSingle(getDatabase().findNodesByLabelAndProperty(PERSON, "name", "Michal")));
+            Set<Node> blacklist = blacklistBuilder.buildBlacklist(getSingle(getDatabase().findNodes(PERSON, "name", "Michal")));
 
             assertEquals(1, blacklist.size());
             assertEquals("GraphAware", blacklist.iterator().next().getProperty("name"));
 
-            blacklist = cypherBlacklist.buildBlacklist(getSingle(getDatabase().findNodesByLabelAndProperty(PERSON, "name", "Emil")));
+            blacklist = blacklistBuilder.buildBlacklist(getSingle(getDatabase().findNodes(PERSON, "name", "Emil")));
 
             assertEquals(1, blacklist.size());
             assertEquals("Neo Technology", blacklist.iterator().next().getProperty("name"));

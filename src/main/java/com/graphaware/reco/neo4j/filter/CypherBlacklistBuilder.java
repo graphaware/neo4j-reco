@@ -17,7 +17,6 @@
 package com.graphaware.reco.neo4j.filter;
 
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
-import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterator;
 
@@ -30,14 +29,18 @@ import static org.springframework.util.Assert.notNull;
 /**
  * {@link BlacklistBuilder} based on finding blacklisted {@link Node}s by executing a Cypher query.
  */
-public abstract class CypherBlacklistBuilder implements BlacklistBuilder<Node, Node> {
+public class CypherBlacklistBuilder implements BlacklistBuilder<Node, Node> {
 
-    private final GraphDatabaseService database;
     private final String query;
 
-    protected CypherBlacklistBuilder(GraphDatabaseService database) {
-        this.database = database;
-        query = getQuery();
+    /**
+     * Construct a new blacklist builder.
+     *
+     * @param query the Cypher query that returns blacklisted nodes. Can have {@link #idParamName()} as a placeholder
+     *              representing the ID of the input node. Must return a set of nodes named {@link #blacklistResultName()}.
+     */
+    public CypherBlacklistBuilder(String query) {
+        this.query = query;
     }
 
     /**
@@ -49,7 +52,7 @@ public abstract class CypherBlacklistBuilder implements BlacklistBuilder<Node, N
 
         Set<Node> excluded = new HashSet<>();
 
-        ResourceIterator<Node> it = database.execute(query, Collections.singletonMap("id", (Object) input.getId())).columnAs("blacklist");
+        ResourceIterator<Node> it = input.getGraphDatabase().execute(query, Collections.singletonMap(idParamName(), (Object) input.getId())).columnAs(blacklistResultName());
 
         while (it.hasNext()) {
             excluded.add(it.next());
@@ -59,10 +62,20 @@ public abstract class CypherBlacklistBuilder implements BlacklistBuilder<Node, N
     }
 
     /**
-     * Get the Cypher query that returns blacklisted nodes. Can have {id} as a placeholder representing the ID of the
-     * input node. Must return a set of nodes named "blacklist".
+     * Get the name of the parameter that represents input node ID.
      *
-     * @return Cypher query.
+     * @return input node ID parameter name, "id" by default.
      */
-    protected abstract String getQuery();
+    protected String idParamName() {
+        return "id";
+    }
+
+    /**
+     * Get the name of the result column that contains blacklisted items.
+     *
+     * @return blacklisted items result name, "blacklist" by default.
+     */
+    protected String blacklistResultName() {
+        return "blacklist";
+    }
 }

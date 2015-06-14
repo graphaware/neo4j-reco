@@ -21,17 +21,14 @@ import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
 import org.junit.Test;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by bachmanm on 14/06/2015.
+ * Test for {@link CypherEngine}.
  */
 public class CypherEngineTest extends DatabaseIntegrationTest {
 
@@ -71,13 +68,8 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
 
     @Test
     public void shouldComputeRecommendationsFromCypher() {
-        String query = "MATCH (p:Person)-[:FRIEND_OF]-()-[:FRIEND_OF]-(fof) WHERE NOT (p)-[:FRIEND_OF]-(fof) AND id(p)={id} RETURN id(fof) as reco, count(*) as score";
-        RecommendationEngine<Node, Node> engine = new CypherEngine(query) {
-            @Override
-            public String name() {
-                return "test engine";
-            }
-        };
+        String query = "MATCH (p:Person)-[:FRIEND_OF]-()-[:FRIEND_OF]-(reco) WHERE NOT (p)-[:FRIEND_OF]-(reco) AND id(p)={id} RETURN reco, count(*) as score";
+        RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query);
 
         List<Recommendation<Node>> result;
 
@@ -85,10 +77,131 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
             Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
             result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
 
+            assertEquals(2, result.size());
             assertEquals("Adam", result.get(0).getItem().getProperty("name"));
             assertEquals("Luanne", result.get(1).getItem().getProperty("name"));
             assertEquals(2.0, result.get(0).getScore().getTotalScore(), 0.001);
             assertEquals(1.0, result.get(1).getScore().getTotalScore(), 0.001);
+
+            tx.success();
+        }
+    }
+
+    @Test
+    public void shouldRespectLimit() {
+        String query = "MATCH (p:Person)-[:FRIEND_OF]-()-[:FRIEND_OF]-(reco) WHERE NOT (p)-[:FRIEND_OF]-(reco) AND id(p)={id} RETURN reco, count(*) as score ORDER BY score DESC limit {limit}";
+
+        RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query);
+
+        List<Recommendation<Node>> result;
+
+        try (Transaction tx = getDatabase().beginTx()) {
+            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 1, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+
+            assertEquals(1, result.size());
+            assertEquals("Adam", result.get(0).getItem().getProperty("name"));
+            assertEquals(2.0, result.get(0).getScore().getTotalScore(), 0.001);
+
+            tx.success();
+        }
+    }
+
+    @Test
+    public void shouldRespectCustomParams() {
+        String query = "MATCH (p:Person)-[:FRIEND_OF]-()-[:FRIEND_OF]-(customReco) WHERE NOT (p)-[:FRIEND_OF]-(customReco) AND id(p)={customId} RETURN customReco, count(*) as customScore ORDER BY customScore DESC limit {customLimit}";
+
+        RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query) {
+            @Override
+            protected String idParamName() {
+                return "customId";
+            }
+
+            @Override
+            protected String limitParamName() {
+                return "customLimit";
+            }
+
+            @Override
+            protected String recoResultName() {
+                return "customReco";
+            }
+
+            @Override
+            protected String scoreResultName() {
+                return "customScore";
+            }
+        };
+
+        List<Recommendation<Node>> result;
+
+        try (Transaction tx = getDatabase().beginTx()) {
+            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 1, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+
+            assertEquals(1, result.size());
+            assertEquals("Adam", result.get(0).getItem().getProperty("name"));
+            assertEquals(2.0, result.get(0).getScore().getTotalScore(), 0.001);
+
+            tx.success();
+        }
+    }
+
+    @Test
+    public void shouldBeAbleToUseDefaultScore() {
+        String query = "MATCH (p:Person)-[:FRIEND_OF]-()-[:FRIEND_OF]-(reco) WHERE NOT (p)-[:FRIEND_OF]-(reco) AND id(p)={id} RETURN reco";
+        RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query);
+
+        List<Recommendation<Node>> result;
+
+        try (Transaction tx = getDatabase().beginTx()) {
+            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+
+            assertEquals(2, result.size());
+            assertEquals("Adam", result.get(0).getItem().getProperty("name"));
+            assertEquals("Luanne", result.get(1).getItem().getProperty("name"));
+            assertEquals(2.0, result.get(0).getScore().getTotalScore(), 0.001);
+            assertEquals(1.0, result.get(1).getScore().getTotalScore(), 0.001);
+
+            tx.success();
+        }
+    }
+
+    @Test(expected = QueryExecutionException.class)
+    public void shouldFailWhenCypherQueryIsInvalid() {
+        String query = "MATCH (p:Person)-[:FRIEND_OF]-(-[:FRIEND_OF]-(reco) WHERE NOT (p)-[:FRIEND_OF]-(reco) AND id(p)={id} RETURN reco";
+        RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query);
+
+        try (Transaction tx = getDatabase().beginTx()) {
+            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+        }
+    }
+
+    @Test(expected = QueryExecutionException.class)
+    public void shouldFailWhenCypherQueryUsesUnknownParam() {
+        String query = "MATCH (p:Person)-[:FRIEND_OF]-()-[:FRIEND_OF]-(reco) WHERE NOT (p)-[:FRIEND_OF]-(reco) AND id(p)={unknown} RETURN reco";
+        RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query);
+
+        try (Transaction tx = getDatabase().beginTx()) {
+            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+        }
+    }
+
+    @Test
+    public void shouldGracefullyHandleNoResults() {
+        String query = "MATCH (p:Person)-[:FRIEND_OF]-()-[:FRIEND_OF]-(reco) WHERE NOT (p)-[:FRIEND_OF]-(reco) AND id(p)=435234523 RETURN reco";
+        RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query);
+
+        List<Recommendation<Node>> result;
+
+        try (Transaction tx = getDatabase().beginTx()) {
+            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, 10, Long.MAX_VALUE)).get(Integer.MAX_VALUE);
+
+            assertEquals(0, result.size());
 
             tx.success();
         }

@@ -1,3 +1,6 @@
+2.2.2.31.7:
+    - ability to create Cypher-based engines
+
 2.2.2.31.6:
     - no changes
 
