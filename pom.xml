@@ -14,7 +14,8 @@
   ~ <http://www.gnu.org/licenses />.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>recommendation-engine</artifactId>
@@ -30,6 +31,24 @@
     <description>Neo4j Based Recommendation Engine Module with real-time and pre-computed recommendations.</description>
     <url>http://graphaware.com</url>
 
+    <profiles>
+        <profile>
+            <id>intellij-javadoc-fix</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
+                        <configuration>
+                            <aggregate>true</aggregate>
+                            <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <licenses>
         <license>
             <name>GNU General Public License, version 3</name>
@@ -42,8 +61,8 @@
         <connection>scm:git:git@github.com:graphaware/neo4j-reco.git</connection>
         <developerConnection>scm:git:git@github.com:graphaware/neo4j-reco.git</developerConnection>
         <url>git@github.com:graphaware/neo4j-reco.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <developers>
         <developer>
