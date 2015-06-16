@@ -24,20 +24,19 @@ import com.graphaware.module.algo.generator.config.BasicGeneratorConfig;
 import com.graphaware.module.algo.generator.node.SocialNetworkNodeCreator;
 import com.graphaware.module.algo.generator.relationship.BarabasiAlbertRelationshipGenerator;
 import com.graphaware.module.algo.generator.relationship.SocialNetworkRelationshipCreator;
-import com.graphaware.reco.integration.domain.Relationships;
-import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
 import com.graphaware.test.integration.WrappingServerIntegrationTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 import org.neo4j.helpers.collection.Iterables;
 import org.neo4j.test.TestGraphDatabaseFactory;
-import org.neo4j.tooling.GlobalGraphOperations;
 
 import java.util.Arrays;
 
-import static com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine.*;
-import static org.neo4j.graphdb.Direction.*;
+import static com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine.RECOMMEND;
+import static org.neo4j.graphdb.Direction.OUTGOING;
+import static org.neo4j.graphdb.DynamicLabel.label;
+import static org.neo4j.helpers.collection.IteratorUtil.asIterable;
 
 public class ModuleDemo extends WrappingServerIntegrationTest {
 
@@ -47,7 +46,7 @@ public class ModuleDemo extends WrappingServerIntegrationTest {
         Thread.sleep(20000);
 
         try (Transaction tx = getDatabase().beginTx()) {
-            for (Node person : GlobalGraphOperations.at(getDatabase()).getAllNodesWithLabel(DynamicLabel.label("Person"))) {
+            for (Node person : asIterable(getDatabase().findNodes(label("Person")))) {
                 printRecommendations(person);
             }
             tx.success();
