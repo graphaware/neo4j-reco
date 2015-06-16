@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.transform;
 
+import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.result.PartialScore;
 
 /**
@@ -59,7 +60,7 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * {@inheritDoc}
      */
     @Override
-    public <OUT> PartialScore transform(OUT item, PartialScore score) {
+    public <OUT> PartialScore transform(OUT item, PartialScore score, Context<OUT, ?> context) {
         score.setValue(function.transform(score.getValue()));
 
         return score;

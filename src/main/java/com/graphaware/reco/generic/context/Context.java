@@ -25,9 +25,20 @@ import com.graphaware.reco.generic.stats.Statistics;
 public interface Context<OUT, IN> {
 
     /**
-     * @return user-originating configuration for the recommendation-computing process.
+     * Get config.
+     *
+     * @return configuration for the recommendation-computing process.
      */
     Config config();
+
+    /**
+     * Get config in a type-safe manner.
+     *
+     * @param clazz of the config.
+     * @return configuration for the recommendation-computing process.
+     * @throws IllegalArgumentException if the config isn't of the specified type.
+     */
+    <C extends Config> C config(Class<C> clazz);
 
     /**
      * @return <code>true</code> iff there's still time to compute more.

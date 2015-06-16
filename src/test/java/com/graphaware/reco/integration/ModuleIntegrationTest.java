@@ -14,13 +14,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.integration.module;
+package com.graphaware.reco.integration;
 
 import com.graphaware.common.util.IterableUtils;
 import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.result.Recommendation;
-import com.graphaware.reco.integration.engine.FriendsComputingEngine;
-import com.graphaware.reco.integration.engine.FriendsRecommendationEngine;
+import com.graphaware.reco.integration.FriendsComputingEngine;
+import com.graphaware.reco.integration.FriendsRecommendationEngine;
 import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import com.graphaware.reco.neo4j.module.RecommendationModule;

@@ -73,7 +73,7 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
         }
 
         for (Filter<OUT, IN> filter : filters) {
-            if (!filter.include(recommendation, input)) {
+            if (!filter.include(recommendation, input, this)) {
                 statistics().incrementStatistic(task, FILTERED_ITEMS);
                 return false;
             }

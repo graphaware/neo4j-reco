@@ -30,17 +30,17 @@ public class ParetoScoreTransformerTest {
     public void verifyTransform() {
         ParetoScoreTransformer transformer = new ParetoScoreTransformer(100, 10);
 
-        assertEquals(0, transformer.transform(null, new PartialScore(0)).getValue(), 0.5);
-        assertEquals(15, transformer.transform(null, new PartialScore(1)).getValue(), 0.5);
-        assertEquals(28, transformer.transform(null, new PartialScore(2)).getValue(), 0.5);
-        assertEquals(38, transformer.transform(null, new PartialScore(3)).getValue(), 0.5);
-        assertEquals(55, transformer.transform(null, new PartialScore(5)).getValue(), 0.5);
-        assertEquals(80, transformer.transform(null, new PartialScore(10)).getValue(), 0.5);
-        assertEquals(96, transformer.transform(null, new PartialScore(20)).getValue(), 0.5);
-        assertEquals(100, transformer.transform(null, new PartialScore(50)).getValue(), 0.5);
-        assertEquals(100, transformer.transform(null, new PartialScore(100)).getValue(), 0.5);
-        assertEquals(100, transformer.transform(null, new PartialScore(10000)).getValue(), 0.5);
+        assertEquals(0, transformer.transform(null, new PartialScore(0), null).getValue(), 0.5);
+        assertEquals(15, transformer.transform(null, new PartialScore(1), null).getValue(), 0.5);
+        assertEquals(28, transformer.transform(null, new PartialScore(2), null).getValue(), 0.5);
+        assertEquals(38, transformer.transform(null, new PartialScore(3), null).getValue(), 0.5);
+        assertEquals(55, transformer.transform(null, new PartialScore(5), null).getValue(), 0.5);
+        assertEquals(80, transformer.transform(null, new PartialScore(10), null).getValue(), 0.5);
+        assertEquals(96, transformer.transform(null, new PartialScore(20), null).getValue(), 0.5);
+        assertEquals(100, transformer.transform(null, new PartialScore(50), null).getValue(), 0.5);
+        assertEquals(100, transformer.transform(null, new PartialScore(100), null).getValue(), 0.5);
+        assertEquals(100, transformer.transform(null, new PartialScore(10000), null).getValue(), 0.5);
 
-        assertEquals(0, new ParetoScoreTransformer(100, 10, 10).transform(null, new PartialScore(9)).getValue(), 0.5);
+        assertEquals(0, new ParetoScoreTransformer(100, 10, 10).transform(null, new PartialScore(9), null).getValue(), 0.5);
     }
 }

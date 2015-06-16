@@ -61,7 +61,7 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
 
         for (Map.Entry<OUT, PartialScore> entry : doRecommendSingle(input, context).entrySet()) {
             if (context.allow(entry.getKey(), input, name())) {
-                result.add(entry.getKey(), name(), transformer.transform(entry.getKey(), entry.getValue()));
+                result.add(entry.getKey(), name(), transformer.transform(entry.getKey(), entry.getValue(), context));
             }
         }
 

@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.integration.module;
+package com.graphaware.reco.integration;
 
 import com.graphaware.common.util.PropertyContainerUtils;
 import com.graphaware.module.algo.generator.GraphGenerator;

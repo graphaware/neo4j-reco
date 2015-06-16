@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.neo4j.post;
 
+import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
@@ -39,8 +40,11 @@ import org.neo4j.graphdb.RelationshipType;
  */
 public abstract class RewardSomethingShared implements PostProcessor<Node, Node> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node input) {
+    public void postProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         Node inputSharedNode = sharedNode(input);
 
         if (inputSharedNode == null) {

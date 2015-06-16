@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.generic.post;
 
+import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.result.Recommendations;
 
 /**
@@ -30,6 +31,7 @@ public interface PostProcessor<OUT, IN> {
      *
      * @param recommendations scored recommendations.
      * @param input           for whom the recommendation have been produced, must not be <code>null</code>.
+     * @param context         for the recommendation computing process.
      */
-    void postProcess(Recommendations<OUT> recommendations, IN input);
+    void postProcess(Recommendations<OUT> recommendations, IN input, Context<OUT, IN> context);
 }

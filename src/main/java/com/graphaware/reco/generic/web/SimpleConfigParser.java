@@ -14,23 +14,28 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.generic.transform;
+package com.graphaware.reco.generic.web;
 
-import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.result.PartialScore;
+import com.graphaware.reco.generic.config.SimpleConfig;
 
 /**
- * A component that can transform recommendation scores.
+ * {@link ConfigParser} producing {@link SimpleConfig}. Completely ignores extra config.
  */
-public interface ScoreTransformer {
+public class SimpleConfigParser implements ConfigParser<SimpleConfig> {
 
     /**
-     * Transform a partial score.
-     *
-     * @param item         recommended item.
-     * @param partialScore partial score of the item.
-     * @param context      of the recommendation computing process.
-     * @return transformed partial score.
+     * {@inheritDoc}
      */
-    <OUT> PartialScore transform(OUT item, PartialScore partialScore, Context<OUT, ?> context);
+    @Override
+    public SimpleConfig produceConfig(int limit, String config) {
+        return new SimpleConfig(limit);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SimpleConfig produceConfig(int limit, long maxTime, String config) {
+        return new SimpleConfig(limit, maxTime);
+    }
 }

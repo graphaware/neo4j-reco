@@ -31,9 +31,10 @@ import static org.springframework.util.Assert.hasLength;
  * {@link SingleScoreRecommendationEngine} based on finding recommendations by executing a Cypher query.
  * <p/>
  * An example query can look like this:
- * <code>"MATCH (p:Person)-[:FRIEND_OF]-()-[:FRIEND_OF]-(reco) WHERE NOT (p)-[:FRIEND_OF]-(reco) AND id(p)={id} RETURN reco, count(*) as score ORDER BY score DESC limit {limit}"</code>
+ * <code>"MATCH (p:Person)-[:FRIEND_OF]-(f)-[:FRIEND_OF]-(reco) WHERE NOT (p)-[:FRIEND_OF]-(reco) AND id(p)={id} RETURN reco, f.name as name, count(*) as score ORDER BY score DESC limit {limit}"</code>
  * {id} and {limit} will be provided as parameters by the engine. "reco" and "score" will become the recommended nodes
- * and their respective scores.
+ * and their respective scores. All other values returned by the query (e.g. "name" in this case) must be scalars and
+ * will become reasons for the recommendation.
  */
 public class CypherEngine extends SingleScoreRecommendationEngine<Node, Node> {
 
@@ -105,10 +106,28 @@ public class CypherEngine extends SingleScoreRecommendationEngine<Node, Node> {
      */
     protected PartialScore buildScore(Map<String, Object> row) {
         if (row.containsKey(scoreResultName())) {
-            return new PartialScore(Float.valueOf(String.valueOf(row.get(scoreResultName()))));
+            return new PartialScore(Float.valueOf(String.valueOf(row.get(scoreResultName()))), reasons(row));
         }
 
-        return new PartialScore(defaultScore());
+        return new PartialScore(defaultScore(), reasons(row));
+    }
+
+    /**
+     * Compute the reasons for a recommendation from all returned values, except {@link #scoreResultName()} and {@link #recoResultName()}.
+     *
+     * @param row of results from Cypher query.
+     * @return reasons. Cna be en empty map, but will never be <code>null</code>.
+     */
+    protected Map<String, Object> reasons(Map<String, Object> row) {
+        Map<String, Object> result = new HashMap<>();
+
+        for (String key : row.keySet()) {
+            if (!key.equals(scoreResultName()) && !key.equals(recoResultName())) {
+                result.put(key, row.get(key));
+            }
+        }
+
+        return result;
     }
 
     /**

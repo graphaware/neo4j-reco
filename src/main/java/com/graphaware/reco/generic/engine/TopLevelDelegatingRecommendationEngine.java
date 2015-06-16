@@ -67,7 +67,7 @@ public class TopLevelDelegatingRecommendationEngine<OUT, IN> extends DelegatingR
         Set<OUT> blacklist = new HashSet<>();
 
         for (BlacklistBuilder<OUT, IN> blacklistBuilder : blacklistBuilders) {
-            blacklist.addAll(blacklistBuilder.buildBlacklist(input));
+            blacklist.addAll(blacklistBuilder.buildBlacklist(input, config));
         }
 
         return produceContext(input, config, unmodifiableList(filters), blacklist);

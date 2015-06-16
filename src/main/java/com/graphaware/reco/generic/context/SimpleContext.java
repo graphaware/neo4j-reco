@@ -36,7 +36,7 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
     /**
      * Construct a new context.
      *
-     * @param input for which recommendations are being computed. Must not be <code>null</code>.
+     * @param input  for which recommendations are being computed. Must not be <code>null</code>.
      * @param config for the computation. Must not be <code>null</code>.
      */
     public SimpleContext(IN input, Config config) {
@@ -53,6 +53,20 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
     @Override
     public final Config config() {
         return config;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final <C extends Config> C config(Class<C> clazz) {
+        notNull(clazz);
+
+        if (!clazz.isAssignableFrom(config.getClass())) {
+            throw new IllegalArgumentException(config.getClass() + " is not assignable from " + clazz);
+        }
+
+        return (C) config();
     }
 
     /**

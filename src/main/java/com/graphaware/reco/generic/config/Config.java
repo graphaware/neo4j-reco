@@ -17,9 +17,11 @@
 package com.graphaware.reco.generic.config;
 
 /**
- * User-originating configuration of the recommendation-computing process.
+ * One off (per-request) configuration for the recommendation-computing process.
  */
 public interface Config {
+
+    Config UNLIMITED = new SimpleConfig(Integer.MAX_VALUE);
 
     /**
      * @return desired maximum number of produced recommendations.

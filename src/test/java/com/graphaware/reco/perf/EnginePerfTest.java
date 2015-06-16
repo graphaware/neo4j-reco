@@ -14,23 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.generic.transform;
+package com.graphaware.reco.perf;
 
-import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.result.PartialScore;
-
-/**
- * A component that can transform recommendation scores.
- */
-public interface ScoreTransformer {
-
-    /**
-     * Transform a partial score.
-     *
-     * @param item         recommended item.
-     * @param partialScore partial score of the item.
-     * @param context      of the recommendation computing process.
-     * @return transformed partial score.
-     */
-    <OUT> PartialScore transform(OUT item, PartialScore partialScore, Context<OUT, ?> context);
+public class EnginePerfTest {
 }

@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.neo4j.filter;
 
+import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
@@ -53,7 +54,7 @@ public class ExistingRelationshipBlacklistBuilder implements BlacklistBuilder<No
      * {@inheritDoc}
      */
     @Override
-    public final Set<Node> buildBlacklist(Node input) {
+    public final Set<Node> buildBlacklist(Node input, Config config) {
         notNull(input);
 
         Set<Node> excluded = new HashSet<>();

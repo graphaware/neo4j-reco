@@ -14,67 +14,59 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.integration.engine;
+package com.graphaware.reco.demo;
 
-import com.graphaware.reco.generic.context.Context;
+import com.graphaware.reco.demo.engine.RecruitPeopleBySkills;
+import com.graphaware.reco.demo.filter.FilterOutUnderage;
+import com.graphaware.reco.demo.post.RewardSameCountry;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
 import com.graphaware.reco.generic.filter.Filter;
-import com.graphaware.reco.generic.policy.ParticipationPolicy;
+import com.graphaware.reco.generic.log.Logger;
 import com.graphaware.reco.generic.post.PostProcessor;
-import com.graphaware.reco.integration.post.PenalizeAgeDifference;
-import com.graphaware.reco.integration.post.RewardSameLabels;
-import com.graphaware.reco.integration.post.RewardSameLocation;
+import com.graphaware.reco.neo4j.engine.CypherEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
-import com.graphaware.reco.neo4j.filter.ExcludeSelf;
-import com.graphaware.reco.neo4j.filter.ExistingRelationshipBlacklistBuilder;
+import com.graphaware.reco.neo4j.filter.CypherBlacklistBuilder;
 import org.neo4j.graphdb.Node;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static com.graphaware.reco.integration.domain.Relationships.FRIEND_OF;
-import static org.neo4j.graphdb.Direction.BOTH;
-
-/**
- * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
- */
-public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
+public class RecruitingRecoEngine extends Neo4jTopLevelDelegatingEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
         return Arrays.<RecommendationEngine<Node, Node>>asList(
-                new FriendsInCommon(),
-                new RandomPeople()
+                new RecruitPeopleBySkills(),
+                new CypherEngine("employed-contacts",
+                        "MATCH (c:Company)<-[:WORKS_FOR]-(p)-[:KNOWS]-(reco) WHERE id(c)={id} RETURN reco, p.name as name")
         );
     }
 
     @Override
     protected List<PostProcessor<Node, Node>> postProcessors() {
-        return Arrays.asList(
-                new RewardSameLabels(),
-                new RewardSameLocation(),
-                new PenalizeAgeDifference()
+        return Arrays.<PostProcessor<Node, Node>>asList(
+                new RewardSameCountry()
         );
     }
 
     @Override
     protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
         return Arrays.<BlacklistBuilder<Node, Node>>asList(
-                new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+                new CypherBlacklistBuilder("MATCH (p)-[:WORKS_FOR]->(c:Company) WHERE id(c)={id} RETURN p as blacklist")
         );
     }
 
     @Override
     protected List<Filter<Node, Node>> filters() {
         return Arrays.<Filter<Node, Node>>asList(
-                new ExcludeSelf()
+                new FilterOutUnderage()
         );
     }
 
     @Override
-    public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {
-        //noinspection unchecked
-        return ParticipationPolicy.IF_MORE_RESULTS_NEEDED;
+    protected List<Logger<Node, Node>> loggers() {
+        return Collections.emptyList();
     }
 }

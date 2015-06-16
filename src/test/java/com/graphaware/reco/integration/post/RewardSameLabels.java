@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.integration.post;
 
+import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
@@ -32,7 +33,7 @@ import static org.neo4j.helpers.collection.Iterables.toArray;
 public class RewardSameLabels implements PostProcessor<Node, Node> {
 
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node input) {
+    public void postProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         Label[] inputLabels = toArray(Label.class, input.getLabels());
 
         for (Recommendation<Node> recommendation : recommendations.get()) {

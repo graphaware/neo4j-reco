@@ -14,42 +14,30 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.neo4j.filter;
+package com.graphaware.reco.demo.filter;
 
-import com.graphaware.reco.generic.config.Config;
+import com.graphaware.reco.generic.config.KeyValueConfig;
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.filter.BlacklistBuilder;
 import com.graphaware.reco.generic.filter.Filter;
 import org.neo4j.graphdb.Node;
 
-import java.util.Collections;
-import java.util.Set;
-
-import static org.springframework.util.Assert.*;
+import static com.graphaware.common.util.PropertyContainerUtils.getInt;
 
 /**
- * {@link BlacklistBuilder} and {@link Filter} that blacklists/excludes suggestions that are themselves.
+ * {@link Filter} that filters out potentially recommended people that are underage. The minimum legal age is passed
+ * in as a "legalAge" String configuration value ({@link Context#config()}), defaulting to "18".
  */
-public class ExcludeSelf implements BlacklistBuilder<Node, Node>, Filter<Node, Node> {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<Node> buildBlacklist(Node input, Config config) {
-        notNull(input);
-
-        return Collections.singleton(input);
-    }
+public class FilterOutUnderage implements Filter<Node, Node> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean include(Node item, Node input, Context<Node, Node> context) {
-        notNull(item);
-        notNull(input);
+        int age = getInt(item, "age", 0);
+        int legalAge = Integer.valueOf(context.config(KeyValueConfig.class).get("legalAge", "18", String.class));
 
-        return input.getId() != item.getId();
+        return age >= legalAge;
     }
 }
+

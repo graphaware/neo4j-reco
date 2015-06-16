@@ -16,6 +16,8 @@
 
 package com.graphaware.reco.generic.filter;
 
+import com.graphaware.reco.generic.config.Config;
+
 import java.util.Set;
 
 /**
@@ -32,8 +34,9 @@ public interface BlacklistBuilder<OUT, IN> {
     /**
      * Get a set of items that must not be used as a recommendation for given input.
      *
-     * @param input for which recommendations are being computed. Must not be null.
+     * @param input  for which recommendations are being computed. Must not be <code>null</code>.
+     * @param config for the recommendation computing process. Must not be <code>null</code>.
      * @return set of blacklisted recommendations.
      */
-    Set<OUT> buildBlacklist(IN input);
+    Set<OUT> buildBlacklist(IN input, Config config);
 }

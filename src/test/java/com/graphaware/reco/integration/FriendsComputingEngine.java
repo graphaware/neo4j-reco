@@ -14,16 +14,19 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.integration.engine;
+package com.graphaware.reco.integration;
 
+import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
 import com.graphaware.reco.generic.filter.Filter;
-import com.graphaware.reco.generic.log.Logger;
-import com.graphaware.reco.generic.log.Slf4jRecommendationLogger;
-import com.graphaware.reco.generic.log.Slf4jStatisticsLogger;
-import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
-import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
+import com.graphaware.reco.generic.policy.ParticipationPolicy;
+import com.graphaware.reco.generic.post.PostProcessor;
+import com.graphaware.reco.integration.engine.FriendsInCommon;
+import com.graphaware.reco.integration.engine.RandomPeople;
+import com.graphaware.reco.integration.post.PenalizeAgeDifference;
+import com.graphaware.reco.integration.post.RewardSameLabels;
+import com.graphaware.reco.integration.post.RewardSameLocation;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
 import com.graphaware.reco.neo4j.filter.ExcludeSelf;
 import com.graphaware.reco.neo4j.filter.ExistingRelationshipBlacklistBuilder;
@@ -36,24 +39,30 @@ import static com.graphaware.reco.integration.domain.Relationships.FRIEND_OF;
 import static org.neo4j.graphdb.Direction.BOTH;
 
 /**
- * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
- * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
- * real-time using {@link com.graphaware.reco.integration.engine.FriendsComputingEngine}.
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
  */
-public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
+public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
         return Arrays.<RecommendationEngine<Node, Node>>asList(
-                new Neo4jPrecomputedEngine(),
-                new FriendsComputingEngine()
+                new FriendsInCommon(),
+                new RandomPeople()
+        );
+    }
+
+    @Override
+    protected List<PostProcessor<Node, Node>> postProcessors() {
+        return Arrays.asList(
+                new RewardSameLabels(),
+                new RewardSameLocation(),
+                new PenalizeAgeDifference()
         );
     }
 
     @Override
     protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
-        return Arrays.asList(
-                new ExcludeSelf(),
+        return Arrays.<BlacklistBuilder<Node, Node>>asList(
                 new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
         );
     }
@@ -66,11 +75,8 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
     }
 
     @Override
-    protected List<Logger<Node, Node>> loggers() {
-        return Arrays.asList(
-                new RecommendationsRememberingLogger(),
-                new Slf4jRecommendationLogger<Node, Node>(),
-                new Slf4jStatisticsLogger<Node, Node>()
-        );
+    public ParticipationPolicy<Node, Node> participationPolicy(Context<Node, Node> context) {
+        //noinspection unchecked
+        return ParticipationPolicy.IF_MORE_RESULTS_NEEDED;
     }
 }

@@ -14,23 +14,22 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.generic.transform;
+package com.graphaware.reco.generic.web;
 
-import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.result.PartialScore;
+import com.graphaware.reco.generic.config.SimpleConfig;
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
- * A component that can transform recommendation scores.
+ * Unit test for {@link SimpleConfigParser}.
  */
-public interface ScoreTransformer {
+public class SimpleConfigParserTest {
 
-    /**
-     * Transform a partial score.
-     *
-     * @param item         recommended item.
-     * @param partialScore partial score of the item.
-     * @param context      of the recommendation computing process.
-     * @return transformed partial score.
-     */
-    <OUT> PartialScore transform(OUT item, PartialScore partialScore, Context<OUT, ?> context);
+    @Test
+    public void shouldProduceConfig() {
+        assertEquals(new SimpleConfig(1, 2), new SimpleConfigParser().produceConfig(1, 2, "whatever"));
+        assertEquals(new SimpleConfig(1, Long.MAX_VALUE), new SimpleConfigParser().produceConfig(1, "whatever"));
+    }
 }

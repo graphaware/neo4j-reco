@@ -16,6 +16,8 @@
 
 package com.graphaware.reco.generic.filter;
 
+import com.graphaware.reco.generic.context.Context;
+
 /**
  * Component that filters recommendations.
  * <p/>
@@ -30,9 +32,10 @@ public interface Filter<OUT, IN> {
     /**
      * Should the given recommendation actually be used?
      *
-     * @param item  to decide on. Must not be <code>null</code>.
-     * @param input input based on which this recommendation was found. Must not be <code>null</code>.
+     * @param item    to decide on. Must not be <code>null</code>.
+     * @param input   input based on which this recommendation was found. Must not be <code>null</code>.
+     * @param context for the recommendation computing process.
      * @return true iff the recommendation should be used based on this filter's opinion.
      */
-    boolean include(OUT item, IN input);
+    boolean include(OUT item, IN input, Context<OUT, IN> context);
 }

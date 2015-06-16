@@ -149,7 +149,7 @@ public class DelegatingRecommendationEngine<OUT, IN> extends BaseRecommendationE
         }
 
         for (PostProcessor<OUT, IN> postProcessor : postProcessors) {
-            postProcessor.postProcess(recommendations, input);
+            postProcessor.postProcess(recommendations, input, context);
         }
 
         return recommendations;

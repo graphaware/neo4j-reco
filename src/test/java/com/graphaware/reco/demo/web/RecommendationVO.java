@@ -14,30 +14,46 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.generic.transform;
+package com.graphaware.reco.demo.web;
 
-import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.result.PartialScore;
+import com.graphaware.reco.generic.result.Score;
 
-/**
- * {@link ScoreTransformer} that performs no transformation. Singleton.
- */
-public final class NoTransformation implements ScoreTransformer {
+public class RecommendationVO {
 
-    private static final NoTransformation INSTANCE = new NoTransformation();
+    private String uuid;
+    private String item;
+    private Score score;
 
-    public static NoTransformation getInstance() {
-        return INSTANCE;
+    public RecommendationVO() {
     }
 
-    private NoTransformation() {
+    public RecommendationVO(String uuid, String item, Score score) {
+        this.uuid = uuid;
+        this.item = item;
+        this.score = score;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <OUT> PartialScore transform(OUT item, PartialScore score, Context<OUT, ?> context) {
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getItem() {
+        return item;
+    }
+
+    public void setItem(String item) {
+        this.item = item;
+    }
+
+    public Score getScore() {
         return score;
+    }
+
+    public void setScore(Score score) {
+        this.score = score;
     }
 }
