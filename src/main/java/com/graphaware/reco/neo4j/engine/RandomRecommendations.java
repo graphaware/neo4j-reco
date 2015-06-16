@@ -17,6 +17,7 @@
 package com.graphaware.reco.neo4j.engine;
 
 import com.graphaware.common.policy.NodeInclusionPolicy;
+import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
@@ -52,7 +53,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
     /**
      * {@inheritDoc}
      * <p/>
-     * A maximum of {@link com.graphaware.reco.generic.context.Context#limit()} number of nodes is returned, each with
+     * A maximum of {@link Context#config()} {@link Config#limit()} number of nodes is returned, each with
      * a score determined by {@link #score(org.neo4j.graphdb.Node)}. The total number of attempts made to find a suitable
      * node is determined by {@link #numberOfAttempts(com.graphaware.reco.generic.context.Context)}.
      */
@@ -66,7 +67,9 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
 
         while (attempts++ < numberOfAttempts && result.size() < numberOfRecommendations) {
             Node node = selector.selectNode(input.getGraphDatabase());
-            result.put(node, score(node));
+            if (node != null) {
+                result.put(node, score(node));
+            }
         }
 
         return result;
@@ -86,7 +89,7 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * Determine the maximum total number of attempts to make when selecting random nodes to recommend.
      *
      * @param context of the current computation.
-     * @return maximum number of attempts. By default 10 * {@link com.graphaware.reco.generic.context.Context#limit()}
+     * @return maximum number of attempts. By default 10 * {@link Context#config()} {@link Config#limit()}
      */
     protected int numberOfAttempts(Context<Node, Node> context) {
         return context.config().limit() * 10;
@@ -96,13 +99,13 @@ public abstract class RandomRecommendations extends SingleScoreRecommendationEng
      * Determine the maximum number of random nodes to recommend.
      * <p/>
      * The reason for this setting is the following: usually, this engine will be used as the last one to make up the
-     * desired number of recommendations. If only {@link com.graphaware.reco.generic.context.Context#limit()} recommendations
+     * desired number of recommendations. If only {@link Context#config()} {@link Config#limit()} recommendations
      * were produced, there could be a possibility that the produced recommendations are the ones already computed by
      * previous engines, thus not making up the desired number. The higher the return value of this method, the lower
      * the chance of the desired number of recommendations not being satisfied.
      *
      * @param context of the current computation.
-     * @return maximum number of recommendations. By default 2 * {@link com.graphaware.reco.generic.context.Context#limit()}
+     * @return maximum number of recommendations. By default 2 * {@link Context#config()} {@link Config#limit()}
      */
     protected int numberOfRecommendations(Context<Node, Node> context) {
         return context.config().limit() * 2;
