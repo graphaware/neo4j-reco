@@ -28,9 +28,7 @@ import org.neo4j.graphdb.Label;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.neo4j.graphdb.Direction.BOTH;
-import static org.neo4j.graphdb.Direction.INCOMING;
-import static org.neo4j.graphdb.Direction.OUTGOING;
+import static org.neo4j.graphdb.Direction.*;
 
 public abstract class SomethingThroughCommon extends SingleScoreRecommendationEngine<Node, Node> {
 
@@ -59,7 +57,7 @@ public abstract class SomethingThroughCommon extends SingleScoreRecommendationEn
     }
 
     /**
-     * Produce details about something in common to be stored as a {@link com.graphaware.reco.generic.result.Reason} inside a {@link com.graphaware.reco.generic.result.PartialScore}.
+     * Produce details about something found through an item in common to be stored as a {@link com.graphaware.reco.generic.result.Reason} inside a {@link com.graphaware.reco.generic.result.PartialScore}.
      *
      * @param throughCommon node representing the thing thing in common.
      * @param similarNode node representing the similar node found by a depth 2 search through the Relationship

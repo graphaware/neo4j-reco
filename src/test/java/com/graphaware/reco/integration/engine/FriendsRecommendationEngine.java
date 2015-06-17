@@ -46,7 +46,8 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
     protected List<RecommendationEngine<Node, Node>> engines() {
         return Arrays.<RecommendationEngine<Node, Node>>asList(
                 new Neo4jPrecomputedEngine(),
-                new FriendsComputingEngine()
+                new FriendsComputingEngine(),
+                new FoaFoaFComputingEngine()
         );
     }
 

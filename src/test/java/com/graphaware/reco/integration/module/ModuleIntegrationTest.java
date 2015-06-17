@@ -123,6 +123,11 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             assertEquals("Vince", recoForLuanne.get(3).getItem().getProperty("name"));
             assertEquals(8, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
+            List<Recommendation<Node>> recoForChris = recommendationEngine.recommend(getPersonByName("Christophe"), 4);
+
+            assertEquals("Michal", recoForChris.get(0).getItem().getProperty("name"));
+            assertEquals(17, recoForChris.get(0).getScore().getTotalScore(), 0.5);
+
             tx.success();
         }
     }
