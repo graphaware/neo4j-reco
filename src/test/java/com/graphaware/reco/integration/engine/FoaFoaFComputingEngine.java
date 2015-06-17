@@ -3,10 +3,10 @@ package com.graphaware.reco.integration.engine;
 
 import com.graphaware.reco.integration.domain.Relationships;
 import com.graphaware.reco.neo4j.engine.SomethingThroughCommon;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.*;
+
+import java.util.Collections;
+import java.util.Map;
 
 public class FoaFoaFComputingEngine extends SomethingThroughCommon{
 
@@ -34,5 +34,10 @@ public class FoaFoaFComputingEngine extends SomethingThroughCommon{
     protected Label getLabel()
     {
         return PERSON;
+    }
+
+    @Override
+    protected Map<String, Object> details(Node throughCommon, Node similar) {
+        return Collections.singletonMap("foaf", similar.getProperty("name"));
     }
 }
