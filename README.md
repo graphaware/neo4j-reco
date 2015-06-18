@@ -147,10 +147,16 @@ computed by a `SingleScoreRecommendationEngine`.
 
 `Recommendations` are always computed within a **Context**. Whist each recommendation-computing process for a single input
 might involve multiple `RecommendationEngine`s and other components, there is usually a single `Context` per computation
-that encapsulates information relevant to the process. For example, the `Context` knows, how many recommendations should
-be produced, what is the maximum time the recommendation-computing process should take, and whether a potential
+that encapsulates information relevant to the process. For example, the `Context` knows whether a potential
 recommendation discovered by a `RecommendationEngine` is allowed
 to be served to the user. For each computation, a new `Context` is produced by `TopLevelRecommendationEngine`.
+
+#### Config
+
+The `Context` also encapsulates a **Config** for each recommendation-computing process. This is a set user-defined values.
+By default, a `Config` knows how many recommendations should be produce and what is the maximum time the
+recommendation-computing process should take. Optionally, arbitrary key-value pairs can be passed in, which is useful
+ for scenarios when score values, rewards, penalties, and other variables should not be hard-coded and differ per computation.
 
 #### Blacklist Builders and Filters
 
@@ -219,8 +225,9 @@ thus ignore the direction of the `FRIEND_OF` relationship. A sample graph, expre
     (d:Person:Female {name:'Daniela', age:20}),
     (v:Person:Male {name:'Vince', age:40}),
     (a:Person:Male {name:'Adam', age:30}),
+    (b:Person:Female {name:'Britney', age:12}),
     (l:Person:Female {name:'Luanne', age:25}),
-    (b:Person:Male {name:'Christophe', age:60}),
+    (c:Person:Male {name:'Christophe', age:60}),
     (j:Person:Male {name:'Jim', age:40}),
 
     (lon:City {name:'London'}),
@@ -230,6 +237,7 @@ thus ignore the direction of the `FRIEND_OF` relationship. A sample graph, expre
     (m)-[:FRIEND_OF]->(d),
     (m)-[:FRIEND_OF]->(l),
     (m)-[:FRIEND_OF]->(a),
+    (m)-[:FRIEND_OF]->(b),
     (m)-[:FRIEND_OF]->(v),
     (d)-[:FRIEND_OF]->(v),
     (b)-[:FRIEND_OF]->(v),
@@ -242,6 +250,7 @@ thus ignore the direction of the `FRIEND_OF` relationship. A sample graph, expre
     (m)-[:LIVES_IN]->(lon),
     (j)-[:LIVES_IN]->(lon),
     (c)-[:LIVES_IN]->(br),
+    (b)-[:LIVES_IN]->(br),
     (l)-[:LIVES_IN]->(mum);
 ```
 
@@ -255,7 +264,8 @@ Our intention will be recommending people a person should be friends with, based
 5. The bigger the age difference between two people, the lower the chance they will become friends
 6. People should not be friends with themselves
 7. People who are already friends should not be recommended as potential friends
-8. If we don't have enough recommendations, we will recommend some random people, but only if there is enough time
+8. Young users should not be recommended to anyone as potential friends. The definition of "young" should be configurable per computation
+9. If we don't have enough recommendations, we will recommend some random people, but only if there is enough time
 
 Let's start tackling the requirements one by one.
 
@@ -624,7 +634,7 @@ com.graphaware.module.reco.1=com.graphaware.reco.neo4j.module.RecommendationModu
 com.graphaware.module.reco.node=hasLabel('Person')
 
 #Define which Recommendation Engine to use
-com.graphaware.module.reco.engine=com.graphaware.reco.integration.engine.FriendsComputingEngine
+com.graphaware.module.reco.engine=com.graphaware.reco.integration.FriendsComputingEngine
 
 #Optionally, specify how many recommendation to compute (default is 10)
 com.graphaware.module.reco.maxRecommendations=5
@@ -696,7 +706,7 @@ it will now be responsible for constructing `Context`s, since it is a top-level 
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
  * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
- * real-time using {@link com.graphaware.reco.integration.engine.FriendsComputingEngine}.
+ * real-time using {@link com.graphaware.reco.integration.FriendsComputingEngine}.
  */
 public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
 
@@ -710,7 +720,7 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
 
     @Override
     protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
-        return Arrays.asList(
+        return Arrays.<Node, Node>asList(
                 new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
         );
     }
@@ -733,7 +743,7 @@ engine, e.g.:
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
  * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
- * real-time using {@link com.graphaware.reco.integration.engine.FriendsComputingEngine}.
+ * real-time using {@link com.graphaware.reco.integration.FriendsComputingEngine}.
  */
 public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
 
