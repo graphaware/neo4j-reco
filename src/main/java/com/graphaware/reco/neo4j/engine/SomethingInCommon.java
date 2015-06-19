@@ -19,6 +19,7 @@ package com.graphaware.reco.neo4j.engine;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine;
 import com.graphaware.reco.generic.result.PartialScore;
+import com.graphaware.reco.neo4j.util.DirectionUtils;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -27,17 +28,18 @@ import org.neo4j.graphdb.RelationshipType;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.graphaware.reco.neo4j.util.DirectionUtils.*;
 import static org.neo4j.graphdb.Direction.*;
 
 /**
- * {@link SingleScoreRecommendationEngine} that recommends {@link Node}s with which have something in common. In other
+ * {@link SingleScoreRecommendationEngine} that recommends {@link Node}s with which the input has something in common. In other
  * words, there is a path of length two between the subject node (the input to the recommendation) and the recommended node.
  * <p/>
  * Moreover, both relationships of the path have the same type (specified by {@link #getType()} and unless {@link #getDirection()}
  * is {@link Direction#BOTH}, the first relationship of the path is of the specified direction and the second one if of
  * the opposite direction.
  * <p/>
- * Every time a recommendation is found, it's score is incremented by {@link #scoreNode(org.neo4j.graphdb.Node)}.
+ * Every time a recommendation is found, it's score is incremented by {@link #scoreNode(Node, Node, Relationship, Relationship)}.
  */
 public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<Node, Node> {
 
@@ -51,9 +53,9 @@ public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<
         for (Relationship r1 : input.getRelationships(getType(), getDirection())) {
             Node thingInCommon = r1.getOtherNode(input);
             for (Relationship r2 : thingInCommon.getRelationships(getType(), reverse(getDirection()))) {
-                Node node = r2.getOtherNode(thingInCommon);
-                if (node.getId() != input.getId()) {
-                    addToResult(result, node, new PartialScore(scoreNode(node), details(thingInCommon, r1, r2)));
+                Node recommendation = r2.getOtherNode(thingInCommon);
+                if (recommendation.getId() != input.getId()) {
+                    addToResult(result, recommendation, new PartialScore(scoreNode(recommendation, thingInCommon, r1, r2), details(thingInCommon, r1, r2)));
                 }
             }
         }
@@ -62,27 +64,29 @@ public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<
     }
 
     /**
+     * Score the recommended node.
+     *
+     * @param recommendation to score.
+     * @param thingInCommon  node representing the thing thing in common.
+     * @param withInput      relationship of the input with the thing in common.
+     * @param withOutput     relationships of the output (recommended item) with the thing in common.
+     * @return score, 1 by default.
+     */
+    protected int scoreNode(Node recommendation, Node thingInCommon, Relationship withInput, Relationship withOutput) {
+        return 1;
+    }
+
+    /**
      * Produce details about something in common to be stored as a {@link com.graphaware.reco.generic.result.Reason} inside a {@link com.graphaware.reco.generic.result.PartialScore}.
      *
      * @param thingInCommon node representing the thing thing in common.
      * @param withInput     relationship of the input with the thing in common.
      * @param withOutput    relationships of the output (recommended item) with the thing in common.
-     * @return details as a map of arbitrary key-value pairs.
+     * @return details as a map of arbitrary key-value pairs. <code>null</code> by default.
      */
     protected Map<String, Object> details(Node thingInCommon, Relationship withInput, Relationship withOutput) {
         return null;
     }
-
-    /**
-     * Score the recommended node.
-     *
-     * @param node to score.
-     * @return score, 1 by default.
-     */
-    protected int scoreNode(Node node) {
-        return 1;
-    }
-
 
     /**
      * Get the relationship type of the relationship that links the subject of the recommendation and the recommended
@@ -98,23 +102,4 @@ public abstract class SomethingInCommon extends SingleScoreRecommendationEngine<
      * @return direction.
      */
     protected abstract Direction getDirection();
-
-    /**
-     * Reverse direction.
-     *
-     * @param direction to reverse.
-     * @return reversed direction.
-     */
-    private Direction reverse(Direction direction) {
-        switch (direction) {
-            case BOTH:
-                return BOTH;
-            case OUTGOING:
-                return INCOMING;
-            case INCOMING:
-                return OUTGOING;
-            default:
-                throw new IllegalArgumentException("Unknown direction " + direction);
-        }
-    }
 }

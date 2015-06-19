@@ -24,4 +24,5 @@ import org.neo4j.graphdb.RelationshipType;
 public enum Relationships implements RelationshipType {
     FRIEND_OF,
     LIVES_IN,
+    KNOWS
 }
