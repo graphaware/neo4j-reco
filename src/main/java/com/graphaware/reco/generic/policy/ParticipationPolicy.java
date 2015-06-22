@@ -49,7 +49,7 @@ public interface ParticipationPolicy<OUT, IN> {
     static ParticipationPolicy IF_ENOUGH_TIME = new ParticipationPolicy() {
         @Override
         public boolean participate(Object input, Context context, Recommendations recommendations) {
-            return context.hasEnoughTime();
+            return context.timeLeft();
         }
     };
 

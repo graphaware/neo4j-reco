@@ -22,6 +22,8 @@ import static org.springframework.util.Assert.isTrue;
  * The simplest implementation of {@link Config}. To be used when the recommendation engine is configured entirely
  * in Java (using hard-coded values for scores etc.), and the only user-driven configuration is the number of desired
  * results ({@link #limit()}) and optionally the maximum time the computation should take ({@link #maxTime()}).
+ * <p/>
+ * After construction, this class is read-only, thus thread-safe.
  */
 public class SimpleConfig implements Config {
 

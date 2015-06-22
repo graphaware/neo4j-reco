@@ -20,14 +20,15 @@ import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.stats.Statistics;
 
 /**
- * Context holding information about the recommendation-computing process.
+ * Context holding information about the recommendation-computing process. All methods of implementing classes can be
+ * called by multiple threads simultaneously, thus must be thread-safe.
  */
 public interface Context<OUT, IN> {
 
     /**
      * Get config.
      *
-     * @return configuration for the recommendation-computing process.
+     * @return configuration for the recommendation-computing process. Never <code>null</code>.
      */
     Config config();
 
@@ -35,19 +36,19 @@ public interface Context<OUT, IN> {
      * Get config in a type-safe manner.
      *
      * @param clazz of the config.
-     * @return configuration for the recommendation-computing process.
+     * @return configuration for the recommendation-computing process. Never <code>null</code>.
      * @throws IllegalArgumentException if the config isn't of the specified type.
      */
     <C extends Config> C config(Class<C> clazz);
 
     /**
-     * @return <code>true</code> iff there's still time to compute more.
+     * @return <code>true</code> iff there's still time left for the computation, i.e. iff less time has elapsed so far
+     * than returned by {@link Config#maxTime()}.
      */
-    boolean hasEnoughTime();
+    boolean timeLeft();
 
     /**
-     * Check whether a produced recommendation is allowed for the given input in the current context. Can be called by
-     * multiple threads simultaneously, must be thus thread-safe.
+     * Check whether a produced recommendation is allowed for the given input in the current context.
      *
      * @param recommendation produced. Must not be <code>null</code>.
      * @param input          for which the recommendation was produced. Must not be <code>null</code>.
@@ -59,7 +60,7 @@ public interface Context<OUT, IN> {
 
     /**
      * Disallow the given recommendation. Intended for {@link com.graphaware.reco.generic.engine.RecommendationEngine}s
-     * to prevent other engines the follow from discovering the same recommendation.
+     * to prevent other engines that follow from discovering the same recommendation.
      *
      * @param recommendation to disallow.
      */

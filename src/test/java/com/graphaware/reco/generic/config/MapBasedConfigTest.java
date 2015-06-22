@@ -16,7 +16,6 @@
 
 package com.graphaware.reco.generic.config;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;

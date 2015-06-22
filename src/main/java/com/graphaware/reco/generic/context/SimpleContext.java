@@ -20,13 +20,14 @@ import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.stats.DefaultStatistics;
 import com.graphaware.reco.generic.stats.Statistics;
 
-import static com.graphaware.reco.generic.stats.Statistics.*;
+import static com.graphaware.reco.generic.stats.Statistics.TOTAL_TIME;
 import static org.springframework.util.Assert.hasLength;
-import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 
 /**
  * The simplest possible context, allowing all recommendations.
+ *
+ * This class is thread-safe.
  */
 public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
 
@@ -73,7 +74,7 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
      * {@inheritDoc}
      */
     @Override
-    public boolean hasEnoughTime() {
+    public boolean timeLeft() {
         return config.maxTime() > statistics.getTime(TOTAL_TIME);
     }
 

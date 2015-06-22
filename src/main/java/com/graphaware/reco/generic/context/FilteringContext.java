@@ -19,8 +19,10 @@ package com.graphaware.reco.generic.context;
 import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.filter.Filter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.graphaware.reco.generic.stats.Statistics.*;
 import static org.springframework.util.Assert.notNull;
@@ -28,6 +30,8 @@ import static org.springframework.util.Assert.notNull;
 /**
  * A {@link com.graphaware.reco.generic.context.Context} that accepts a list of {@link com.graphaware.reco.generic.filter.Filter}s
  * and a set of blacklisted items, both of which it uses to disallow some recommendations.
+ * <p/>
+ * This class is thread-safe.
  */
 public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
 
@@ -48,8 +52,9 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
         notNull(filters);
         notNull(blacklist);
 
-        this.filters = filters;
-        this.blacklist = blacklist;
+        this.filters = Collections.unmodifiableList(filters);
+        this.blacklist = Collections.newSetFromMap(new ConcurrentHashMap<OUT, Boolean>());
+        this.blacklist.addAll(blacklist);
     }
 
     /**

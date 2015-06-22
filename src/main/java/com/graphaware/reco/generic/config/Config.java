@@ -17,7 +17,7 @@
 package com.graphaware.reco.generic.config;
 
 /**
- * One off (per-request) configuration for the recommendation-computing process.
+ * One off (per-request) configuration for the recommendation-computing process. Implementations must be thread-safe.
  */
 public interface Config {
 

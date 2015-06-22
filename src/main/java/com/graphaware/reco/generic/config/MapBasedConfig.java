@@ -16,12 +16,13 @@
 
 package com.graphaware.reco.generic.config;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static org.springframework.util.Assert.notNull;
 
 /**
- * {@link Map}-based implementation of {@link KeyValueConfig}.
+ * {@link Map}-based implementation of {@link KeyValueConfig}. After construction, this class is read-only, this thread-safe.
  */
 public class MapBasedConfig extends SimpleConfig implements KeyValueConfig {
 
@@ -37,7 +38,7 @@ public class MapBasedConfig extends SimpleConfig implements KeyValueConfig {
         super(limit);
 
         notNull(values);
-        this.values = values;
+        this.values = Collections.unmodifiableMap(values);
     }
 
     /**
@@ -51,7 +52,7 @@ public class MapBasedConfig extends SimpleConfig implements KeyValueConfig {
         super(limit, maxTime);
 
         notNull(values);
-        this.values = values;
+        this.values = Collections.unmodifiableMap(values);
     }
 
     /**
