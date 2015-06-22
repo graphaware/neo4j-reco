@@ -16,12 +16,9 @@
 
 package com.graphaware.reco.generic.config;
 
-import org.springframework.util.Assert;
-
-import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.util.Assert.*;
+import static org.springframework.util.Assert.notNull;
 
 /**
  * {@link Map}-based implementation of {@link KeyValueConfig}.

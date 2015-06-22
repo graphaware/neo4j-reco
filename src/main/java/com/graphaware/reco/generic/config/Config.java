@@ -24,12 +24,14 @@ public interface Config {
     Config UNLIMITED = new SimpleConfig(Integer.MAX_VALUE);
 
     /**
-     * @return desired maximum number of produced recommendations.
+     * @return desired maximum number of produced recommendations. Please note that it is for information only, i.e.,
+     * it is up to the engine to decide whether to honour the configuration or not.
      */
     int limit();
 
     /**
-     * @return desired maximum time in ms that the recommendation-computing process should take.
+     * @return desired maximum time in ms that the recommendation-computing process should take. Please note that it is
+     * for information only, i.e., it is up to the engine to decide whether to honour the configuration or not.
      */
     long maxTime();
 }
