@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.graphaware.reco.generic.stats.Statistics.*;
+import static org.springframework.util.Assert.hasLength;
 import static org.springframework.util.Assert.notNull;
 
 /**
@@ -64,10 +65,13 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
      * {@link com.graphaware.reco.generic.filter.Filter}s.
      */
     @Override
-    public boolean allow(OUT recommendation, IN input, String task) {
+    public boolean allow(OUT recommendation, String task) {
+        notNull(recommendation);
+        hasLength(task);
+
         statistics().incrementStatistic(task, CANDIDATE_ITEMS);
 
-        if (!super.allow(recommendation, input, task)) {
+        if (!super.allow(recommendation, task)) {
             statistics().incrementStatistic(task, "NOT_ALLOWED_BY_SUPERCLASS");
             return false;
         }
@@ -78,7 +82,7 @@ public class FilteringContext<OUT, IN> extends SimpleContext<OUT, IN> {
         }
 
         for (Filter<OUT, IN> filter : filters) {
-            if (!filter.include(recommendation, input, this)) {
+            if (!filter.include(recommendation, input(), this)) {
                 statistics().incrementStatistic(task, FILTERED_ITEMS);
                 return false;
             }

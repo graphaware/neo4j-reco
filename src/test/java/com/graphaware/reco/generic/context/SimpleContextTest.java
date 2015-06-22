@@ -29,6 +29,41 @@ import static org.junit.Assert.*;
  */
 public class SimpleContextTest {
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldComplainAboutIllegalConstruction() {
+        new SimpleContext<>(null, new SimpleConfig(1, 2));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldComplainAboutIllegalConstruction2() {
+        new SimpleContext<>(new Object(), null);
+    }
+
+    @Test
+    public void shouldAllowAnyItem() {
+        new SimpleContext<>(new Object(), new SimpleConfig(1, 2)).allow(new Object(), "test");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldComplainAboutAllowingIllegalItem() {
+        new SimpleContext<>(new Object(), new SimpleConfig(1, 2)).allow(null, "test");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldComplainAboutAllowingIllegalItem2() {
+        new SimpleContext<>(new Object(), new SimpleConfig(1, 2)).allow(new Object(), "");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldComplainAboutAllowingIllegalItem3() {
+        new SimpleContext<>(new Object(), new SimpleConfig(1, 2)).allow(new Object(), null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldNotAllowBlacklisting() {
+        new SimpleContext<>(new Object(), new SimpleConfig(1, 2)).disallow(new Object());
+    }
+
     @Test
     public void shouldReturnConfig() {
         Context<?, ?> context = new SimpleContext<>(new Object(), new SimpleConfig(1, 2));
@@ -43,5 +78,16 @@ public class SimpleContextTest {
         Context<?, ?> context = new SimpleContext<>(new Object(), new SimpleConfig(1, 2));
 
         context.config(KeyValueConfig.class);
+    }
+
+    @Test
+    public void shouldCorrectlyJudgeTiming() throws InterruptedException {
+        Context<?, ?> context = new SimpleContext<>(new Object(), new SimpleConfig(1, 10));
+
+        assertTrue(context.timeLeft());
+
+        Thread.sleep(11);
+
+        assertFalse(context.timeLeft());
     }
 }

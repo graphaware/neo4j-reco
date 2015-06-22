@@ -17,15 +17,12 @@
 package com.graphaware.reco.generic.engine;
 
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.generic.result.Recommendations;
-
-import static com.graphaware.common.util.PropertyContainerUtils.getInt;
 
 /**
  * A {@link RecommendationEngine} that reads pre-computed recommendations and their scores from an external source.
  * <p/>
- * {@link com.graphaware.reco.generic.context.Context#allow(Object, Object, String)} is still consulted filter out recommendations
+ * {@link com.graphaware.reco.generic.context.Context#allow(Object, String)} is still consulted filter out recommendations
  * for which the situation has changed since they were pre-computed.
  * <p/>
  * Once a pre-computed recommendation has been read, it is disallowed by calling {@link com.graphaware.reco.generic.context.Context#disallow(Object)}
@@ -52,7 +49,7 @@ public abstract class PrecomputedEngine<OUT, IN, SOURCE> extends BaseRecommendat
 
         for (SOURCE source : produce(input)) {
             OUT recommendation = extract(source);
-            if (context.allow(recommendation, input, name())) {
+            if (context.allow(recommendation, name())) {
                 addToResult(result, recommendation, source);
                 context.disallow(recommendation);
             }

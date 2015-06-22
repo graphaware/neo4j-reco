@@ -31,6 +31,7 @@ import static org.springframework.util.Assert.notNull;
  */
 public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
 
+    private final IN input;
     private final Config config;
     private final Statistics statistics;
 
@@ -44,6 +45,7 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
         notNull(input);
         notNull(config);
 
+        this.input = input;
         this.config = config;
         this.statistics = createStatistics(input);
     }
@@ -54,6 +56,14 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
     @Override
     public final Config config() {
         return config;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IN input() {
+        return input;
     }
 
     /**
@@ -84,9 +94,8 @@ public class SimpleContext<OUT, IN> implements Context<OUT, IN> {
      * always returns true by default.
      */
     @Override
-    public boolean allow(OUT recommendation, IN input, String task) {
+    public boolean allow(OUT recommendation, String task) {
         notNull(recommendation);
-        notNull(input);
         hasLength(task);
 
         return true;

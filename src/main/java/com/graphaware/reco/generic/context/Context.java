@@ -33,6 +33,11 @@ public interface Context<OUT, IN> {
     Config config();
 
     /**
+     * @return for which recommendations are being computed. Must not be <code>null</code>.
+     */
+    IN input();
+
+    /**
      * Get config in a type-safe manner.
      *
      * @param clazz of the config.
@@ -51,12 +56,11 @@ public interface Context<OUT, IN> {
      * Check whether a produced recommendation is allowed for the given input in the current context.
      *
      * @param recommendation produced. Must not be <code>null</code>.
-     * @param input          for which the recommendation was produced. Must not be <code>null</code>.
      * @param task           name of the task that is asking the "allow?" question. Must not be <code>null</code>.
      *                       Used for statistics and logging.
      * @return true iff the recommendation is allowed for the given input.
      */
-    boolean allow(OUT recommendation, IN input, String task);
+    boolean allow(OUT recommendation, String task);
 
     /**
      * Disallow the given recommendation. Intended for {@link com.graphaware.reco.generic.engine.RecommendationEngine}s
