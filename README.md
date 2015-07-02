@@ -1,7 +1,7 @@
 GraphAware Neo4j Recommendation Engine
 ======================================
 
-[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.2.2.31.6
+[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.2.2.31.7
 
 GraphAware Neo4j Recommendation Engine is a library for building high-performance complex recommendation engines atop Neo4j.
 It is in production at a number of <a href="http://graphaware.com" target="_blank">GraphAware</a>'s clients producing real-time recommendations on graphs with hundreds of millions of nodes.
@@ -51,7 +51,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
         <dependency>
             <groupId>com.graphaware.neo4j</groupId>
             <artifactId>recommendation-engine</artifactId>
-            <version>2.2.2.31.6</version>
+            <version>2.2.2.31.7</version>
         </dependency>
         ...
     </dependencies>
@@ -59,7 +59,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
 #### Snapshots
 
 To use the latest development version, just clone this repository, run `mvn clean install` and change the version in the
-dependency above to 2.2.2.31.7-SNAPSHOT.
+dependency above to 2.2.2.31.8-SNAPSHOT.
 
 #### Note on Versioning Scheme
 
@@ -411,7 +411,7 @@ public class RewardSameLocation extends RewardSomethingShared {
 public class RewardSameLabels implements PostProcessor<Node, Node> {
 
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node input) {
+    public void postProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         Label[] inputLabels = toArray(Label.class, input.getLabels());
 
         for (Recommendation<Node> recommendation : recommendations.get()) {
@@ -441,7 +441,7 @@ public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
     private final TransformationFunction function = new ParetoFunction(10, 20);
 
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node input) {
+    public void postProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         int age = getInt(input, "age", 40);
 
         for (Recommendation<Node> reco : recommendations.get()) {
@@ -465,7 +465,7 @@ Now that we have all the components that satisfy all 8 requirements, we just nee
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
  */
-public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
+public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
@@ -528,7 +528,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
                         "(a:Person:Male {name:'Adam', age:30})," +
                         "(l:Person:Female {name:'Luanne', age:25})," +
                         "(b:Person:Male {name:'Christophe', age:60})," +
-                        "(j:Person:Male {name:'Jim', age:40})," +
+                        "(j:Person:Male {name:'Jim', age:38})," +
 
                         "(lon:City {name:'London'})," +
                         "(mum:City {name:'Mumbai'})," +
@@ -558,7 +558,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Vince
 
-            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), 2);
+            List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(2));
 
             String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}})";
 
@@ -567,7 +567,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Adam
 
-            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), 2);
+            List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), new SimpleConfig(2));
 
             String expectedForAdam = "Computed recommendations for Adam: (Vince {total:41.99417, ageDifference:-5.527864, friendsInCommon: {value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}}, sameGender:10.0, sameLocation: {value:10.0, {value:10.0, location:London}}}), (Daniela {total:19.338144, ageDifference:-5.527864, friendsInCommon: {value:14.866008, {value:1.0, name:Michal}}, sameLocation: {value:10.0, {value:10.0, location:London}}})";
 
@@ -576,7 +576,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             //verify Luanne
 
-            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), 4);
+            List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), new SimpleConfig(4));
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
             assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
@@ -656,7 +656,7 @@ in order to indicate that it should only be used if there aren't enough pre-comp
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
  */
-public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
+public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
@@ -677,8 +677,7 @@ public final class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine 
 
     @Override
     protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
-        return Arrays.asList(
-                new ExcludeSelf(),
+        return Arrays.<BlacklistBuilder<Node, Node>>asList(
                 new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
         );
     }
@@ -706,7 +705,7 @@ it will now be responsible for constructing `Context`s, since it is a top-level 
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
  * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
- * real-time using {@link com.graphaware.reco.integration.FriendsComputingEngine}.
+ * real-time using {@link FriendsComputingEngine}.
  */
 public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
 
@@ -720,7 +719,7 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEn
 
     @Override
     protected List<BlacklistBuilder<Node, Node>> blacklistBuilders() {
-        return Arrays.<Node, Node>asList(
+        return Arrays.asList(
                 new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
         );
     }
@@ -743,7 +742,7 @@ engine, e.g.:
 /**
  * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
  * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
- * real-time using {@link com.graphaware.reco.integration.FriendsComputingEngine}.
+ * real-time using {@link FriendsComputingEngine}.
  */
 public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
 
