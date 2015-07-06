@@ -313,14 +313,16 @@ with a theoretical upper value of 100, with 80% of the total score being achieve
  */
 public class FriendsInCommon extends SomethingInCommon {
 
+    private ScoreTransformer scoreTransformer = new ParetoScoreTransformer(100, 10);
+
     @Override
-    protected String name() {
+    public String name() {
         return "friendsInCommon";
     }
 
     @Override
     protected ScoreTransformer scoreTransformer() {
-        return new ParetoScoreTransformer(100, 10);
+        return scoreTransformer;
     }
 
     @Override
@@ -331,6 +333,11 @@ public class FriendsInCommon extends SomethingInCommon {
     @Override
     protected Direction getDirection() {
         return BOTH;
+    }
+
+    @Override
+    protected Map<String, Object> details(Node thingInCommon, Relationship withInput, Relationship withOutput) {
+        return Collections.singletonMap("name", thingInCommon.getProperty("name"));
     }
 }
 ```

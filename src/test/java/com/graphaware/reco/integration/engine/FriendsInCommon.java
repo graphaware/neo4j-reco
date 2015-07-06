@@ -37,6 +37,8 @@ import static org.neo4j.graphdb.Direction.BOTH;
  */
 public class FriendsInCommon extends SomethingInCommon {
 
+    private ScoreTransformer scoreTransformer = new ParetoScoreTransformer(100, 10);
+
     @Override
     public String name() {
         return "friendsInCommon";
@@ -44,7 +46,7 @@ public class FriendsInCommon extends SomethingInCommon {
 
     @Override
     protected ScoreTransformer scoreTransformer() {
-        return new ParetoScoreTransformer(100, 10);
+        return scoreTransformer;
     }
 
     @Override

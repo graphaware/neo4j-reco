@@ -34,17 +34,11 @@ import java.util.Map;
  */
 public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecommendationEngine<OUT, IN> {
 
-    private final ScoreTransformer transformer;
-
-    /**
-     * Construct a recommendation engine.
-     */
-    protected SingleScoreRecommendationEngine() {
-        this.transformer = scoreTransformer();
-    }
-
     /**
      * Get a score transformer used to transform all scores produced by this engine. Intended to be overridden.
+     * <p/>
+     * Note that this method is executed for every transformation; for performance reasons, supply the same instance
+     * of a transformer, rather than instantiating a new one if overriding this method.
      *
      * @return transformer, {@link com.graphaware.reco.generic.transform.NoTransformation} by default.
      */
@@ -61,7 +55,7 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
 
         for (Map.Entry<OUT, PartialScore> entry : doRecommendSingle(input, context).entrySet()) {
             if (context.allow(entry.getKey(), name())) {
-                result.add(entry.getKey(), name(), transformer.transform(entry.getKey(), entry.getValue(), context));
+                result.add(entry.getKey(), name(), scoreTransformer().transform(entry.getKey(), entry.getValue(), context));
             }
         }
 
@@ -72,7 +66,7 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
      * Perform the computation of recommendations. Recommendations produced by this method have an associated {@link com.graphaware.reco.generic.result.PartialScore},
      * which is later transformed by the provided {@link com.graphaware.reco.generic.transform.ScoreTransformer}.
      * <p/>
-     * Context is provided for information, but its {@link com.graphaware.reco.generic.context.Context#allow(Object, Object, String)}
+     * Context is provided for information, but its {@link com.graphaware.reco.generic.context.Context#allow(Object, String)}
      * method does not have to be used. I.e., implementations of this method should produce raw recommendations, expressing
      * core business logic of coming up with these recommendations, ignoring blacklists, filtering, etc, which is applied
      * by this class ({@link com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine}).
