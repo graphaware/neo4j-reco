@@ -1,5 +1,6 @@
-2.2.2.32.7:
-    - no changes (but should fix issue #6)
+2.2.2.32.8:
+    - ability to sort recommendation produced by an external system
+    - todo should fix issue #6
 
 2.2.2.31.7:
     - ability to create Cypher-based engines

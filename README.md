@@ -470,9 +470,9 @@ Now that we have all the components that satisfy all 8 requirements, we just nee
 
 ```java
 /**
- * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine} that computes friend recommendations.
  */
-public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
+public class FriendsComputingEngine extends Neo4jTopLevelDelegatingRecommendationEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
@@ -661,7 +661,7 @@ in order to indicate that it should only be used if there aren't enough pre-comp
 
 ```java
 /**
- * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine} that computes friend recommendations.
  */
 public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
 
@@ -710,7 +710,7 @@ it will now be responsible for constructing `Context`s, since it is a top-level 
 
 ```java
 /**
- * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine} that recommends friends by first trying to
  * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
  * real-time using {@link FriendsComputingEngine}.
  */
@@ -747,11 +747,11 @@ engine, e.g.:
 
 ```java
 /**
- * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
+ * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine} that recommends friends by first trying to
  * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
  * real-time using {@link FriendsComputingEngine}.
  */
-public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
+public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingRecommendationEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {

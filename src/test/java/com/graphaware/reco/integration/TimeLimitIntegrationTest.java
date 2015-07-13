@@ -21,10 +21,9 @@ import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
-import com.graphaware.reco.integration.FriendsComputingEngine;
 import com.graphaware.reco.integration.engine.FriendsInCommon;
 import com.graphaware.reco.integration.engine.RandomPeople;
-import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
 import org.junit.Test;
 import org.neo4j.graphdb.DynamicLabel;
@@ -39,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TimeLimitIntegrationTest extends DatabaseIntegrationTest {
 
-    private Neo4jTopLevelDelegatingEngine recommendationEngine;
+    private Neo4jTopLevelDelegatingRecommendationEngine recommendationEngine;
 
     @Override
     public void setUp() throws Exception {

@@ -25,7 +25,7 @@ import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.log.Logger;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.neo4j.engine.CypherEngine;
-import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.reco.neo4j.filter.CypherBlacklistBuilder;
 import org.neo4j.graphdb.Node;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class RecruitingRecoEngine extends Neo4jTopLevelDelegatingEngine {
+public class RecruitingRecoEngine extends Neo4jTopLevelDelegatingRecommendationEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {

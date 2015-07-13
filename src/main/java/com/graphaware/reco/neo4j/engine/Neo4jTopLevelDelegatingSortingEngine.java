@@ -16,13 +16,12 @@
 
 package com.graphaware.reco.neo4j.engine;
 
-import com.graphaware.reco.generic.engine.TopLevelDelegatingRecommendationEngine;
+import com.graphaware.reco.generic.engine.TopLevelDelegatingSortingEngine;
 import org.neo4j.graphdb.Node;
 
 /**
- * A Neo4j {@link TopLevelDelegatingRecommendationEngine} where both the input to the
- * recommendation-computing process and the produced recommendations are {@link org.neo4j.graphdb.Node}s.
+ * A Neo4j {@link TopLevelDelegatingSortingEngine} where both the input to the
+ * sorting process and the sorted recommendations are {@link org.neo4j.graphdb.Node}s.
  */
-public class Neo4jTopLevelDelegatingEngine extends TopLevelDelegatingRecommendationEngine<Node, Node> {
-
+public class Neo4jTopLevelDelegatingSortingEngine extends TopLevelDelegatingSortingEngine<Node, Node> {
 }

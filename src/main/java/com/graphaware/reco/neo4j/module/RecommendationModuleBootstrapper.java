@@ -18,7 +18,7 @@ package com.graphaware.reco.neo4j.module;
 
 import com.graphaware.common.policy.NodeInclusionPolicy;
 import com.graphaware.reco.generic.config.SimpleConfig;
-import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.runtime.config.function.StringToNodeInclusionPolicy;
 import com.graphaware.runtime.module.RuntimeModuleBootstrapper;
 import org.neo4j.graphdb.DynamicRelationshipType;
@@ -76,7 +76,7 @@ public class RecommendationModuleBootstrapper implements RuntimeModuleBootstrapp
         return new RecommendationModule(moduleId, configuration, database);
     }
 
-    private Neo4jTopLevelDelegatingEngine createEngine(Map<String, String> config) {
+    private Neo4jTopLevelDelegatingRecommendationEngine createEngine(Map<String, String> config) {
         return create(config, ENGINE, "Engine");
     }
 

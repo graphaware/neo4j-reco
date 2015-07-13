@@ -19,10 +19,8 @@ package com.graphaware.reco.integration;
 import com.graphaware.common.util.IterableUtils;
 import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.result.Recommendation;
-import com.graphaware.reco.integration.FriendsComputingEngine;
-import com.graphaware.reco.integration.FriendsRecommendationEngine;
 import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
-import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.reco.neo4j.module.RecommendationModule;
 import com.graphaware.reco.neo4j.module.RecommendationModuleConfiguration;
 import com.graphaware.runtime.GraphAwareRuntime;
@@ -42,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
-    private Neo4jTopLevelDelegatingEngine recommendationEngine;
+    private Neo4jTopLevelDelegatingRecommendationEngine recommendationEngine;
     private RecommendationsRememberingLogger rememberingLogger = new RecommendationsRememberingLogger();
 
     @Override

@@ -27,7 +27,7 @@ import com.graphaware.reco.integration.engine.RandomPeople;
 import com.graphaware.reco.integration.post.PenalizeAgeDifference;
 import com.graphaware.reco.integration.post.RewardSameLabels;
 import com.graphaware.reco.integration.post.RewardSameLocation;
-import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.reco.neo4j.filter.ExcludeSelf;
 import com.graphaware.reco.neo4j.filter.ExistingRelationshipBlacklistBuilder;
 import org.neo4j.graphdb.Node;
@@ -39,9 +39,9 @@ import static com.graphaware.reco.integration.domain.Relationships.FRIEND_OF;
 import static org.neo4j.graphdb.Direction.BOTH;
 
 /**
- * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that computes friend recommendations.
+ * {@link Neo4jTopLevelDelegatingRecommendationEngine} that computes friend recommendations.
  */
-public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
+public class FriendsComputingEngine extends Neo4jTopLevelDelegatingRecommendationEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {

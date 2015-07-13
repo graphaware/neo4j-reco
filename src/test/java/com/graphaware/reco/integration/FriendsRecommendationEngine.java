@@ -24,7 +24,7 @@ import com.graphaware.reco.generic.log.Slf4jRecommendationLogger;
 import com.graphaware.reco.generic.log.Slf4jStatisticsLogger;
 import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
 import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
-import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine;
+import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.reco.neo4j.filter.ExcludeSelf;
 import com.graphaware.reco.neo4j.filter.ExistingRelationshipBlacklistBuilder;
 import org.neo4j.graphdb.Node;
@@ -36,11 +36,11 @@ import static com.graphaware.reco.integration.domain.Relationships.FRIEND_OF;
 import static org.neo4j.graphdb.Direction.BOTH;
 
 /**
- * {@link com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingEngine} that recommends friends by first trying to
+ * {@link Neo4jTopLevelDelegatingRecommendationEngine} that recommends friends by first trying to
  * read pre-computed recommendations from the graph, then (if there aren't enough results) by computing the friends in
  * real-time using {@link FriendsComputingEngine}.
  */
-public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingEngine {
+public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingRecommendationEngine {
 
     @Override
     protected List<RecommendationEngine<Node, Node>> engines() {
