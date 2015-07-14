@@ -33,6 +33,11 @@ import static org.neo4j.graphdb.Direction.OUTGOING;
 public class RewardSameLocation extends RewardSomethingShared {
 
     @Override
+    protected String name() {
+        return "sameLocation";
+    }
+
+    @Override
     protected RelationshipType type() {
         return LIVES_IN;
     }
@@ -45,10 +50,5 @@ public class RewardSameLocation extends RewardSomethingShared {
     @Override
     protected PartialScore partialScore(Node recommendation, Node input, Node sharedThing) {
         return new PartialScore(10, Collections.singletonMap("location", sharedThing.getProperty("name")));
-    }
-
-    @Override
-    protected String scoreName() {
-        return "sameLocation";
     }
 }

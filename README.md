@@ -1,7 +1,7 @@
 GraphAware Neo4j Recommendation Engine
 ======================================
 
-[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.2.2.32.7
+[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.png)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.2.2.32.8
 
 GraphAware Neo4j Recommendation Engine is a library for building high-performance complex recommendation engines atop Neo4j.
 It is in production at a number of <a href="http://graphaware.com" target="_blank">GraphAware</a>'s clients producing real-time recommendations on graphs with hundreds of millions of nodes.
@@ -51,7 +51,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
         <dependency>
             <groupId>com.graphaware.neo4j</groupId>
             <artifactId>recommendation-engine</artifactId>
-            <version>2.2.2.32.7</version>
+            <version>2.2.2.32.8</version>
         </dependency>
         ...
     </dependencies>
@@ -59,7 +59,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
 #### Snapshots
 
 To use the latest development version, just clone this repository, run `mvn clean install` and change the version in the
-dependency above to 2.2.2.32.8-SNAPSHOT.
+dependency above to 2.2.2.32.9-SNAPSHOT.
 
 #### Note on Versioning Scheme
 
@@ -390,6 +390,11 @@ the following two classes:
 public class RewardSameLocation extends RewardSomethingShared {
 
     @Override
+    protected String name() {
+        return "sameLocation";
+    }
+
+    @Override
     protected RelationshipType type() {
         return LIVES_IN;
     }
@@ -403,11 +408,6 @@ public class RewardSameLocation extends RewardSomethingShared {
     protected PartialScore partialScore(Node recommendation, Node input, Node sharedThing) {
         return new PartialScore(10, Collections.singletonMap("location", sharedThing.getProperty("name")));
     }
-
-    @Override
-    protected String scoreName() {
-        return "sameLocation";
-    }
 }
 ```
 
@@ -415,15 +415,20 @@ public class RewardSameLocation extends RewardSomethingShared {
 /**
  * Rewards same gender (exactly the same labels) by 10 points.
  */
-public class RewardSameLabels implements PostProcessor<Node, Node> {
+public class RewardSameLabels extends BasePostProcessor<Node, Node> {
 
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
+    protected String name() {
+        return "sameGender";
+    }
+
+    @Override
+    protected void doPostProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         Label[] inputLabels = toArray(Label.class, input.getLabels());
 
         for (Recommendation<Node> recommendation : recommendations.get()) {
             if (Arrays.equals(inputLabels, toArray(Label.class, recommendation.getItem().getLabels()))) {
-                recommendation.add("sameGender", 10);
+                recommendation.add(name(), 10);
             }
         }
     }
@@ -443,20 +448,26 @@ score with 80% being subtracted when the difference in age is 20 years.
  * Subtracts points for difference in age. The maximum number of points subtracted is 10 and 80% of that is achieved
  * when the difference is 20 years.
  */
-public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
+public class PenalizeAgeDifference extends BasePostProcessor<Node, Node> {
 
     private final TransformationFunction function = new ParetoFunction(10, 20);
 
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
+    protected String name() {
+        return "ageDifference";
+    }
+
+    @Override
+    protected void doPostProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         int age = getInt(input, "age", 40);
 
         for (Recommendation<Node> reco : recommendations.get()) {
             int diff = Math.abs(getInt(reco.getItem(), "age", 40) - age);
-            reco.add("ageDifference", -function.transform(diff));
+            reco.add(name(), -function.transform(diff));
         }
     }
 }
+
 ```
 
 #### Blacklist Builders and Filters
@@ -484,7 +495,7 @@ public class FriendsComputingEngine extends Neo4jTopLevelDelegatingRecommendatio
 
     @Override
     protected List<PostProcessor<Node, Node>> postProcessors() {
-        return Arrays.asList(
+        return Arrays.<PostProcessor<Node, Node>>asList(
                 new RewardSameLabels(),
                 new RewardSameLocation(),
                 new PenalizeAgeDifference()
@@ -675,7 +686,7 @@ public class FriendsComputingEngine extends Neo4jTopLevelDelegatingEngine {
 
     @Override
     protected List<PostProcessor<Node, Node>> postProcessors() {
-        return Arrays.asList(
+        return Arrays.<PostProcessor<Node, Node>>asList(
                 new RewardSameLabels(),
                 new RewardSameLocation(),
                 new PenalizeAgeDifference()

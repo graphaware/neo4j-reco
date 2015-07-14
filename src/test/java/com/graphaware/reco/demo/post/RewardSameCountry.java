@@ -17,6 +17,7 @@
 package com.graphaware.reco.demo.post;
 
 import com.graphaware.reco.generic.context.Context;
+import com.graphaware.reco.generic.post.BasePostProcessor;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
@@ -30,19 +31,27 @@ import static org.neo4j.graphdb.DynamicRelationshipType.withName;
 /**
  * Rewards people who live in the same country as the company by 10 (hardcoded) points.
  */
-public class RewardSameCountry implements PostProcessor<Node, Node> {
+public class RewardSameCountry extends BasePostProcessor<Node, Node> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node company, Context<Node, Node> context) {
+    protected String name() {
+        return "same-country";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doPostProcess(Recommendations<Node> recommendations, Node company, Context<Node, Node> context) {
         Node companyCountry = company.getSingleRelationship(withName("LOCATED_IN"), OUTGOING).getEndNode();
 
         for (Recommendation<Node> reco : recommendations.get()) {
             Node personCountry = reco.getItem().getSingleRelationship(withName("LIVES_IN"), OUTGOING).getEndNode();
             if (personCountry.equals(companyCountry)) {
-                reco.add("same-country", 10, Collections.singletonMap("Country", personCountry.getProperty("name")));
+                reco.add(name(), 10, Collections.singletonMap("Country", personCountry.getProperty("name")));
             }
         }
     }

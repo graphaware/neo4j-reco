@@ -7,13 +7,13 @@ import java.util.Map;
  */
 public interface Statistics {
 
-    public static final String TOTAL_TIME = "total time";
+    String TOTAL_TIME = "total time";
 
-    static final String ELAPSED_TIME = "elapsed time";
-    static final String CANDIDATE_ITEMS = "candidate items";
-    static final String BLACKLISTED_ITEMS = "blacklisted items";
-    static final String FILTERED_ITEMS = "filtered items";
-    static final String TOTAL_ITEMS = "total items";
+    String ELAPSED_TIME = "elapsed time";
+    String CANDIDATE_ITEMS = "candidate items";
+    String BLACKLISTED_ITEMS = "blacklisted items";
+    String FILTERED_ITEMS = "filtered items";
+    String TOTAL_ITEMS = "total items";
 
     /**
      * Start timing a task.

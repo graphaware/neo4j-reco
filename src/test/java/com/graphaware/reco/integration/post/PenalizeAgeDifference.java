@@ -17,6 +17,7 @@
 package com.graphaware.reco.integration.post;
 
 import com.graphaware.reco.generic.context.Context;
+import com.graphaware.reco.generic.post.BasePostProcessor;
 import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
@@ -30,17 +31,28 @@ import static com.graphaware.common.util.PropertyContainerUtils.getInt;
  * Subtracts points for difference in age. The maximum number of points subtracted is 10 and 80% of that is achieved
  * when the difference is 20 years.
  */
-public class PenalizeAgeDifference implements PostProcessor<Node, Node> {
+public class PenalizeAgeDifference extends BasePostProcessor<Node, Node> {
 
     private final TransformationFunction function = new ParetoFunction(10, 20);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
+    protected String name() {
+        return "ageDifference";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doPostProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         int age = getInt(input, "age", 40);
 
         for (Recommendation<Node> reco : recommendations.get()) {
             int diff = Math.abs(getInt(reco.getItem(), "age", 40) - age);
-            reco.add("ageDifference", -function.transform(diff));
+            reco.add(name(), -function.transform(diff));
         }
     }
 }

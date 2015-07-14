@@ -17,10 +17,10 @@
 package com.graphaware.reco.neo4j.post;
 
 import com.graphaware.reco.generic.context.Context;
-import com.graphaware.reco.generic.post.PostProcessor;
+import com.graphaware.reco.generic.post.BasePostProcessor;
+import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
-import com.graphaware.reco.generic.result.PartialScore;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -38,13 +38,13 @@ import org.neo4j.graphdb.RelationshipType;
  * For example, this could be used on a dating site to reward matches that live in the same location,
  * which would be indicated by a single LIVES_IN relationship between people and locations.
  */
-public abstract class RewardSomethingShared implements PostProcessor<Node, Node> {
+public abstract class RewardSomethingShared extends BasePostProcessor<Node, Node> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void postProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
+    protected void doPostProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         Node inputSharedNode = sharedNode(input);
 
         if (inputSharedNode == null) {
@@ -58,7 +58,7 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
             }
 
             if (recommendationSharedNode.getId() == inputSharedNode.getId()) {
-                recommendation.add(scoreName(), partialScore(recommendation.getItem(), input, recommendationSharedNode));
+                recommendation.add(name(), partialScore(recommendation.getItem(), input, recommendationSharedNode));
             }
         }
     }
@@ -90,13 +90,6 @@ public abstract class RewardSomethingShared implements PostProcessor<Node, Node>
      * @return direction.
      */
     protected abstract Direction direction();
-
-    /**
-     * Get the name of the score added by this post processor.
-     *
-     * @return score name.
-     */
-    protected abstract String scoreName();
 
     /**
      * Get the partial score this post processor adds if subject and recommendation have a thing in common.

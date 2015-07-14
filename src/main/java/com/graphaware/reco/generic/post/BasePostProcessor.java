@@ -20,14 +20,32 @@ import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.result.Recommendations;
 
 /**
- * Recommendations post processor. Intended for boosting or penalizing scores of certain recommendations. For example,
- * you could boost the score of a recommended match on a dating site if the smoker/non-smoker preference of the
- * recommended person matches the preference of the person looking for recommendation.
+ * Base class for {@link PostProcessor} implementation that collects timing statistics about the process.
  *
  * @param <OUT> type of the post-processed recommendations.
  * @param <IN>  type of the item recommendations are for / based on.
  */
-public interface PostProcessor<OUT, IN> {
+public abstract class BasePostProcessor<OUT, IN> implements PostProcessor<OUT, IN> {
+
+    /**
+     * Get the name of this post processor. This name should be unique within the overall recommendation engine structure and
+     * will be used for naming scores produced by the post processor, as well as for collecting {@link com.graphaware.reco.generic.stats.Statistics}.
+     *
+     * @return name.
+     */
+    protected abstract String name();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void postProcess(Recommendations<OUT> recommendations, IN input, Context<OUT, IN> context) {
+        context.statistics().startTiming(name());
+
+        doPostProcess(recommendations, input, context);
+
+        context.statistics().stopTiming(name());
+    }
 
     /**
      * Post-process results.
@@ -36,5 +54,5 @@ public interface PostProcessor<OUT, IN> {
      * @param input           for whom the recommendation have been produced, must not be <code>null</code>.
      * @param context         for the recommendation computing process.
      */
-    void postProcess(Recommendations<OUT> recommendations, IN input, Context<OUT, IN> context);
+    protected abstract void doPostProcess(Recommendations<OUT> recommendations, IN input, Context<OUT, IN> context);
 }

@@ -53,7 +53,7 @@ public class FriendsComputingEngine extends Neo4jTopLevelDelegatingRecommendatio
 
     @Override
     protected List<PostProcessor<Node, Node>> postProcessors() {
-        return Arrays.asList(
+        return Arrays.<PostProcessor<Node, Node>>asList(
                 new RewardSameLabels(),
                 new RewardSameLocation(),
                 new PenalizeAgeDifference()
