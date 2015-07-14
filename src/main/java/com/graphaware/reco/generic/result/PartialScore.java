@@ -92,7 +92,7 @@ public class PartialScore {
      * @param value   to add.
      * @param details about the value as arbitrary key-value pairs.
      */
-    public void add(float value, Map<String, Object> details) {
+    public void add(float value, Map<String, ?> details) {
         add(value);
         addReason(value, details);
     }
@@ -115,7 +115,7 @@ public class PartialScore {
      * @param value   of the reason to add.
      * @param details of the reason to add.
      */
-    private void addReason(float value, Map<String, Object> details) {
+    private void addReason(float value, Map<String, ?> details) {
         if (details == null) {
             return;
         }

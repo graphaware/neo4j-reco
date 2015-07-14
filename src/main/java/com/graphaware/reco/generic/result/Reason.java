@@ -46,7 +46,7 @@ public class Reason {
      *                has been discovered. Must not be <code>null</code>. If there aren't any details, there should be
      *                no point in constructing this object.
      */
-    public Reason(float value, Map<String, Object> details) {
+    public Reason(float value, Map<String, ?> details) {
         notNull(details);
 
         this.value = value;
