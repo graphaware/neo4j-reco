@@ -54,9 +54,12 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
      */
     @Override
     public NodeBasedContext createInitialContext(GraphDatabaseService database) {
-        initializeSelectorIfNeeded(null, database);
-
-        Node node = selector.selectNode(database);
+        Node node;
+        try (Transaction tx = database.beginTx()) {
+            initializeSelectorIfNeeded(null, database);
+            node = selector.selectNode(database);
+            tx.success();
+        }
 
         if (node == null) {
             LOG.warn("RecommendationModule did not find a node to start with. There are no nodes matching the configuration.");
