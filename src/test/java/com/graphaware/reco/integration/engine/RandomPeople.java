@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.integration.engine;
 
+import com.graphaware.common.policy.BaseNodeInclusionPolicy;
 import com.graphaware.common.policy.NodeInclusionPolicy;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
@@ -35,7 +36,7 @@ public class RandomPeople extends RandomRecommendations {
 
     @Override
     protected NodeInclusionPolicy getPolicy() {
-        return new NodeInclusionPolicy() {
+        return new BaseNodeInclusionPolicy() {
             @Override
             public boolean include(Node node) {
                 return node.hasLabel(DynamicLabel.label("Person"));
