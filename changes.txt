@@ -1,3 +1,6 @@
+2.2.4.34.9:
+    - fixed issue #12 (perf improvement)
+
 2.2.4.34.8:
     - no changes
 

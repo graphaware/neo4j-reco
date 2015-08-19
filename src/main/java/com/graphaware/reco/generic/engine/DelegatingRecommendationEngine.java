@@ -20,6 +20,7 @@ import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
 import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.post.PostProcessor;
+import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.generic.result.Recommendations;
 
 import java.util.Collections;
@@ -148,11 +149,75 @@ public class DelegatingRecommendationEngine<OUT, IN> extends BaseRecommendationE
             }
         }
 
+        removeIrrelevant(input, context, recommendations);
+
         for (PostProcessor<OUT, IN> postProcessor : postProcessors) {
             postProcessor.postProcess(recommendations, input, context);
         }
 
         return recommendations;
+    }
+
+    /**
+     * Remove recommendations that have no chance of making it to the final selection, because their score will always
+     * be lower than the score of the last returned recommendation, even after post processing. This is a performance
+     * optimisation, so that irrelevant recommendations don't have to be post-processed.
+     *
+     * @param input           input to the recommendation engine. Typically the person or item recommendations are being
+     *                        computed for.
+     * @param context         additional information about the recommendation process.
+     * @param recommendations computed so far.
+     */
+    private void removeIrrelevant(IN input, Context<OUT, IN> context, Recommendations<OUT> recommendations) {
+        float maxRelativeChange = maxRelativeChange(input, context);
+
+        if (Float.POSITIVE_INFINITY == maxRelativeChange) {
+            return;
+        }
+
+        int i = 0;
+        float minScoreInLimit = 0;
+        for (Recommendation<OUT> recommendation : recommendations.get(Integer.MAX_VALUE)) {
+            if (++i == context.config().limit()) {
+                minScoreInLimit = recommendation.getScore().getTotalScore() - maxRelativeChange;
+            } else if (i > context.config().limit() && recommendation.getScore().getTotalScore() < minScoreInLimit) {
+                recommendations.remove(recommendation.getItem());
+            }
+        }
+    }
+
+    /**
+     * Get the maximum value by which score difference between any two recommendations can be changed by post processing.
+     *
+     * @param input   input to the recommendation engine. Typically the person or item recommendations are being
+     *                computed for.
+     * @param context additional information about the recommendation process.
+     * @return maximum relative change. If unknown, {@link Float#POSITIVE_INFINITY} will be returned.
+     */
+    private float maxRelativeChange(IN input, Context<OUT, IN> context) {
+        float result = 0f;
+
+        for (PostProcessor<OUT, IN> postProcessor : postProcessors) {
+            float posInfluence = postProcessor.maxPositiveScore(input, context);
+            float negInfluence = postProcessor.maxNegativeScore(input, context);
+
+            if (posInfluence < 0) {
+                throw new IllegalStateException(postProcessor + " has a negative influence score (" + posInfluence + "), should not be negative");
+            }
+
+            if (negInfluence > 0) {
+                throw new IllegalStateException(postProcessor + " has a positive influence score (" + negInfluence + "), should not be positive");
+            }
+
+            if (Float.isInfinite(negInfluence) || Float.isInfinite(posInfluence)) {
+                result = Float.POSITIVE_INFINITY;
+                break;
+            }
+
+            result += Math.abs(negInfluence) + Math.abs(posInfluence);
+        }
+
+        return result;
     }
 
     /**

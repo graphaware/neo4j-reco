@@ -55,5 +55,21 @@ public class RewardSameCountry extends BasePostProcessor<Node, Node> {
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float maxPositiveScore(Node input, Context<Node, Node> context) {
+        return 10;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float maxNegativeScore(Node input, Context<Node, Node> context) {
+        return 0;
+    }
 }
 

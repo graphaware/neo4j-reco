@@ -121,8 +121,8 @@ public class Recommendations<OUT> {
     /**
      * Add a recommendation.
      *
-     * @param item      to add. Must not be <code>null</code>.
-     * @param scoreName name of the partial score this recommendation is receiving. Must not be <code>null</code> or empty.
+     * @param item         to add. Must not be <code>null</code>.
+     * @param scoreName    name of the partial score this recommendation is receiving. Must not be <code>null</code> or empty.
      * @param partialScore partial score.
      */
     public void add(OUT item, String scoreName, PartialScore partialScore) {
@@ -158,6 +158,16 @@ public class Recommendations<OUT> {
      */
     public void add(OUT item, String scoreName, float score) {
         add(item, scoreName, score, null);
+    }
+
+    /**
+     * Remove a recommendation.
+     *
+     * @param item recommended item to remove.
+     */
+    public void remove(OUT item) {
+        notNull(item);
+        scoredItems.remove(item);
     }
 
     /**

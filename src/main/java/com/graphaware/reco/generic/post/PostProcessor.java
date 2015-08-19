@@ -37,4 +37,26 @@ public interface PostProcessor<OUT, IN> {
      * @param context         for the recommendation computing process.
      */
     void postProcess(Recommendations<OUT> recommendations, IN input, Context<OUT, IN> context);
+
+    /**
+     * Get the maximum value by which this post processor can increase the overall score of a recommendation.
+     * If it is not possible to say, this method should return {@link Float#POSITIVE_INFINITY}.
+     *
+     * @param input   for the recommendation are being post-processed, must not be <code>null</code>.
+     * @param context for the recommendation computing process.
+     * @return Maximum value by which this post processor can increase the overall score of a recommendation.
+     * Must be positive and should be {@link Float#POSITIVE_INFINITY} if unknown.
+     */
+    float maxPositiveScore(IN input, Context<OUT, IN> context);
+
+    /**
+     * Get the maximum value by which this post processor can decrease the overall score of a recommendation.
+     * If it is not possible to say, this method should return {@link Float#NEGATIVE_INFINITY}.
+     *
+     * @param input   for the recommendation are being post-processed, must not be <code>null</code>.
+     * @param context for the recommendation computing process.
+     * @return Maximum value by which this post processor can decrease the overall score of a recommendation.
+     * Must be negative and should be {@link Float#NEGATIVE_INFINITY} if unknown.
+     */
+    float maxNegativeScore(IN input, Context<OUT, IN> context);
 }

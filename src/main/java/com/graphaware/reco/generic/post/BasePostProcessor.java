@@ -55,4 +55,20 @@ public abstract class BasePostProcessor<OUT, IN> implements PostProcessor<OUT, I
      * @param context         for the recommendation computing process.
      */
     protected abstract void doPostProcess(Recommendations<OUT> recommendations, IN input, Context<OUT, IN> context);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float maxPositiveScore(IN input, Context<OUT, IN> context) {
+        return Float.POSITIVE_INFINITY;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float maxNegativeScore(IN input, Context<OUT, IN> context) {
+        return Float.NEGATIVE_INFINITY;
+    }
 }
