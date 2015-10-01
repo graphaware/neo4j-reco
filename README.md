@@ -361,7 +361,7 @@ there aren't enough results and there is time left.
 
      @Override
      protected NodeInclusionPolicy getPolicy() {
-         return new NodeInclusionPolicy() {
+         return new BaseNodeInclusionPolicy() {
              @Override
              public boolean include(Node node) {
                  return node.hasLabel(DynamicLabel.label("Person"));
