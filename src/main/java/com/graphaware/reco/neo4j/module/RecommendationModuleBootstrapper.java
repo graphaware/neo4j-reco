@@ -80,6 +80,7 @@ public class RecommendationModuleBootstrapper implements RuntimeModuleBootstrapp
         return create(config, ENGINE, "Engine");
     }
 
+    //todo replace this with framework class
     private <T> T create(Map<String, String> config, String configKey, String logString) {
         if (config.get(configKey) != null) {
             String className = config.get(configKey);

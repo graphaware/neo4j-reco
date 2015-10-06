@@ -24,7 +24,7 @@ import com.graphaware.runtime.module.BaseRuntimeModule;
 import com.graphaware.runtime.module.TimerDrivenModule;
 import com.graphaware.runtime.walk.ContinuousNodeSelector;
 import com.graphaware.runtime.walk.NodeSelector;
-import com.graphaware.writer.DatabaseWriter;
+import com.graphaware.writer.neo4j.Neo4jWriter;
 import org.neo4j.graphdb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +41,12 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
 
     private final RecommendationModuleConfiguration config;
     private NodeSelector selector;
-    private final DatabaseWriter databaseWriter;
+    private final Neo4jWriter writer;
 
     public RecommendationModule(String moduleId, RecommendationModuleConfiguration config, GraphDatabaseService database) {
         super(moduleId);
         this.config = config;
-        this.databaseWriter = RuntimeRegistry.getRuntime(database).getDatabaseWriter();
+        this.writer = RuntimeRegistry.getRuntime(database).getDatabaseWriter();
     }
 
     /**
@@ -124,7 +124,7 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
     }
 
     private void persistRecommendations(final Node node, final List<Recommendation<Node>> recommendations) {
-        databaseWriter.write(new Runnable() {
+        writer.write(new Runnable() {
             @Override
             public void run() {
                 for (Relationship existing : node.getRelationships(config.getRelationshipType(), Direction.OUTGOING)) {
