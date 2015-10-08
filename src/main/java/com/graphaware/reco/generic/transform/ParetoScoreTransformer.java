@@ -19,6 +19,8 @@ package com.graphaware.reco.generic.transform;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.result.PartialScore;
 
+import java.util.Collections;
+
 /**
  * A {@link ScoreTransformer} that transforms the score based on an exponential (Pareto) function
  * <p/>
@@ -30,7 +32,7 @@ import com.graphaware.reco.generic.result.PartialScore;
  * <p/>
  * score = 100 * (1-e^(-alpha*number_of_friends)), where alpha = ln(5)/10.
  */
-public class ParetoScoreTransformer implements ScoreTransformer {
+public class ParetoScoreTransformer<OUT> implements ScoreTransformer<OUT> {
 
     private final TransformationFunction function;
 
@@ -40,6 +42,30 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * @param maxScore           maximum score this transformer will produce.
      * @param eightyPercentLevel score at which the transformer will produce 80% of the maximum score.
      */
+    public static <OUT> ParetoScoreTransformer<OUT> create(float maxScore, float eightyPercentLevel) {
+        return new ParetoScoreTransformer<>(maxScore, eightyPercentLevel);
+    }
+
+    /**
+     * Construct a new transformer.
+     *
+     * @param maxScore           maximum score this transformer will produce.
+     * @param eightyPercentLevel score at which the transformer will produce 80% of the maximum score.
+     * @param minimumThreshold   minimum input score that must be achieved to get a score higher than 0 out of this
+     *                           transformer.
+     */
+    public static <OUT> ParetoScoreTransformer<OUT> create(float maxScore, float eightyPercentLevel, float minimumThreshold) {
+        return new ParetoScoreTransformer<>(maxScore, eightyPercentLevel, minimumThreshold);
+    }
+
+    /**
+     * Construct a new transformer.
+     *
+     * @param maxScore           maximum score this transformer will produce.
+     * @param eightyPercentLevel score at which the transformer will produce 80% of the maximum score.
+     * @deprecated please use {@link #create(float, float)}. This method will be made <code>private</code> in future releases.
+     */
+    @Deprecated
     public ParetoScoreTransformer(float maxScore, float eightyPercentLevel) {
         this(maxScore, eightyPercentLevel, 0);
     }
@@ -51,7 +77,9 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * @param eightyPercentLevel score at which the transformer will produce 80% of the maximum score.
      * @param minimumThreshold   minimum input score that must be achieved to get a score higher than 0 out of this
      *                           transformer.
+     * @deprecated please use {@link #create(float, float, float)}. This method will be made <code>private</code> in future releases.
      */
+    @Deprecated
     public ParetoScoreTransformer(float maxScore, float eightyPercentLevel, float minimumThreshold) {
         function = new ParetoFunction(maxScore, eightyPercentLevel, minimumThreshold);
     }
@@ -60,8 +88,8 @@ public class ParetoScoreTransformer implements ScoreTransformer {
      * {@inheritDoc}
      */
     @Override
-    public <OUT> PartialScore transform(OUT item, PartialScore score, Context<OUT, ?> context) {
-        score.setValue(function.transform(score.getValue()));
+    public PartialScore transform(OUT item, PartialScore score, Context<? extends OUT, ?> context) {
+        score.setNewValue(function.transform(score.getValue()), Collections.singletonMap("ParetoTransformationOf", score.getValue()));
 
         return score;
     }

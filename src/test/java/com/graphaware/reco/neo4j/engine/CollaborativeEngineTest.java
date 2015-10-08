@@ -78,21 +78,21 @@ public class CollaborativeEngineTest extends DatabaseIntegrationTest {
 
             String expectedForVince = "Computed recommendations for Christophe: " +
 
-                    "(Java {total:28.0, skills: {value:28.0, " +
+                    "(Java {total:28.0, skills:{value:28.0, " +
                     "{value:6.0, person:Michal, skill:Cypher}, " +
                     "{value:6.0, person:Michal, skill:Neo4j}, " +
                     "{value:9.0, person:Vince, skill:Cypher}, " +
                     "{value:7.0, person:Vince, skill:Neo4j}}}), " +
 
-                    "(Neo4j {total:16.0, skills: {value:16.0, " +
+                    "(Neo4j {total:16.0, skills:{value:16.0, " +
                     "{value:8.0, person:Michal, skill:Cypher}, " +
                     "{value:8.0, person:Vince, skill:Cypher}}}), " +
 
-                    "(Cypher {total:14.0, skills: {value:14.0, " +
+                    "(Cypher {total:14.0, skills:{value:14.0, " +
                     "{value:7.0, person:Vince, skill:Neo4j}, " +
                     "{value:7.0, person:Michal, skill:Neo4j}}}), " +
 
-                    "(Git {total:12.0, skills: {value:12.0, " +
+                    "(Git {total:12.0, skills:{value:12.0, " +
                     "{value:7.0, person:Vince, skill:Cypher}, " +
                     "{value:5.0, person:Vince, skill:Neo4j}}})";
 

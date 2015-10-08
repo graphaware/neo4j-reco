@@ -156,12 +156,13 @@ public class PartialScore {
 
     /**
      * Set a new total value of this partial score. Intended to be used by {@link com.graphaware.reco.generic.transform.ScoreTransformer}s.
-     * Will not change anything about the encapsulated {@link com.graphaware.reco.generic.result.Reason}s.
+     * Will not change anything about the already encapsulated {@link com.graphaware.reco.generic.result.Reason}s.
      *
      * @param value new total value.
+     * @param details of the transformation.
      */
-    public void setValue(float value) {
-        this.value.set(value);
+    public void setNewValue(float value, Map<String, ?> details) {
+        add(-(this.value.get() - value), details);
     }
 
     /**
@@ -182,7 +183,7 @@ public class PartialScore {
             return String.valueOf(value);
         }
 
-        StringBuilder result = new StringBuilder(" {value:").append(value);
+        StringBuilder result = new StringBuilder("{value:").append(value);
 
         for (Reason reason : reasons) {
             result.append(", ").append(reason);

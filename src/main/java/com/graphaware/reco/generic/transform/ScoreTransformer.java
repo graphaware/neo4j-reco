@@ -22,7 +22,7 @@ import com.graphaware.reco.generic.result.PartialScore;
 /**
  * A component that can transform recommendation scores.
  */
-public interface ScoreTransformer {
+public interface ScoreTransformer<OUT> {
 
     /**
      * Transform a partial score.
@@ -32,5 +32,5 @@ public interface ScoreTransformer {
      * @param context      of the recommendation computing process.
      * @return transformed partial score.
      */
-    <OUT> PartialScore transform(OUT item, PartialScore partialScore, Context<OUT, ?> context);
+    PartialScore transform(OUT item, PartialScore partialScore, Context<? extends OUT, ?> context);
 }

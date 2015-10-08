@@ -42,7 +42,7 @@ public abstract class SingleScoreRecommendationEngine<OUT, IN> extends BaseRecom
      *
      * @return transformer, {@link com.graphaware.reco.generic.transform.NoTransformation} by default.
      */
-    protected ScoreTransformer scoreTransformer() {
+    protected ScoreTransformer<OUT> scoreTransformer() {
         return NoTransformation.getInstance();
     }
 

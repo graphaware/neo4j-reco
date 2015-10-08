@@ -22,11 +22,11 @@ import com.graphaware.reco.generic.result.PartialScore;
 /**
  * {@link ScoreTransformer} that performs no transformation. Singleton.
  */
-public final class NoTransformation implements ScoreTransformer {
+public final class NoTransformation<OUT> implements ScoreTransformer<OUT> {
 
     private static final NoTransformation INSTANCE = new NoTransformation();
 
-    public static NoTransformation getInstance() {
+    public static <OUT> NoTransformation<OUT> getInstance() {
         return INSTANCE;
     }
 
@@ -37,7 +37,7 @@ public final class NoTransformation implements ScoreTransformer {
      * {@inheritDoc}
      */
     @Override
-    public <OUT> PartialScore transform(OUT item, PartialScore score, Context<OUT, ?> context) {
+    public PartialScore transform(OUT item, PartialScore score, Context<? extends OUT, ?> context) {
         return score;
     }
 }

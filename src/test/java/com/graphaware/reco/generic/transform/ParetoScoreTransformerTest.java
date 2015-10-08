@@ -28,7 +28,7 @@ public class ParetoScoreTransformerTest {
 
     @Test
     public void verifyTransform() {
-        ParetoScoreTransformer transformer = new ParetoScoreTransformer(100, 10);
+        ParetoScoreTransformer<?> transformer = ParetoScoreTransformer.create(100, 10);
 
         assertEquals(0, transformer.transform(null, new PartialScore(0), null).getValue(), 0.5);
         assertEquals(15, transformer.transform(null, new PartialScore(1), null).getValue(), 0.5);
@@ -41,6 +41,9 @@ public class ParetoScoreTransformerTest {
         assertEquals(100, transformer.transform(null, new PartialScore(100), null).getValue(), 0.5);
         assertEquals(100, transformer.transform(null, new PartialScore(10000), null).getValue(), 0.5);
 
-        assertEquals(0, new ParetoScoreTransformer(100, 10, 10).transform(null, new PartialScore(9), null).getValue(), 0.5);
+        assertEquals(0, ParetoScoreTransformer.create(100, 10, 10).transform(null, new PartialScore(9), null).getValue(), 0.5);
+
+        PartialScore transformed = transformer.transform(null, new PartialScore(9), null);
+        assertEquals("{value:76.50762, {value:67.50762, ParetoTransformationOf:9.0}}", transformed.toString());
     }
 }
