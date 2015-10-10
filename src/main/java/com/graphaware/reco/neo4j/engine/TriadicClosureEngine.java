@@ -10,19 +10,20 @@ import org.neo4j.graphdb.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class TriadicClosureEngine extends SingleScoreRecommendationEngine{
+public abstract class TriadicClosureEngine extends SingleScoreRecommendationEngine<Node,Node>{
 
     private RelationshipType type;
     private Direction direction;
-    private DynamicLabel label;
+    private Label label;
 
-    public TriadicClosureEngine(DynamicLabel label, RelationshipType type, Direction direction){
+    public TriadicClosureEngine(Label label, RelationshipType type, Direction direction){
         this.label = label;
         this.type = type;
         this.direction = direction;
     }
 
-    protected final Map<Node, PartialScore> doRecommendSingle(Node input, Context<Node, Node> context){
+    @Override
+    protected final Map<Node, PartialScore> doRecommendSingle(Node input, Context context) {
         Map<Node, PartialScore> result = new HashMap<>();
         GraphDatabaseService database = input.getGraphDatabase();
 
