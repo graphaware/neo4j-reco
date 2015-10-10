@@ -53,8 +53,8 @@ public abstract class TriadicClosureEngine extends SingleScoreRecommendationEngi
     }
 
     private Statement buildQuery(Long inputId){
-        String query = "MATCH (n:" + this.label.toString() + ") WHERE id(n) = {id}" +
-                "MATCH (n)";
+        String query = "MATCH (n:" + this.label.toString() + ") WHERE id(n) = {id} " +
+                " MATCH (n)";
 
         String relPart;
         switch (this.direction) {
@@ -67,9 +67,9 @@ public abstract class TriadicClosureEngine extends SingleScoreRecommendationEngi
             default:
                 throw new IllegalArgumentException("Invalid Relationship Direction");
         }
-        query += relPart + "(b)" + relPart + "(c:" + this.label.toString() + ")" +
-                "WHERE NOT (a)" + relPart + "(b)" +
-                "AND (a) <> (b)" +
+        query += relPart + "(b)" + relPart + "(c:" + this.label.toString() + ") " +
+                "WHERE NOT (n)" + relPart + "(c)" +
+                "AND (n) <> (b)" +
                 "RETURN c as reco, count(*) as score";
 
         Statement statement = new Statement(query);
