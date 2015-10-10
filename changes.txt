@@ -1,3 +1,6 @@
+2.2.5.35.10:
+    - Make Cypher engine extensible
+
 2.2.5.35.9:
     - API changes in ScoreTransformers
     - Inverse Degree Transformer
