@@ -58,6 +58,7 @@ public class TriadicEngineTest extends DatabaseIntegrationTest {
                         "(m)-[:FRIEND_OF]->(c)," +
                         "(m)-[:FRIEND_OF]->(a)," +
                         "(c)-[:FRIEND_OF]->(m)," +
+                        "(a)-[:FRIEND_OF]->(m)," +
                         "(c)-[:KNOWS {level:3}]->(php)," +
                         "(c)-[:KNOWS {level:2}]->(neo)," +
                         "(c)-[:KNOWS {level:3}]->(cypher)," +
@@ -74,9 +75,9 @@ public class TriadicEngineTest extends DatabaseIntegrationTest {
     @Test
     public void shouldRecommendPeople(){
         try (Transaction tx = getDatabase().beginTx()) {
-            Node chris = getPersonByName("Christophe");
-            List<Recommendation<Node>> friendsForChris = engine.recommend(chris, new SimpleContext<Node, Node>(chris, Config.UNLIMITED)).get(Integer.MAX_VALUE);
-            assertEquals(3, friendsForChris.size());
+            Node ales = getPersonByName("Alessandro");
+            List<Recommendation<Node>> friendsForAles = engine.recommend(ales, new SimpleContext<Node, Node>(ales, Config.UNLIMITED)).get(Integer.MAX_VALUE);
+            assertEquals(4, friendsForAles.size());
             tx.success();
 
         }

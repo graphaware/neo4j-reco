@@ -8,7 +8,7 @@ import org.neo4j.graphdb.DynamicRelationshipType;
 public class Triadic extends TriadicClosureEngine{
 
     public Triadic(){
-        super(DynamicLabel.label("Person"), DynamicRelationshipType.withName("KNOWS"), Direction.OUTGOING);
+        super(DynamicLabel.label("Person"), DynamicRelationshipType.withName("FRIEND_OF"), Direction.OUTGOING);
     }
 
     @Override
