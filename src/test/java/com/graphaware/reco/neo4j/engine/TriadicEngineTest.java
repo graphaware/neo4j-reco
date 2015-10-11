@@ -77,7 +77,7 @@ public class TriadicEngineTest extends DatabaseIntegrationTest {
         try (Transaction tx = getDatabase().beginTx()) {
             Node ales = getPersonByName("Alessandro");
             List<Recommendation<Node>> friendsForAles = engine.recommend(ales, new SimpleContext<Node, Node>(ales, Config.UNLIMITED)).get(Integer.MAX_VALUE);
-            assertEquals(4, friendsForAles.size());
+            assertEquals(3, friendsForAles.size());
             tx.success();
 
         }
