@@ -114,6 +114,6 @@ public class TimeLimitIntegrationTest extends DatabaseIntegrationTest {
     }
 
     private Node getPersonByName(String name) {
-        return IterableUtils.getSingle(getDatabase().findNodes(DynamicLabel.label("Person"), "name", name));
+        return getDatabase().findNode(DynamicLabel.label("Person"), "name", name);
     }
 }
