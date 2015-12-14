@@ -14,32 +14,38 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.integration.engine;
+package com.graphaware.reco.neo4j.engine;
 
-import com.graphaware.reco.neo4j.engine.SpatialRecommendationEngine;
+import java.util.Collections;
+import java.util.Set;
+
+import org.neo4j.gis.spatial.indexprovider.SpatialIndexProvider;
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.index.Index;
 
-public class ClosestFriends extends SpatialRecommendationEngine {
-
-	final Index<Node> index;
-
-	public ClosestFriends(Index<Node> index) {
-		this.index = index;
-	}
+public class PeopleNearby extends SpatialRecommendationEngine{
 
 	@Override
-	protected Index<Node> getSpatialIndex() {
-		return index;
+	protected Index<Node> getSpatialIndex(GraphDatabaseService database) {
+		return database.index().forNodes("locations", SpatialIndexProvider.SIMPLE_POINT_CONFIG);
 	}
 
 	@Override
 	protected double getDistanceInKm() {
-		return 20;
+		return 5;
 	}
 
 	@Override
 	public String name() {
-		return "Closest Friends";
+		return "People nearby";
 	}
+
+	@Override
+	protected Set<Label> getLabels() {
+		return Collections.singleton(DynamicLabel.label("Person"));
+	}
+
 }
