@@ -12,6 +12,14 @@ import org.neo4j.graphdb.PathExpanders;
 
 public class ShortestPath extends BasePostProcessor<Node, Node> {
 
+    private final PathFinder<Path> finder;
+
+    public ShortestPath() {
+        this.finder = GraphAlgoFactory.shortestPath(
+                PathExpanders.allTypesAndDirections(), 15
+        );
+    }
+
     @Override
     protected String name() {
         return "shortestPath";
@@ -19,10 +27,6 @@ public class ShortestPath extends BasePostProcessor<Node, Node> {
 
     @Override
     protected void doPostProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
-        PathFinder<Path> finder = GraphAlgoFactory.shortestPath(
-                PathExpanders.allTypesAndDirections(), 15
-        );
-
         for (Recommendation<Node> recommendation : recommendations.get()) {
             Path path = finder.findSinglePath(input, recommendation.getItem());
             recommendation.add(name(), path.length());
