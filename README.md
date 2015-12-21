@@ -788,7 +788,7 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingRe
 
     @Override
     protected List<Logger<Node, Node>> loggers() {
-        return Arrays.asList(
+        return Arrays.<Logger<Node, Node>>asList(
                 new Slf4jRecommendationLogger<Node, Node>(),
                 new Slf4jStatisticsLogger<Node, Node>()
         );
