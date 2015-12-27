@@ -22,7 +22,9 @@ import com.graphaware.reco.generic.filter.Filter;
 import com.graphaware.reco.generic.log.Logger;
 import com.graphaware.reco.generic.log.Slf4jRecommendationLogger;
 import com.graphaware.reco.generic.log.Slf4jStatisticsLogger;
+import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
+import com.graphaware.reco.integration.post.ShortestPath;
 import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.reco.neo4j.filter.ExcludeSelf;
@@ -55,6 +57,13 @@ public final class FriendsRecommendationEngine extends Neo4jTopLevelDelegatingRe
         return Arrays.asList(
                 new ExcludeSelf(),
                 new ExistingRelationshipBlacklistBuilder(FRIEND_OF, BOTH)
+        );
+    }
+
+    @Override
+    protected List<PostProcessor<Node, Node>> postProcessors() {
+        return Arrays.<PostProcessor<Node, Node>>asList(
+                new ShortestPath()
         );
     }
 
