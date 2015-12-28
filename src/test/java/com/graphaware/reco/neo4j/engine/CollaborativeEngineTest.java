@@ -19,14 +19,16 @@ package com.graphaware.reco.neo4j.engine;
 import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.context.SimpleContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
+import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.result.Recommendation;
-import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
+import com.graphaware.reco.util.ScoreUtils;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
 import org.junit.Test;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.helpers.collection.MapUtil;
 
 import java.util.List;
 
@@ -75,34 +77,59 @@ public class CollaborativeEngineTest extends DatabaseIntegrationTest {
             Node christophe = getPersonByName("Christophe");
             List<Recommendation<Node>> skillsForChris = engine.recommend(christophe, new SimpleContext<Node, Node>(christophe, Config.UNLIMITED)).get(Integer.MAX_VALUE);
 
-            String expectedForVince = "Computed recommendations for Christophe: " +
-
-                    "(Java {total:28.0, skills:{value:28.0, " +
-                    "{value:6.0, person:Michal, skill:Cypher}, " +
-                    "{value:6.0, person:Michal, skill:Neo4j}, " +
-                    "{value:9.0, person:Vince, skill:Cypher}, " +
-                    "{value:7.0, person:Vince, skill:Neo4j}}}), " +
-
-                    "(Neo4j {total:16.0, skills:{value:16.0, " +
-                    "{value:8.0, person:Michal, skill:Cypher}, " +
-                    "{value:8.0, person:Vince, skill:Cypher}}}), " +
-
-                    "(Cypher {total:14.0, skills:{value:14.0, " +
-                    "{value:7.0, person:Vince, skill:Neo4j}, " +
-                    "{value:7.0, person:Michal, skill:Neo4j}}}), " +
-
-                    "(Git {total:12.0, skills:{value:12.0, " +
-                    "{value:7.0, person:Vince, skill:Cypher}, " +
-                    "{value:5.0, person:Vince, skill:Neo4j}}})";
-
-            assertEquals(expectedForVince, new RecommendationsRememberingLogger().toString(getPersonByName("Christophe"), skillsForChris, null));
-
+            assertEquals(4, skillsForChris.size());
+            ScoreUtils.assertScoresEqual(recommendedJava(), skillsForChris.get(0));
+            ScoreUtils.assertScoresEqual(recommendedNeo4j(), skillsForChris.get(1));
+            ScoreUtils.assertScoresEqual(recommendedCypher(), skillsForChris.get(2));
+            ScoreUtils.assertScoresEqual(recommendedGit(), skillsForChris.get(3));
             tx.success();
         }
     }
 
     private Node getPersonByName(String name) {
         return getDatabase().findNode(DynamicLabel.label("Person"), "name", name);
+    }
+
+    private Node getSkillByName(String name) {
+        return getDatabase().findNode(DynamicLabel.label("Skill"), "name", name);
+    }
+
+    private Recommendation<Node> recommendedJava() {
+        Recommendation<Node> java = new Recommendation<>(getSkillByName("Java"));
+        PartialScore skills = new PartialScore();
+        skills.add(6.0f, MapUtil.map("person","Michal","skill","Cypher"));
+        skills.add(6.0f, MapUtil.map("person","Michal","skill","Neo4j"));
+        skills.add(9.0f, MapUtil.map("person","Vince","skill","Cypher"));
+        skills.add(7.0f, MapUtil.map("person","Vince","skill","Neo4j"));
+        java.add("skills",skills);
+        return java;
+    }
+
+    private Recommendation<Node> recommendedNeo4j() {
+        Recommendation<Node> neo4j = new Recommendation<>(getSkillByName("Neo4j"));
+        PartialScore skills = new PartialScore();
+        skills.add(8.0f, MapUtil.map("person","Michal","skill","Cypher"));
+        skills.add(8.0f, MapUtil.map("person","Vince","skill","Cypher"));
+        neo4j.add("skills",skills);
+        return neo4j;
+    }
+
+    private Recommendation<Node> recommendedCypher() {
+        Recommendation<Node> cypher = new Recommendation<>(getSkillByName("Cypher"));
+        PartialScore skills = new PartialScore();
+        skills.add(7.0f, MapUtil.map("person","Michal","skill","Neo4j"));
+        skills.add(7.0f, MapUtil.map("person","Vince","skill","Neo4j"));
+        cypher.add("skills",skills);
+        return cypher;
+    }
+
+    private Recommendation<Node> recommendedGit() {
+        Recommendation<Node> git = new Recommendation<>(getSkillByName("Git"));
+        PartialScore skills = new PartialScore();
+        skills.add(7.0f, MapUtil.map("person","Vince","skill","Cypher"));
+        skills.add(5.0f, MapUtil.map("person","Vince","skill","Neo4j"));
+        git.add("skills",skills);
+        return git;
     }
 
 }

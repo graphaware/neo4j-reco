@@ -17,11 +17,13 @@
 package com.graphaware.reco.integration;
 
 import com.graphaware.reco.generic.config.SimpleConfig;
+import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.integration.log.RecommendationsRememberingLogger;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.reco.neo4j.module.RecommendationModule;
 import com.graphaware.reco.neo4j.module.RecommendationModuleConfiguration;
+import com.graphaware.reco.util.ScoreUtils;
 import com.graphaware.runtime.GraphAwareRuntime;
 import com.graphaware.runtime.GraphAwareRuntimeFactory;
 import com.graphaware.runtime.config.FluentRuntimeConfiguration;
@@ -32,6 +34,7 @@ import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.helpers.collection.MapUtil;
 
 import java.util.List;
 
@@ -91,19 +94,17 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(2));
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:43.99417, ageDifference:-5.527864, friendsInCommon:{value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}, {value:25.522034, ParetoTransformationOf:2.0}}, sameGender:10.0, sameLocation:{value:10.0, {value:10.0, location:London}}, shortestPath:2.0}), (Luanne {total:9.856705, ageDifference:-7.0093026, friendsInCommon:{value:14.866008, {value:13.866008, ParetoTransformationOf:1.0}, {value:1.0, name:Michal}}, shortestPath:2.0})";
-
-            assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
-            assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
+			assertEquals(2, recoForVince.size());
+			ScoreUtils.assertScoresEqual(recommendedAdam(), recoForVince.get(0));
+			ScoreUtils.assertScoresEqual(recommendedLuanne(), recoForVince.get(1));
 
             //verify Adam
 
             List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), new SimpleConfig(2));
 
-            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:43.99417, ageDifference:-5.527864, friendsInCommon:{value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}, {value:25.522034, ParetoTransformationOf:2.0}}, sameGender:10.0, sameLocation:{value:10.0, {value:10.0, location:London}}, shortestPath:2.0}), (Daniela {total:21.338144, ageDifference:-5.527864, friendsInCommon:{value:14.866008, {value:13.866008, ParetoTransformationOf:1.0}, {value:1.0, name:Michal}}, sameLocation:{value:10.0, {value:10.0, location:London}}, shortestPath:2.0})";
-
-            assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
-            assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
+			assertEquals(2, recoForAdam.size());
+			ScoreUtils.assertScoresEqual(recommendedVince(), recoForAdam.get(0));
+			ScoreUtils.assertScoresEqual(recommendedDaniela(), recoForAdam.get(1));
 
             //verify Luanne
 
@@ -134,10 +135,9 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(10, 1));
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon:{value:27.522034, {value:1.0, name:Jim}, {value:1.0, name:Michal}, {value:25.522034, ParetoTransformationOf:2.0}}, sameGender:10.0, sameLocation:{value:10.0, {value:10.0, location:London}}}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon:{value:14.866008, {value:13.866008, ParetoTransformationOf:1.0}, {value:1.0, name:Michal}}})";
-
-            assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
-            assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
+			assertEquals(2, recoForVince.size());
+			ScoreUtils.assertScoresEqual(recommendedAdam(), recoForVince.get(0));
+			ScoreUtils.assertScoresEqual(recommendedLuanne(), recoForVince.get(1));
 
             tx.success();
         }
@@ -169,41 +169,139 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 
             List<Recommendation<Node>> recoForVince = recommendationEngine.recommend(getPersonByName("Vince"), new SimpleConfig(2));
 
-            String expectedForVince = "Computed recommendations for Vince: (Adam {total:41.99417, ageDifference:-5.527864, friendsInCommon:27.522034, sameGender:10.0, sameLocation:10.0}), (Luanne {total:7.856705, ageDifference:-7.0093026, friendsInCommon:14.866008})";
-
-            assertEquals(expectedForVince, rememberingLogger.toString(getPersonByName("Vince"), recoForVince, null));
-            assertEquals(expectedForVince, rememberingLogger.get(getPersonByName("Vince")));
+			assertEquals(2, recoForVince.size());
+			ScoreUtils.assertScoresEqual(recommendedAdamPrecomputed(), recoForVince.get(0));
+			ScoreUtils.assertScoresEqual(recommendedLuannePrecomputed(), recoForVince.get(1));
 
             //verify Adam
 
             List<Recommendation<Node>> recoForAdam = recommendationEngine.recommend(getPersonByName("Adam"), new SimpleConfig(2));
 
-            String expectedForAdam = "Computed recommendations for Adam: (Vince {total:41.99417, ageDifference:-5.527864, friendsInCommon:27.522034, sameGender:10.0, sameLocation:10.0}), (Daniela {total:19.338144, ageDifference:-5.527864, friendsInCommon:14.866008, sameLocation:10.0})";
-
-            assertEquals(expectedForAdam, rememberingLogger.toString(getPersonByName("Adam"), recoForAdam, null));
-            assertEquals(expectedForAdam, rememberingLogger.get(getPersonByName("Adam")));
+			assertEquals(2, recoForAdam.size());
+			ScoreUtils.assertScoresEqual(recommendedVincePrecomputed(), recoForAdam.get(0));
+			ScoreUtils.assertScoresEqual(recommendedDanielaPrecomputed(), recoForAdam.get(1));
 
             //verify Luanne
 
             List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), new SimpleConfig(4));
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
-            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
+            assertEquals(23, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
 
             assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
-            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
+            assertEquals(13, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
             assertEquals("Jim", recoForLuanne.get(2).getItem().getProperty("name"));
-            assertEquals(8, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
+            assertEquals(10, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
             assertEquals("Vince", recoForLuanne.get(3).getItem().getProperty("name"));
-            assertEquals(8, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
+            assertEquals(9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
             tx.success();
         }
     }
 
-    private Node getPersonByName(String name) {
-        return getDatabase().findNode(DynamicLabel.label("Person"), "name", name);
-    }
+	private Node getPersonByName(String name) {
+		return getDatabase().findNode(DynamicLabel.label("Person"), "name", name);
+	}
+
+	private Recommendation<Node> recommendedAdam() {
+		Recommendation<Node> adam = new Recommendation<>(getPersonByName("Adam"));
+		adam.add("ageDifference", -5.527864f);
+		adam.add("sameGender", 10.0f);
+		adam.add("shortestPath", 2.0f);
+		PartialScore adamsFriends = new PartialScore();
+		adamsFriends.add(1.0f, MapUtil.map("name", "Jim"));
+		adamsFriends.add(1.0f, MapUtil.map("name", "Michal"));
+		adamsFriends.add(25.522034f, MapUtil.map("ParetoTransformationOf", 2.0f));
+		adam.add("friendsInCommon", adamsFriends);
+		PartialScore adamsLocation = new PartialScore();
+		adamsLocation.add(10.0f, MapUtil.map("location", "London"));
+		adam.add("sameLocation", adamsLocation);
+		return adam;
+	}
+
+	private Recommendation<Node> recommendedLuanne() {
+		Recommendation<Node> luanne = new Recommendation<>(getPersonByName("Luanne"));
+		luanne.add("ageDifference", -7.0093026f);
+		luanne.add("shortestPath", 2.0f);
+		PartialScore luannesFriends = new PartialScore();
+		luannesFriends.add(1.0f, MapUtil.map("name", "Michal"));
+		luannesFriends.add(13.866008f, MapUtil.map("ParetoTransformationOf", 1.0f));
+		luanne.add("friendsInCommon", luannesFriends);
+		return luanne;
+	}
+
+	private Recommendation<Node> recommendedVince() {
+		Recommendation<Node> vince = new Recommendation<>(getPersonByName("Vince"));
+		vince.add("ageDifference", -5.527864f);
+		vince.add("sameGender", 10.0f);
+		vince.add("shortestPath", 2.0f);
+		PartialScore vincesFriends = new PartialScore();
+		vincesFriends.add(1.0f, MapUtil.map("name", "Jim"));
+		vincesFriends.add(1.0f, MapUtil.map("name", "Michal"));
+		vincesFriends.add(25.522034f, MapUtil.map("ParetoTransformationOf", 2.0f));
+		vince.add("friendsInCommon", vincesFriends);
+		PartialScore vincesLocation = new PartialScore();
+		vincesLocation.add(10.0f, MapUtil.map("location", "London"));
+		vince.add("sameLocation", vincesLocation);
+		return vince;
+	}
+
+	private Recommendation<Node> recommendedDaniela() {
+		Recommendation<Node> daniela = new Recommendation<>(getPersonByName("Daniela"));
+		daniela.add("ageDifference", -5.527864f);
+		daniela.add("shortestPath", 2.0f);
+		PartialScore danielasFriends = new PartialScore();
+		danielasFriends.add(1.0f, MapUtil.map("name", "Michal"));
+		danielasFriends.add(13.866008f, MapUtil.map("ParetoTransformationOf", 1.0f));
+		daniela.add("friendsInCommon", danielasFriends);
+		PartialScore danielasLocation = new PartialScore();
+		danielasLocation.add(10.0f, MapUtil.map("location", "London"));
+		daniela.add("sameLocation", danielasLocation);
+		return daniela;
+	}
+
+	private Recommendation<Node> recommendedAdamPrecomputed() {
+		Recommendation<Node> adam = new Recommendation<>(getPersonByName("Adam"));
+		adam.add("ageDifference", -5.527864f);
+		adam.add("sameGender", 10.0f);
+
+		//since recommendations are pre-computed, the shortest path from Vince to Adam or Luanne is via the RECOMMEND relationship
+
+		adam.add("shortestPath", 1.0f);
+		adam.add("friendsInCommon", 27.522034f);
+		adam.add("sameLocation", 10.0f);
+		return adam;
+	}
+
+	private Recommendation<Node> recommendedLuannePrecomputed() {
+		Recommendation<Node> luanne = new Recommendation<>(getPersonByName("Luanne"));
+		luanne.add("ageDifference", -7.0093026f);
+
+		//since recommendations are pre-computed, the shortest path from Vince to Adam or Luanne is via the RECOMMEND relationship
+
+		luanne.add("shortestPath", 1.0f);
+		luanne.add("friendsInCommon", 14.866008f);
+		return luanne;
+	}
+
+	private Recommendation<Node> recommendedVincePrecomputed() {
+		Recommendation<Node> vince = new Recommendation<>(getPersonByName("Vince"));
+		vince.add("ageDifference", -5.527864f);
+		vince.add("sameGender", 10.0f);
+		vince.add("shortestPath", 1.0f);
+		vince.add("friendsInCommon", 27.522034f);
+		vince.add("sameLocation", 10.0f);
+		return vince;
+	}
+
+	private Recommendation<Node> recommendedDanielaPrecomputed() {
+		Recommendation<Node> daniela = new Recommendation<>(getPersonByName("Daniela"));
+		daniela.add("ageDifference", -5.527864f);
+		daniela.add("shortestPath", 1.0f);
+		daniela.add("friendsInCommon", 14.866008f);
+		daniela.add("sameLocation", 10.0f);
+		return daniela;
+	}
 }
