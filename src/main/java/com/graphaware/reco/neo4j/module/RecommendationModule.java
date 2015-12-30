@@ -19,8 +19,9 @@ package com.graphaware.reco.neo4j.module;
 import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.runtime.RuntimeRegistry;
+import com.graphaware.runtime.config.TimerDrivenModuleConfiguration;
 import com.graphaware.runtime.metadata.NodeBasedContext;
-import com.graphaware.runtime.module.BaseRuntimeModule;
+import com.graphaware.runtime.module.BaseTimerDrivenModule;
 import com.graphaware.runtime.module.TimerDrivenModule;
 import com.graphaware.runtime.walk.ContinuousNodeSelector;
 import com.graphaware.runtime.walk.NodeSelector;
@@ -35,7 +36,7 @@ import java.util.Map;
 /**
  * {@link TimerDrivenModule} that continuously pre-computes recommendations in the graph.
  */
-public class RecommendationModule extends BaseRuntimeModule implements TimerDrivenModule<NodeBasedContext> {
+public class RecommendationModule extends BaseTimerDrivenModule<NodeBasedContext> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RecommendationModule.class);
 
@@ -47,6 +48,14 @@ public class RecommendationModule extends BaseRuntimeModule implements TimerDriv
         super(moduleId);
         this.config = config;
         this.writer = RuntimeRegistry.getRuntime(database).getDatabaseWriter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TimerDrivenModuleConfiguration getConfiguration() {
+        return config;
     }
 
     /**

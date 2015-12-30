@@ -21,6 +21,7 @@ import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.engine.TopLevelRecommendationEngine;
 import com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine;
+import com.graphaware.runtime.config.BaseTimerDrivenModuleConfiguration;
 import com.graphaware.runtime.policy.all.IncludeAllBusinessNodes;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
@@ -29,7 +30,7 @@ import org.neo4j.graphdb.RelationshipType;
  * Configuration settings for the {@link RecommendationModule} with fluent interface.
  * //todo null checks in constructor
  */
-public class RecommendationModuleConfiguration {
+public class RecommendationModuleConfiguration extends BaseTimerDrivenModuleConfiguration<RecommendationModuleConfiguration> {
 
     public static final RelationshipType DEFAULT_RELATIONSHIP_TYPE = Neo4jPrecomputedEngine.RECOMMEND;
 
@@ -39,6 +40,14 @@ public class RecommendationModuleConfiguration {
     private final RelationshipType relationshipType;
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected RecommendationModuleConfiguration newInstance(InstanceRolePolicy instanceRolePolicy) {
+        return new RecommendationModuleConfiguration(instanceRolePolicy, getEngine(), getConfig(), getNodeInclusionPolicy(), getRelationshipType());
+    }
+
+    /**
      * Retrieves the default {@link RecommendationModuleConfiguration}, which computes 10 recommendations for all
      * (non-internal) nodes and connects them with the recommendations using a "RECOMMEND" relationship type.
      *
@@ -46,7 +55,7 @@ public class RecommendationModuleConfiguration {
      * @return The default {@link RecommendationModuleConfiguration}
      */
     public static RecommendationModuleConfiguration defaultConfiguration(TopLevelRecommendationEngine<Node, Node> engine) {
-        return new RecommendationModuleConfiguration(engine, new SimpleConfig(10), IncludeAllBusinessNodes.getInstance(), DEFAULT_RELATIONSHIP_TYPE);
+        return new RecommendationModuleConfiguration(InstanceRolePolicy.MASTER_ONLY, engine, new SimpleConfig(10), IncludeAllBusinessNodes.getInstance(), DEFAULT_RELATIONSHIP_TYPE);
     }
 
     /**
@@ -58,7 +67,7 @@ public class RecommendationModuleConfiguration {
      * @return new config.
      */
     public RecommendationModuleConfiguration with(NodeInclusionPolicy nodeInclusionPolicy) {
-        return new RecommendationModuleConfiguration(getEngine(), getConfig(), nodeInclusionPolicy, getRelationshipType());
+        return new RecommendationModuleConfiguration(getInstanceRolePolicy(), getEngine(), getConfig(), nodeInclusionPolicy, getRelationshipType());
     }
 
     /**
@@ -68,7 +77,7 @@ public class RecommendationModuleConfiguration {
      * @return new config.
      */
     public RecommendationModuleConfiguration withConfig(Config config) {
-        return new RecommendationModuleConfiguration(getEngine(), config, getNodeInclusionPolicy(), getRelationshipType());
+        return new RecommendationModuleConfiguration(getInstanceRolePolicy(), getEngine(), config, getNodeInclusionPolicy(), getRelationshipType());
     }
 
     /**
@@ -78,18 +87,20 @@ public class RecommendationModuleConfiguration {
      * @return new config.
      */
     public RecommendationModuleConfiguration withRelationshipType(RelationshipType type) {
-        return new RecommendationModuleConfiguration(getEngine(), getConfig(), getNodeInclusionPolicy(), type);
+        return new RecommendationModuleConfiguration(getInstanceRolePolicy(), getEngine(), getConfig(), getNodeInclusionPolicy(), type);
     }
 
     /**
      * Constructs a new {@link RecommendationModuleConfiguration} based on the given inclusion policy.
      *
+     * @param instanceRolePolicy  specifies which role a machine must have in order to run the module with this configuration. Must not be <code>null</code>.
      * @param engine              the recommendation engine that will be used to compute recommendations.
      * @param config              configuration of the computing process.
      * @param nodeInclusionPolicy The {@link NodeInclusionPolicy} to use for selecting nodes to include in the rank algorithm.
      * @param relationshipType    relationship type of the relationship between the subject and the pre-computed recommendations.
      */
-    private RecommendationModuleConfiguration(TopLevelRecommendationEngine<Node, Node> engine, Config config, NodeInclusionPolicy nodeInclusionPolicy, RelationshipType relationshipType) {
+    private RecommendationModuleConfiguration(InstanceRolePolicy instanceRolePolicy, TopLevelRecommendationEngine<Node, Node> engine, Config config, NodeInclusionPolicy nodeInclusionPolicy, RelationshipType relationshipType) {
+        super(instanceRolePolicy);
         this.engine = engine;
         this.config = config;
         this.nodeInclusionPolicy = nodeInclusionPolicy;

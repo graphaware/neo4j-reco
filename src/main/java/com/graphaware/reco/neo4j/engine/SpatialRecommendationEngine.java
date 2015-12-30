@@ -24,7 +24,6 @@ import com.graphaware.common.util.IterableUtils;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine;
 import com.graphaware.reco.generic.result.PartialScore;
-import org.apache.commons.collections4.map.HashedMap;
 import org.neo4j.gis.spatial.indexprovider.LayerNodeIndex;
 import org.neo4j.gis.spatial.indexprovider.SpatialIndexProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -53,7 +52,7 @@ public abstract class SpatialRecommendationEngine extends SingleScoreRecommendat
 			spatialIndex = getSpatialIndex(input.getGraphDatabase());
 		}
 
-		Map<Node, PartialScore> results = new HashedMap<>();
+		Map<Node, PartialScore> results = new HashMap<>();
 		double inputLatitude = (double) input.getProperty(LAT);
 		double inputLongitude = (double) input.getProperty(LON);
 
