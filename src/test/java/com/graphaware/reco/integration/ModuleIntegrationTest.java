@@ -192,7 +192,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             assertEquals(13, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
             assertEquals("Jim", recoForLuanne.get(2).getItem().getProperty("name"));
-            assertEquals(10, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
+            assertEquals(9, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
             assertEquals("Vince", recoForLuanne.get(3).getItem().getProperty("name"));
             assertEquals(9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
