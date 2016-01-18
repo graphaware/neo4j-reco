@@ -111,17 +111,17 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             List<Recommendation<Node>> recoForLuanne = recommendationEngine.recommend(getPersonByName("Luanne"), new SimpleConfig(4));
 
             assertEquals("Daniela", recoForLuanne.get(0).getItem().getProperty("name"));
-            assertEquals(24, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
-            assertEquals(2, recoForLuanne.get(0).getScore().get("shortestPath"), 0.5);
+            assertEquals(22, recoForLuanne.get(0).getScore().getTotalScore(), 0.5);
+            assertEquals(0.5, recoForLuanne.get(0).getScore().get("shortestPath"), 0.5);
 
             assertEquals("Adam", recoForLuanne.get(1).getItem().getProperty("name"));
-            assertEquals(14, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
+            assertEquals(12, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
             assertEquals("Jim", recoForLuanne.get(2).getItem().getProperty("name"));
-            assertEquals(10, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
+            assertEquals(9, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
             assertEquals("Vince", recoForLuanne.get(3).getItem().getProperty("name"));
-            assertEquals(10, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
+            assertEquals(8.5, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
 
             tx.success();
         }
@@ -192,7 +192,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
             assertEquals(13, recoForLuanne.get(1).getScore().getTotalScore(), 0.5);
 
             assertEquals("Jim", recoForLuanne.get(2).getItem().getProperty("name"));
-            assertEquals(10, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
+            assertEquals(9, recoForLuanne.get(2).getScore().getTotalScore(), 0.5);
 
             assertEquals("Vince", recoForLuanne.get(3).getItem().getProperty("name"));
             assertEquals(9, recoForLuanne.get(3).getScore().getTotalScore(), 0.5);
@@ -209,7 +209,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 		Recommendation<Node> adam = new Recommendation<>(getPersonByName("Adam"));
 		adam.add("ageDifference", -5.527864f);
 		adam.add("sameGender", 10.0f);
-		adam.add("shortestPath", 2.0f);
+		adam.add("shortestPath", 0.5f);
 		PartialScore adamsFriends = new PartialScore();
 		adamsFriends.add(1.0f, MapUtil.map("name", "Jim"));
 		adamsFriends.add(1.0f, MapUtil.map("name", "Michal"));
@@ -224,7 +224,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 	private Recommendation<Node> recommendedLuanne() {
 		Recommendation<Node> luanne = new Recommendation<>(getPersonByName("Luanne"));
 		luanne.add("ageDifference", -7.0093026f);
-		luanne.add("shortestPath", 2.0f);
+		luanne.add("shortestPath", 0.5f);
 		PartialScore luannesFriends = new PartialScore();
 		luannesFriends.add(1.0f, MapUtil.map("name", "Michal"));
 		luannesFriends.add(13.866008f, MapUtil.map("ParetoTransformationOf", 1.0f));
@@ -236,7 +236,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 		Recommendation<Node> vince = new Recommendation<>(getPersonByName("Vince"));
 		vince.add("ageDifference", -5.527864f);
 		vince.add("sameGender", 10.0f);
-		vince.add("shortestPath", 2.0f);
+		vince.add("shortestPath", 0.5f);
 		PartialScore vincesFriends = new PartialScore();
 		vincesFriends.add(1.0f, MapUtil.map("name", "Jim"));
 		vincesFriends.add(1.0f, MapUtil.map("name", "Michal"));
@@ -251,7 +251,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
 	private Recommendation<Node> recommendedDaniela() {
 		Recommendation<Node> daniela = new Recommendation<>(getPersonByName("Daniela"));
 		daniela.add("ageDifference", -5.527864f);
-		daniela.add("shortestPath", 2.0f);
+		daniela.add("shortestPath", 0.5f);
 		PartialScore danielasFriends = new PartialScore();
 		danielasFriends.add(1.0f, MapUtil.map("name", "Michal"));
 		danielasFriends.add(13.866008f, MapUtil.map("ParetoTransformationOf", 1.0f));

@@ -45,7 +45,7 @@ public class ShortestPath extends BasePostProcessor<Node, Node> {
     protected void doPostProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
         for (Recommendation<Node> recommendation : recommendations.get()) {
             Path path = finder.findSinglePath(input, recommendation.getItem());
-            recommendation.add(name(), path.length());
+            recommendation.add(name(), (1f/path.length()));
         }
     }
 }
