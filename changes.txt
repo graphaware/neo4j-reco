@@ -1,3 +1,7 @@
+3.0.1.38.10:
+    - upgrade to Neo4j 3.0.1
+    - temporarily remove spatial libraries until they are release for Neo4j 3.0
+
 2.3.3.37.10:
     - no changes
 
