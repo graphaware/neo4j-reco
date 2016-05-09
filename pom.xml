@@ -96,12 +96,12 @@
             <type>test-jar</type>
         </dependency>
 
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-spatial</artifactId>
-            <version>0.15-neo4j-2.3.0</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.neo4j</groupId>-->
+            <!--<artifactId>neo4j-spatial</artifactId>-->
+            <!--<version>0.15-neo4j-2.3.0</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.graphaware.neo4j</groupId>
@@ -132,28 +132,28 @@
 
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>neo4j-contrib-releases</id>
-            <url>https://raw.github.com/neo4j-contrib/m2/master/releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>neo4j-contrib-snapshots</id>
-            <url>https://raw.github.com/neo4j-contrib/m2/master/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>neo4j-contrib-releases</id>-->
+            <!--<url>https://raw.github.com/neo4j-contrib/m2/master/releases</url>-->
+            <!--<releases>-->
+                <!--<enabled>true</enabled>-->
+            <!--</releases>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+        <!--<repository>-->
+            <!--<id>neo4j-contrib-snapshots</id>-->
+            <!--<url>https://raw.github.com/neo4j-contrib/m2/master/snapshots</url>-->
+            <!--<releases>-->
+                <!--<enabled>false</enabled>-->
+            <!--</releases>-->
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+    <!--</repositories>-->
 
 
 </project>
