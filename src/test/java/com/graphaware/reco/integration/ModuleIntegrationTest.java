@@ -28,19 +28,16 @@ import com.graphaware.runtime.GraphAwareRuntime;
 import com.graphaware.runtime.GraphAwareRuntimeFactory;
 import com.graphaware.runtime.config.FluentRuntimeConfiguration;
 import com.graphaware.runtime.schedule.FixedDelayTimingStrategy;
-import com.graphaware.test.integration.WrappingServerIntegrationTest;
+import com.graphaware.test.integration.GraphAwareIntegrationTest;
 import org.junit.Test;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 import org.neo4j.helpers.collection.MapUtil;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
+public class ModuleIntegrationTest extends GraphAwareIntegrationTest {
 
     private Neo4jTopLevelDelegatingRecommendationEngine recommendationEngine;
     private RecommendationsRememberingLogger rememberingLogger = new RecommendationsRememberingLogger();
@@ -202,7 +199,7 @@ public class ModuleIntegrationTest extends WrappingServerIntegrationTest {
     }
 
 	private Node getPersonByName(String name) {
-		return getDatabase().findNode(DynamicLabel.label("Person"), "name", name);
+		return getDatabase().findNode(Label.label("Person"), "name", name);
 	}
 
 	private Recommendation<Node> recommendedAdam() {

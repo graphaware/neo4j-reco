@@ -24,11 +24,9 @@ import com.graphaware.reco.generic.context.SimpleContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
+import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 
 import java.util.List;
 
@@ -38,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test for {@link RandomRecommendations}.
  */
-public class RandomRecommendationsTest extends DatabaseIntegrationTest {
+public class RandomRecommendationsTest extends EmbeddedDatabaseIntegrationTest {
 
     @Override
     protected void populateDatabase(GraphDatabaseService database) {
@@ -92,7 +90,7 @@ public class RandomRecommendationsTest extends DatabaseIntegrationTest {
         List<Recommendation<Node>> result;
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
 
             assertFalse(result.isEmpty());
@@ -119,7 +117,7 @@ public class RandomRecommendationsTest extends DatabaseIntegrationTest {
         List<Recommendation<Node>> result;
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
 
             assertTrue(result.isEmpty());

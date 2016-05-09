@@ -21,6 +21,7 @@ import com.graphaware.reco.generic.context.SimpleContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
+import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 
@@ -31,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Test for {@link CypherEngine}.
  */
-public class CypherEngineTest extends DatabaseIntegrationTest {
+public class CypherEngineTest extends EmbeddedDatabaseIntegrationTest {
 
     @Override
     protected void populateDatabase(GraphDatabaseService database) {
@@ -75,7 +76,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
         List<Recommendation<Node>> result;
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
 
             assertEquals(2, result.size());
@@ -97,7 +98,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
         List<Recommendation<Node>> result;
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(1))).get(Integer.MAX_VALUE);
 
             assertEquals(1, result.size());
@@ -137,7 +138,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
         List<Recommendation<Node>> result;
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(1))).get(Integer.MAX_VALUE);
 
             assertEquals(1, result.size());
@@ -156,7 +157,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
         List<Recommendation<Node>> result;
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
 
             assertEquals(2, result.size());
@@ -175,7 +176,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
         RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query);
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
         }
     }
@@ -186,7 +187,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
         RecommendationEngine<Node, Node> engine = new CypherEngine("test engine", query);
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
         }
     }
@@ -199,7 +200,7 @@ public class CypherEngineTest extends DatabaseIntegrationTest {
         List<Recommendation<Node>> result;
 
         try (Transaction tx = getDatabase().beginTx()) {
-            Node vince = getDatabase().findNode(DynamicLabel.label("Person"), "name", "Vince");
+            Node vince = getDatabase().findNode(Label.label("Person"), "name", "Vince");
             result = engine.recommend(vince, new SimpleContext<Node, Node>(vince, new SimpleConfig(10))).get(Integer.MAX_VALUE);
 
             assertEquals(0, result.size());

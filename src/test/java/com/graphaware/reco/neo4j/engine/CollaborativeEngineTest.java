@@ -23,8 +23,9 @@ import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.reco.util.ScoreUtils;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
+import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
-import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
@@ -34,7 +35,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class CollaborativeEngineTest extends DatabaseIntegrationTest {
+public class CollaborativeEngineTest extends EmbeddedDatabaseIntegrationTest {
 
     private RecommendationEngine<Node, Node> engine = new SkillsToLearn();
 
@@ -87,11 +88,11 @@ public class CollaborativeEngineTest extends DatabaseIntegrationTest {
     }
 
     private Node getPersonByName(String name) {
-        return getDatabase().findNode(DynamicLabel.label("Person"), "name", name);
+        return getDatabase().findNode(Label.label("Person"), "name", name);
     }
 
     private Node getSkillByName(String name) {
-        return getDatabase().findNode(DynamicLabel.label("Skill"), "name", name);
+        return getDatabase().findNode(Label.label("Skill"), "name", name);
     }
 
     private Recommendation<Node> recommendedJava() {

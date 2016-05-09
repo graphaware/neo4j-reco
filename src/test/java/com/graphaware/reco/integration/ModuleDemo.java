@@ -24,11 +24,12 @@ import com.graphaware.module.algo.generator.config.BasicGeneratorConfig;
 import com.graphaware.module.algo.generator.node.SocialNetworkNodeCreator;
 import com.graphaware.module.algo.generator.relationship.BarabasiAlbertRelationshipGenerator;
 import com.graphaware.module.algo.generator.relationship.SocialNetworkRelationshipCreator;
-import com.graphaware.test.integration.WrappingServerIntegrationTest;
+import com.graphaware.test.integration.GraphAwareIntegrationTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 import org.neo4j.helpers.collection.Iterables;
+import org.neo4j.helpers.collection.Iterators;
 import org.neo4j.test.TestGraphDatabaseFactory;
 
 import java.util.Arrays;
@@ -36,9 +37,9 @@ import java.util.Arrays;
 import static com.graphaware.reco.neo4j.engine.Neo4jPrecomputedEngine.RECOMMEND;
 import static org.neo4j.graphdb.Direction.OUTGOING;
 import static org.neo4j.graphdb.DynamicLabel.label;
-import static org.neo4j.helpers.collection.IteratorUtil.asIterable;
+import static org.neo4j.helpers.collection.Iterators.*;
 
-public class ModuleDemo extends WrappingServerIntegrationTest {
+public class ModuleDemo extends GraphAwareIntegrationTest {
 
     @Test
     @Ignore
@@ -54,10 +55,8 @@ public class ModuleDemo extends WrappingServerIntegrationTest {
     }
 
     @Override
-    protected GraphDatabaseService createDatabase() {
-        return  new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder()
-                .loadPropertiesFromFile("src/test/resources/demo-neo4j.properties")
-                .newGraphDatabase();
+    protected String configFile() {
+        return "demo-neo4j.conf";
     }
 
     @Override
@@ -71,7 +70,7 @@ public class ModuleDemo extends WrappingServerIntegrationTest {
     }
 
     private void printRecommendations(Node node) {
-        StringBuilder s = new StringBuilder(node.getProperty("name").toString()).append("(").append(Arrays.toString(Iterables.toArray(Label.class, node.getLabels()))).append("):");
+        StringBuilder s = new StringBuilder(node.getProperty("name").toString()).append("(").append(Arrays.toString(Iterables.asArray(Label.class, node.getLabels()))).append("):");
         for (Relationship reco : node.getRelationships(RECOMMEND, OUTGOING)) {
             s.append(" ").append(reco.getEndNode().getProperty("name").toString()).append("(");
             s.append(PropertyContainerUtils.propertiesToString(reco));

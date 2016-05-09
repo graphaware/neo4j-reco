@@ -21,16 +21,17 @@ import com.graphaware.reco.generic.context.SimpleContext;
 import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.transform.ScoreTransformer;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
+import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.neo4j.graphdb.Direction.*;
 
-public class InverseDegreeTransformerTest extends DatabaseIntegrationTest {
+public class InverseDegreeTransformerTest extends EmbeddedDatabaseIntegrationTest {
 
-    private static final RelationshipType FRIEND_OF = DynamicRelationshipType.withName("FRIEND_OF");
-    private final ScoreTransformer<Node> transformer = new InverseDegreeTransformer(DynamicRelationshipType.withName("FRIEND_OF"), BOTH);
+    private static final RelationshipType FRIEND_OF = RelationshipType.withName("FRIEND_OF");
+    private final ScoreTransformer<Node> transformer = new InverseDegreeTransformer(RelationshipType.withName("FRIEND_OF"), BOTH);
 
     @Override
     protected void populateDatabase(GraphDatabaseService database) {
@@ -88,8 +89,8 @@ public class InverseDegreeTransformerTest extends DatabaseIntegrationTest {
     private PartialScore getPartialScore(String reco, String input, RelationshipType relType, Direction direction) {
         PartialScore result;
         try (Transaction tx = getDatabase().beginTx()) {
-            Node r = getDatabase().findNode(DynamicLabel.label("Person"), "name", reco);
-            Node i = getDatabase().findNode(DynamicLabel.label("Person"), "name", input);
+            Node r = getDatabase().findNode(Label.label("Person"), "name", reco);
+            Node i = getDatabase().findNode(Label.label("Person"), "name", input);
             result = new InverseDegreeTransformer(relType, direction).transform(r, new PartialScore(1), new SimpleContext<Node, Object>(i, new SimpleConfig(2)));
             tx.success();
         }

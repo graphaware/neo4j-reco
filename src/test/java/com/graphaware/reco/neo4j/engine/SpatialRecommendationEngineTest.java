@@ -25,6 +25,7 @@ import com.graphaware.reco.generic.context.SimpleContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
+import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
 import org.neo4j.gis.spatial.indexprovider.SpatialIndexProvider;
 import org.neo4j.graphdb.*;
@@ -34,7 +35,7 @@ import org.neo4j.graphdb.index.IndexManager;
 /**
  * Test for {@link SpatialRecommendationEngine}.
  */
-public class SpatialRecommendationEngineTest extends DatabaseIntegrationTest{
+public class SpatialRecommendationEngineTest extends EmbeddedDatabaseIntegrationTest {
 
 	@Override
 	protected void populateDatabase(GraphDatabaseService database) {
@@ -57,9 +58,9 @@ public class SpatialRecommendationEngineTest extends DatabaseIntegrationTest{
 						"(glad:Pub {name:'The Gladstone Arms', lat:51.5004457, lon:-0.0963616})");
 
 		try (Transaction tx = database.beginTx()) {
-			addPersonsToSpatialLater(index, database, DynamicLabel.label("Person"), "Michal", "Daniela", "Vince", "Adam", "Luanne", "Christophe");
-			addPersonsToSpatialLater(index, database, DynamicLabel.label("Station"), "Borough Station");
-			addPersonsToSpatialLater(index, database, DynamicLabel.label("Pub"), "The Gladstone Arms");
+			addPersonsToSpatialLater(index, database, Label.label("Person"), "Michal", "Daniela", "Vince", "Adam", "Luanne", "Christophe");
+			addPersonsToSpatialLater(index, database, Label.label("Station"), "Borough Station");
+			addPersonsToSpatialLater(index, database, Label.label("Pub"), "The Gladstone Arms");
 			tx.success();
 		}
 	}
@@ -97,7 +98,7 @@ public class SpatialRecommendationEngineTest extends DatabaseIntegrationTest{
 	}
 
 	private Node getPersonByName(String name) {
-		return getDatabase().findNode(DynamicLabel.label("Person"), "name", name);
+		return getDatabase().findNode(Label.label("Person"), "name", name);
 	}
 
 	private static void addPersonsToSpatialLater(Index spatialIndex, GraphDatabaseService database, Label label, String... names) {

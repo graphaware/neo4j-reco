@@ -24,18 +24,16 @@ import com.graphaware.reco.integration.engine.FriendsInCommon;
 import com.graphaware.reco.integration.engine.RandomPeople;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
+import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class TimeLimitIntegrationTest extends DatabaseIntegrationTest {
+public class TimeLimitIntegrationTest extends EmbeddedDatabaseIntegrationTest {
 
     private Neo4jTopLevelDelegatingRecommendationEngine recommendationEngine;
 
@@ -113,6 +111,6 @@ public class TimeLimitIntegrationTest extends DatabaseIntegrationTest {
     }
 
     private Node getPersonByName(String name) {
-        return getDatabase().findNode(DynamicLabel.label("Person"), "name", name);
+        return getDatabase().findNode(Label.label("Person"), "name", name);
     }
 }

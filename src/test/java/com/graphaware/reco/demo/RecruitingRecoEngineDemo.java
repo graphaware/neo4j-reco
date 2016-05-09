@@ -20,7 +20,7 @@ import com.graphaware.reco.demo.web.RecommendationController;
 import com.graphaware.reco.demo.web.RecommendationVO;
 import com.graphaware.test.data.DatabasePopulator;
 import com.graphaware.test.data.GraphgenPopulator;
-import com.graphaware.test.integration.GraphAwareApiTest;
+import com.graphaware.test.integration.GraphAwareIntegrationTest;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  * A demonstration of an end-to-end recommendation engine. Mostly for showcasing and documenting functionality rather
  * than functional testing.
  */
-public class RecruitingRecoEngineDemo extends GraphAwareApiTest {
+public class RecruitingRecoEngineDemo extends GraphAwareIntegrationTest {
 
     @Override
     protected DatabasePopulator databasePopulator() {

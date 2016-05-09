@@ -19,6 +19,7 @@ package com.graphaware.reco.neo4j.filter;
 import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.filter.BlacklistBuilder;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
+import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 
@@ -30,11 +31,11 @@ import static org.junit.Assert.assertEquals;
 /**
  * Test for {@link com.graphaware.reco.neo4j.filter.CypherBlacklistBuilder}.
  */
-public class CypherBlacklistBuilderTest extends DatabaseIntegrationTest {
+public class CypherBlacklistBuilderTest extends EmbeddedDatabaseIntegrationTest {
 
-    private static final Label PERSON = DynamicLabel.label("Person");
-    private static final Label COMPANY = DynamicLabel.label("Company");
-    private static final DynamicRelationshipType WORKS_FOR = DynamicRelationshipType.withName("WORKS_FOR");
+    private static final Label PERSON = Label.label("Person");
+    private static final Label COMPANY = Label.label("Company");
+    private static final RelationshipType WORKS_FOR = RelationshipType.withName("WORKS_FOR");
 
     @Test
     public void shouldBlacklistMatchingNodes() {

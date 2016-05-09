@@ -25,7 +25,8 @@ import org.neo4j.graphdb.Node;
 
 import java.util.Arrays;
 
-import static org.neo4j.helpers.collection.Iterables.toArray;
+import static org.neo4j.helpers.collection.Iterables.asArray;
+
 
 /**
  * Rewards same gender (exactly the same labels) by 10 points.
@@ -45,10 +46,10 @@ public class RewardSameLabels extends BasePostProcessor<Node, Node> {
      */
     @Override
     protected void doPostProcess(Recommendations<Node> recommendations, Node input, Context<Node, Node> context) {
-        Label[] inputLabels = toArray(Label.class, input.getLabels());
+        Label[] inputLabels = asArray(Label.class, input.getLabels());
 
         for (Recommendation<Node> recommendation : recommendations.get()) {
-            if (Arrays.equals(inputLabels, toArray(Label.class, recommendation.getItem().getLabels()))) {
+            if (Arrays.equals(inputLabels, asArray(Label.class, recommendation.getItem().getLabels()))) {
                 recommendation.add(name(), 10);
             }
         }

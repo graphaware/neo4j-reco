@@ -23,12 +23,11 @@ import com.graphaware.reco.generic.post.PostProcessor;
 import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.result.Recommendations;
 import com.graphaware.test.integration.DatabaseIntegrationTest;
+import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 import org.neo4j.helpers.collection.Iterables;
+import org.neo4j.helpers.collection.Iterators;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,12 +35,13 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.neo4j.helpers.collection.Iterators.*;
 
 /**
  * Test for {@link com.graphaware.reco.generic.engine.DelegatingRecommendationEngine}, especially the optimisation
  * part that takes place before post processing.
  */
-public class DelegatingRecommendationEngineTest extends DatabaseIntegrationTest {
+public class DelegatingRecommendationEngineTest extends EmbeddedDatabaseIntegrationTest {
 
     private DelegatingRecommendationEngine<Node, Node> engine;
     private Node mockNode;
@@ -211,7 +211,7 @@ public class DelegatingRecommendationEngineTest extends DatabaseIntegrationTest 
         @Override
         protected Map<Node, PartialScore> doRecommendSingle(Node input, Context<Node, Node> context) {
             Map<Node, PartialScore> result = new HashMap<>();
-            for (Node node : Iterables.asResourceIterable(input.getGraphDatabase().findNodes(DynamicLabel.label("Person")))) {
+            for (Node node : asResourceIterable(input.getGraphDatabase().findNodes(Label.label("Person")))) {
                 result.put(node, new PartialScore(Float.valueOf(node.getProperty("n").toString())));
             }
             return result;
