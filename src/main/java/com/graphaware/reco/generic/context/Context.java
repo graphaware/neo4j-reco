@@ -47,7 +47,7 @@ public interface Context<OUT, IN> {
     <C extends Config> C config(Class<C> clazz);
 
     /**
-     * @return <code>true</code> iff there's still time left for the computation, i.e. iff less time has elapsed so far
+     * @return <code>true</code> if there's still time left for the computation, i.e. if less time has elapsed so far
      * than returned by {@link Config#maxTime()}.
      */
     boolean timeLeft();
@@ -58,7 +58,7 @@ public interface Context<OUT, IN> {
      * @param recommendation produced. Must not be <code>null</code>.
      * @param task           name of the task that is asking the "allow?" question. Must not be <code>null</code>.
      *                       Used for statistics and logging.
-     * @return true iff the recommendation is allowed for the given input.
+     * @return true if the recommendation is allowed for the given input.
      */
     boolean allow(OUT recommendation, String task);
 
