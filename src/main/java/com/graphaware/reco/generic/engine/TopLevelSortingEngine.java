@@ -22,7 +22,7 @@ import com.graphaware.reco.generic.input.SortingInput;
  * A {@link TopLevelRecommendationEngine} that uses the recommendation logic for sorting recommendations coming from an
  * external source, e.g. ElasticSearch, Solr, etc.
  *
- * It takes and instance of {@link SortingInput} as input. The input already contains pre-produced recommendations. The
+ * It takes an instance of {@link SortingInput} as input. The input already contains pre-produced recommendations. The
  * job of this engine is to sort them, rather than discover new ones.
  *
  * {@link com.graphaware.reco.generic.filter.BlacklistBuilder}s, {@link com.graphaware.reco.generic.filter.Filter}s,
