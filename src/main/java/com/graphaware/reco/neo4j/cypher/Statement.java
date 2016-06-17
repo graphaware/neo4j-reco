@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.graphaware.reco.generic.cypher;
+package com.graphaware.reco.neo4j.cypher;
 
 import java.util.HashMap;
 import java.util.Map;

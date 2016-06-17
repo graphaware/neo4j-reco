@@ -144,7 +144,7 @@ public class ModuleIntegrationTest extends GraphAwareIntegrationTest {
     public void shouldRecommendPreComputed() throws InterruptedException {
         GraphAwareRuntime runtime = GraphAwareRuntimeFactory.createRuntime(
                 getDatabase(),
-                FluentRuntimeConfiguration.defaultConfiguration()
+                FluentRuntimeConfiguration.defaultConfiguration(getDatabase())
                         .withTimingStrategy(
                                 FixedDelayTimingStrategy.getInstance()
                                         .withDelay(100)

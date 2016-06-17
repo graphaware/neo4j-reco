@@ -16,14 +16,14 @@
 
 package com.graphaware.reco.neo4j.transform;
 
+import com.graphaware.common.log.LoggerFactory;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.transform.ScoreTransformer;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.neo4j.logging.Log;
 
 import java.util.Collections;
 
@@ -33,7 +33,7 @@ import java.util.Collections;
  */
 public class InverseDegreeTransformer implements ScoreTransformer<Node> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InverseDegreeTransformer.class);
+    private static final Log LOG = LoggerFactory.getLogger(InverseDegreeTransformer.class);
 
     private final RelationshipType relationshipType;
     private final Direction direction;

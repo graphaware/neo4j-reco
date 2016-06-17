@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.neo4j.module;
 
+import com.graphaware.common.log.LoggerFactory;
 import com.graphaware.common.policy.NodeInclusionPolicy;
 import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
@@ -23,8 +24,7 @@ import com.graphaware.runtime.config.function.StringToNodeInclusionPolicy;
 import com.graphaware.runtime.module.RuntimeModuleBootstrapper;
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.neo4j.logging.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,7 +37,7 @@ import static com.graphaware.reco.neo4j.module.RecommendationModuleConfiguration
  */
 public class RecommendationModuleBootstrapper implements RuntimeModuleBootstrapper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RecommendationModuleBootstrapper.class);
+    private static final Log LOG = LoggerFactory.getLogger(RecommendationModuleBootstrapper.class);
 
     private static final String ENGINE = "engine";
     private static final String NODE = "node";
@@ -49,27 +49,27 @@ public class RecommendationModuleBootstrapper implements RuntimeModuleBootstrapp
      */
     @Override
     public RecommendationModule bootstrapModule(String moduleId, Map<String, String> config, GraphDatabaseService database) {
-        LOG.info("Constructing new recommendation module with ID: {}", moduleId);
-        LOG.trace("Configuration parameter map is: {}", config);
+        LOG.info("Constructing new recommendation module with ID: %s", moduleId);
+        LOG.debug("Configuration parameter map is: %s", config);
 
         RecommendationModuleConfiguration configuration = defaultConfiguration(createEngine(config));
 
         if (config.get(NODE) != null) {
             NodeInclusionPolicy policy = StringToNodeInclusionPolicy.getInstance().apply(config.get(NODE));
-            LOG.info("Node Inclusion Policy set to {}", policy);
+            LOG.info("Node Inclusion Policy set to %s", policy);
             configuration = configuration.with(policy);
         }
 
         //todo allow for an FQN of config class
         if (config.get(MAX_RECOMMENDATIONS) != null) {
             int maxRecommendations = Integer.valueOf(config.get(MAX_RECOMMENDATIONS));
-            LOG.info("Max recommendations set to {}", maxRecommendations);
+            LOG.info("Max recommendations set to %s", maxRecommendations);
             configuration = configuration.withConfig(new SimpleConfig(maxRecommendations));
         }
 
         if (config.get(REL_TYPE) != null) {
             String type = config.get(REL_TYPE);
-            LOG.info("Relationship type set to {}", type);
+            LOG.info("Relationship type set to %s", type);
             configuration = configuration.withRelationshipType(DynamicRelationshipType.withName(type));
         }
 

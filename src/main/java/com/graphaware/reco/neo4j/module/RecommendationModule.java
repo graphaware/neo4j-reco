@@ -16,6 +16,7 @@
 
 package com.graphaware.reco.neo4j.module;
 
+import com.graphaware.common.log.LoggerFactory;
 import com.graphaware.reco.generic.result.PartialScore;
 import com.graphaware.reco.generic.result.Recommendation;
 import com.graphaware.runtime.RuntimeRegistry;
@@ -27,8 +28,7 @@ import com.graphaware.runtime.walk.ContinuousNodeSelector;
 import com.graphaware.runtime.walk.NodeSelector;
 import com.graphaware.writer.neo4j.Neo4jWriter;
 import org.neo4j.graphdb.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.neo4j.logging.Log;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class RecommendationModule extends BaseTimerDrivenModule<NodeBasedContext> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RecommendationModule.class);
+    private static final Log LOG = LoggerFactory.getLogger(RecommendationModule.class);
 
     private final RecommendationModuleConfiguration config;
     private NodeSelector selector;
@@ -123,7 +123,7 @@ public class RecommendationModule extends BaseTimerDrivenModule<NodeBasedContext
         try {
             return lastContext.find(database);
         } catch (NotFoundException e) {
-            LOG.warn("Node referenced in last context with ID: {} was not found in the database.  Will start from a random node.");
+            LOG.warn("Node referenced in last context with ID: %s was not found in the database.  Will start from a random node.");
             return null;
         }
     }
