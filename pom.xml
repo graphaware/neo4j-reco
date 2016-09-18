@@ -18,12 +18,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>recommendation-engine</artifactId>
-    <version>3.0.4.43.11-SNAPSHOT</version>
+    <version>3.0.6.43.10-SNAPSHOT</version>
 
     <parent>
         <groupId>com.graphaware.neo4j</groupId>
         <artifactId>module-parent</artifactId>
-        <version>3.0.4.43</version>
+        <version>3.0.6.43</version>
     </parent>
 
     <name>GraphAware Neo4j Recommendation Engine</name>
@@ -117,13 +117,6 @@
         <dependency>
             <groupId>com.graphaware.neo4j</groupId>
             <artifactId>runtime</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.graphaware.neo4j</groupId>
-            <version>3.0.4.43.5</version>
-            <artifactId>algorithms</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
