@@ -23,7 +23,7 @@
     <parent>
         <groupId>com.graphaware.neo4j</groupId>
         <artifactId>module-parent</artifactId>
-        <version>3.0.6.43</version>
+        <version>3.0.7.44</version>
     </parent>
 
     <name>GraphAware Neo4j Recommendation Engine</name>
