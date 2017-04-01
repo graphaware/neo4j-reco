@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>recommendation-engine</artifactId>
-    <version>3.1.3.45.11</version>
+    <version>3.1.3.45.12-SNAPSHOT</version>
 
     <parent>
         <groupId>com.graphaware.neo4j</groupId>
@@ -60,7 +60,7 @@
         <connection>scm:git:git@github.com:graphaware/neo4j-reco.git</connection>
         <developerConnection>scm:git:git@github.com:graphaware/neo4j-reco.git</developerConnection>
         <url>git@github.com:graphaware/neo4j-reco.git</url>
-        <tag>recommendation-engine-3.1.3.45.11</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
