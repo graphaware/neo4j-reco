@@ -126,7 +126,7 @@ will be discussed shortly.
 #### Scores and Score Transformers
 
 `Recommendations` are a collection of tuples/pairs, where each pair is composed of a recommended item (again, typically a `Node`)
-and associated relevance **Score**. The `Score` is composed of named **Partial Scores**. Each _Partial Score_ has a float
+and associated relevances **Scores**. The `Score` is composed of named **Partial Scores**. Each _Partial Score_ has a float
 value and optionally some extra details about how and why it has been computed that we with to expose to the users. Typically,
 a single `SingleScoreRecommendationEngine`, as the name suggest, is responsible for a single _Partial Score_.
 
