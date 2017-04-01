@@ -17,7 +17,7 @@
 package com.graphaware.reco.neo4j.module;
 
 import com.graphaware.common.log.LoggerFactory;
-import com.graphaware.common.policy.NodeInclusionPolicy;
+import com.graphaware.common.policy.inclusion.NodeInclusionPolicy;
 import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.neo4j.engine.Neo4jTopLevelDelegatingRecommendationEngine;
 import com.graphaware.runtime.config.function.StringToNodeInclusionPolicy;

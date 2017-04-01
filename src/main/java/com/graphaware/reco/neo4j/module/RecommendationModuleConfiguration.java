@@ -16,7 +16,9 @@
 
 package com.graphaware.reco.neo4j.module;
 
-import com.graphaware.common.policy.NodeInclusionPolicy;
+import com.graphaware.common.policy.inclusion.NodeInclusionPolicy;
+import com.graphaware.common.policy.role.InstanceRolePolicy;
+import com.graphaware.common.policy.role.MasterOnly;
 import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.engine.TopLevelRecommendationEngine;
@@ -25,6 +27,7 @@ import com.graphaware.runtime.config.BaseTimerDrivenModuleConfiguration;
 import com.graphaware.runtime.policy.all.IncludeAllBusinessNodes;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.kernel.ha.com.master.Master;
 
 /**
  * Configuration settings for the {@link RecommendationModule} with fluent interface.
@@ -55,14 +58,14 @@ public class RecommendationModuleConfiguration extends BaseTimerDrivenModuleConf
      * @return The default {@link RecommendationModuleConfiguration}
      */
     public static RecommendationModuleConfiguration defaultConfiguration(TopLevelRecommendationEngine<Node, Node> engine) {
-        return new RecommendationModuleConfiguration(InstanceRolePolicy.MASTER_ONLY, engine, new SimpleConfig(10), IncludeAllBusinessNodes.getInstance(), DEFAULT_RELATIONSHIP_TYPE);
+        return new RecommendationModuleConfiguration(MasterOnly.getInstance(), engine, new SimpleConfig(10), IncludeAllBusinessNodes.getInstance(), DEFAULT_RELATIONSHIP_TYPE);
     }
 
     /**
      * Construct a new configuration with the given node inclusion policy, i.e. the policy that determines for which nodes
      * recommendations will be computed.
      *
-     * @param nodeInclusionPolicy The {@link com.graphaware.common.policy.NodeInclusionPolicy} to use for selecting nodes
+     * @param nodeInclusionPolicy The {@link NodeInclusionPolicy} to use for selecting nodes
      *                            for which to compute recommendations.
      * @return new config.
      */

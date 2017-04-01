@@ -16,8 +16,8 @@
 
 package com.graphaware.reco.integration.engine;
 
-import com.graphaware.common.policy.BaseNodeInclusionPolicy;
-import com.graphaware.common.policy.NodeInclusionPolicy;
+import com.graphaware.common.policy.inclusion.BaseNodeInclusionPolicy;
+import com.graphaware.common.policy.inclusion.NodeInclusionPolicy;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.neo4j.engine.RandomRecommendations;

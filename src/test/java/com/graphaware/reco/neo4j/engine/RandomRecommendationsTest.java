@@ -16,14 +16,13 @@
 
 package com.graphaware.reco.neo4j.engine;
 
-import com.graphaware.common.policy.NodeInclusionPolicy;
-import com.graphaware.common.policy.all.IncludeAllNodes;
-import com.graphaware.common.policy.none.IncludeNoNodes;
+import com.graphaware.common.policy.inclusion.NodeInclusionPolicy;
+import com.graphaware.common.policy.inclusion.all.IncludeAllNodes;
+import com.graphaware.common.policy.inclusion.none.IncludeNoNodes;
 import com.graphaware.reco.generic.config.SimpleConfig;
 import com.graphaware.reco.generic.context.SimpleContext;
 import com.graphaware.reco.generic.engine.RecommendationEngine;
 import com.graphaware.reco.generic.result.Recommendation;
-import com.graphaware.test.integration.DatabaseIntegrationTest;
 import com.graphaware.test.integration.EmbeddedDatabaseIntegrationTest;
 import org.junit.Test;
 import org.neo4j.graphdb.*;

@@ -16,7 +16,7 @@
 
 package com.graphaware.reco.neo4j.engine;
 
-import com.graphaware.common.policy.NodeInclusionPolicy;
+import com.graphaware.common.policy.inclusion.NodeInclusionPolicy;
 import com.graphaware.reco.generic.config.Config;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.engine.SingleScoreRecommendationEngine;
@@ -31,7 +31,7 @@ import java.util.Map;
 
 /**
  * {@link SingleScoreRecommendationEngine} that randomly recommends {@link org.neo4j.graphdb.Node}s which comply with
- * the provided {@link com.graphaware.common.policy.NodeInclusionPolicy}.
+ * the provided {@link com.graphaware.common.policy.inclusion.NodeInclusionPolicy}.
  */
 public abstract class RandomRecommendations extends SingleScoreRecommendationEngine<Node, Node> {
 
