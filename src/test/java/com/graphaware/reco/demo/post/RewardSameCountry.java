@@ -25,7 +25,7 @@ import org.neo4j.graphdb.Node;
 import java.util.Collections;
 
 import static org.neo4j.graphdb.Direction.OUTGOING;
-import static org.neo4j.graphdb.DynamicRelationshipType.withName;
+import static org.neo4j.graphdb.RelationshipType.withName;
 
 /**
  * Rewards people who live in the same country as the company by 10 (hardcoded) points.

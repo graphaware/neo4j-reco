@@ -21,7 +21,7 @@ import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.filter.Filter;
 import org.neo4j.graphdb.Node;
 
-import static com.graphaware.common.util.PropertyContainerUtils.getInt;
+import static com.graphaware.common.util.EntityUtils.getInt;
 
 /**
  * {@link Filter} that filters out potentially recommended people that are underage. The minimum legal age is passed

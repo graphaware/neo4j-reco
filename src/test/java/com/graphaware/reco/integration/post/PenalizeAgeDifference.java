@@ -24,7 +24,7 @@ import com.graphaware.reco.generic.transform.ParetoFunction;
 import com.graphaware.reco.generic.transform.TransformationFunction;
 import org.neo4j.graphdb.Node;
 
-import static com.graphaware.common.util.PropertyContainerUtils.getInt;
+import static com.graphaware.common.util.EntityUtils.getInt;
 
 /**
  * Subtracts points for difference in age. The maximum number of points subtracted is 10 and 80% of that is achieved

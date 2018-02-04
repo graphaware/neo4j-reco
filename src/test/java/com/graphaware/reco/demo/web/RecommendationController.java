@@ -54,7 +54,7 @@ public class RecommendationController {
     }
 
     private Node findCompanyByName(String name) {
-        return getSingle(database.findNodes(DynamicLabel.label("Company"), "name", name), "Company with name " + name + " does not exist.");
+        return getSingle(database.findNodes(Label.label("Company"), "name", name), "Company with name " + name + " does not exist.");
     }
 
     private List<RecommendationVO> convert(List<Recommendation<Node>> recommendations) {

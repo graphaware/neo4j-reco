@@ -21,7 +21,7 @@ import com.graphaware.common.policy.inclusion.NodeInclusionPolicy;
 import com.graphaware.reco.generic.context.Context;
 import com.graphaware.reco.generic.policy.ParticipationPolicy;
 import com.graphaware.reco.neo4j.engine.RandomRecommendations;
-import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 
 /**
@@ -39,7 +39,7 @@ public class RandomPeople extends RandomRecommendations {
         return new BaseNodeInclusionPolicy() {
             @Override
             public boolean include(Node node) {
-                return node.hasLabel(DynamicLabel.label("Person"));
+                return node.hasLabel(Label.label("Person"));
             }
         };
     }

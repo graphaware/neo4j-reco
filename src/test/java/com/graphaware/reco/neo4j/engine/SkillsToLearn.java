@@ -23,13 +23,13 @@ import org.neo4j.graphdb.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.graphaware.common.util.PropertyContainerUtils.getInt;
+import static com.graphaware.common.util.EntityUtils.getInt;
 
 public class SkillsToLearn extends CollaborativeEngine {
 
     private static final String LEVEL = "level";
-    private final Label PERSON = DynamicLabel.label("Person");
-    private final Label SKILL = DynamicLabel.label("Skill");
+    private final Label PERSON = Label.label("Person");
+    private final Label SKILL = Label.label("Skill");
 
     @Override
     public String name() {

@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static org.neo4j.graphdb.Direction.INCOMING;
 import static org.neo4j.graphdb.Direction.OUTGOING;
-import static org.neo4j.graphdb.DynamicRelationshipType.withName;
+import static org.neo4j.graphdb.RelationshipType.withName;
 
 /**
  * Recommends people that have the skills a company is looking for. For each skill, a number of points will be added.

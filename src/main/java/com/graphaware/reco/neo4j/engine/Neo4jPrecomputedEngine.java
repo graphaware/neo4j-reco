@@ -24,7 +24,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 
-import static com.graphaware.common.util.PropertyContainerUtils.getFloat;
+import static com.graphaware.common.util.EntityUtils.getFloat;
 import static org.neo4j.graphdb.Direction.OUTGOING;
 
 /**
