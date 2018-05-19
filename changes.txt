@@ -1,3 +1,9 @@
+3.4.0.52.11:
+    - upgrade to the latest framework
+
+3.3.5.52.11:
+    - upgrade to the latest framework
+
 3.3.3.52.11:
     - upgrade to the latest framework
 
