@@ -11,3 +11,4 @@ target/
 .DS_Store
 .classpath
 neo4j-home/
+metrics/
