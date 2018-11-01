@@ -145,7 +145,7 @@ computed by a `SingleScoreRecommendationEngine`.
 
 #### Context
 
-`Recommendations` are always computed within a **Context**. Whist each recommendation-computing process for a single input
+`Recommendations` are always computed within a **Context**. Whilst each recommendation-computing process for a single input
 might involve multiple `RecommendationEngine`s and other components, there is usually a single `Context` per computation
 that encapsulates information relevant to the process. For example, the `Context` knows whether a potential
 recommendation discovered by a `RecommendationEngine` is allowed
@@ -153,7 +153,7 @@ to be served to the user. For each computation, a new `Context` is produced by `
 
 #### Config
 
-The `Context` also encapsulates a **Config** for each recommendation-computing process. This is a set user-defined values.
+The `Context` also encapsulates a **Config** for each recommendation-computing process. This is a set of user-defined values.
 By default, a `Config` knows how many recommendations should be produce and what is the maximum time the
 recommendation-computing process should take. Optionally, arbitrary key-value pairs can be passed in, which is useful
  for scenarios when score values, rewards, penalties, and other variables should not be hard-coded and differ per computation.
