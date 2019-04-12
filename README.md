@@ -1,7 +1,7 @@
 GraphAware Neo4j Recommendation Engine
 ======================================
 
-[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.svg?branch=master)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 3.5.3.53.11
+[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.svg?branch=master)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 3.5.4.53.11
 
 GraphAware Neo4j Recommendation Engine is a library for building high-performance complex recommendation engines atop Neo4j.
 It is in production at a number of <a href="http://graphaware.com" target="_blank">GraphAware</a>'s clients producing real-time recommendations on graphs with hundreds of millions of nodes.
@@ -801,7 +801,7 @@ Job done!
 License
 -------
 
-Copyright (c) 2015 GraphAware
+Copyright (c) 2019 GraphAware
 
 GraphAware is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
