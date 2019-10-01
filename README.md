@@ -1,7 +1,7 @@
 GraphAware Neo4j Recommendation Engine
 ======================================
 
-[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.svg?branch=master)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 3.5.6.54.11
+[![Build Status](https://travis-ci.org/graphaware/neo4j-reco.svg?branch=master)](https://travis-ci.org/graphaware/neo4j-reco) | <a href="http://graphaware.com/products/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/reco/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 3.5.7.54.11
 
 GraphAware Neo4j Recommendation Engine is a library for building high-performance complex recommendation engines atop Neo4j.
 It is in production at a number of <a href="http://graphaware.com" target="_blank">GraphAware</a>'s clients producing real-time recommendations on graphs with hundreds of millions of nodes.
@@ -51,7 +51,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
         <dependency>
             <groupId>com.graphaware.neo4j</groupId>
             <artifactId>recommendation-engine</artifactId>
-            <version>3.5.1.53.11</version>
+            <version>3.5.7.54.11</version>
         </dependency>
         ...
     </dependencies>
@@ -59,7 +59,7 @@ Releases are synced to <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%
 #### Snapshots
 
 To use the latest development version, just clone this repository, run `mvn clean install` and change the version in the
-dependency above to 3.5.1.53.12-SNAPSHOT.
+dependency above to 3.5.7.54.12-SNAPSHOT.
 
 #### Note on Versioning Scheme
 
