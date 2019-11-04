@@ -1,0 +1,25 @@
+include:
+  - project: graphaware/devops/gitlab-ci-templates
+    file: gitlab-ci-templates.yml
+
+stages:
+  - deploy
+  - postDeploy
+
+bumpVersion:
+  extends: .frameworkVersionBump
+  stage: deploy
+
+uploadArtifact:
+  extends: .uploadToS3
+  stage: postDeploy
+  dependencies:
+    - bumpVersion
+  variables:
+    FROM: target/recommendation-engine-$PARENT_VERSION.jar
+    TO: $AWS_PATH/recommendation-engine-$PARENT_VERSION.jar
+  only:
+    refs:
+      - master
+    variables:
+      - $PARENT_VERSION
