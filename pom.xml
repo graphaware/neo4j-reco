@@ -58,7 +58,7 @@
 
     <scm>
         <connection>scm:git:git@github.com:graphaware/neo4j-reco.git</connection>
-        <developerConnection>scm:git@gitlab.com:graphaware/neo4j-plugins/neo4j-reco.git</developerConnection>
+        <developerConnection>scm:git:git@gitlab.com:graphaware/neo4j-plugins/neo4j-reco.git</developerConnection>
         <url>git@github.com:graphaware/neo4j-reco.git</url>
         <tag>HEAD</tag>
     </scm>
