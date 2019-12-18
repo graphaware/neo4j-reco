@@ -1,24 +1,6 @@
 include:
   - project: graphaware/devops/gitlab-ci-templates
-    file: gitlab-ci-templates.yml
+    file: neo4j-framework-template.yml
 
-stages:
-  - deploy
-  - postDeploy
-
-bumpVersion:
-  extends: .frameworkVersionBump
-  stage: deploy
-
-uploadArtifact:
-  extends: .uploadToS3
-  stage: postDeploy
-  dependencies:
-    - bumpVersion
-  variables:
-    JAR_NAME: recommendation-engine
-  only:
-    refs:
-      - master
-    variables:
-      - $PARENT_VERSION
+variables:
+  JAR_NAME: recommendation-engine
