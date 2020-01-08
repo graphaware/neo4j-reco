@@ -4,3 +4,9 @@ include:
 
 variables:
   JAR_NAME: recommendation-engine
+
+publishJavaDoc:
+  extends: .publishJavaDoc
+  variables:
+    FROM: target/apidocs
+    TO: reco
