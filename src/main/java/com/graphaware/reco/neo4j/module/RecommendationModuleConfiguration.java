@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2019 GraphAware
+ * Copyright (c) 2013-2020 GraphAware
  *
  * This file is part of the GraphAware Framework.
  *
@@ -27,7 +27,6 @@ import com.graphaware.runtime.config.BaseTimerDrivenModuleConfiguration;
 import com.graphaware.runtime.policy.all.IncludeAllBusinessNodes;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.kernel.ha.com.master.Master;
 
 /**
  * Configuration settings for the {@link RecommendationModule} with fluent interface.

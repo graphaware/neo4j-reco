@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2013-2019 GraphAware
+  ~ Copyright (c) 2013-2020 GraphAware
   ~
   ~ This file is part of the GraphAware Framework.
   ~
@@ -18,12 +18,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>recommendation-engine</artifactId>
-    <version>3.5.14.55.12-SNAPSHOT</version>
+    <version>3.5.14.58.11-SNAPSHOT</version>
 
     <parent>
         <groupId>com.graphaware.neo4j</groupId>
         <artifactId>module-parent</artifactId>
-        <version>3.5.14.55</version>
+        <version>3.5.14.58</version>
     </parent>
 
     <name>GraphAware Neo4j Recommendation Engine</name>
